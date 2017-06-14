@@ -19,7 +19,7 @@ def gPhoton_data(filename):
     csvRaw = read_lc(filename)
 
     # Create Data Object from glue using imported two columns from CSV
-    csvData = Data("Flux (Background Subtracted)"=csvRaw[['flux_bgsub']], "Mean Time"=csvRaw[['t_mean']], label='lightcurve') 
+    csvData = Data(Flux_BackgroundSubtracted=csvRaw[['flux_bgsub']], MeanTime"=csvRaw[['t_mean']], label='lightcurve') 
 
     # Return Array of Data
     dataArray.append(csvData)
