@@ -1,6 +1,6 @@
 from glue.core import Data
 from glue.core.data_factories import has_extension
-from glue.app.qt.application import GlueApplication
+#from glue.app.qt.application import GlueApplication
 
 from glue.config import data_factory, importer, menubar_plugin
 
