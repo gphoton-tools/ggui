@@ -1,6 +1,6 @@
 from glue.core import Data, DataCollection
 from glue.core.data_factories import has_extension, load_data
-#from glue.app.qt.application import GlueApplication
+
 from glue.viewers.scatter.qt import ScatterWidget
 
 from glue.config import menubar_plugin
@@ -44,13 +44,23 @@ def my_plugin(session, dataLibrary):
 
     # Import Lightcurve CSVs to DataCollection
     for lightcurveFile in lightcurveFilenames:
-        dataLibrary.append(load_data(lightcurveFile))
+        lightcurveData = load_data(lightcurveFile)
+        dataLibrary.append(lightcurveData)
+        # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
+        from glue.app.qt.application import GlueApplication
+        glueApp = GlueApplication(dataLibrary)
+        scatter = glueApp.new_data_viewer(ScatterWidget)
+        scatter.add_data(lightcurveData)
+        glueApp.start()
+        
+
     # Import CoAdd Fits to DataCollection
 
     # Import Image Cube Fits to DataCollection
 
 
-    # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
+    
+    
 
     # Generate 2D Image Viewer Canvas for CoAdd Fits
 
