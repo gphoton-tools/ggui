@@ -9,8 +9,20 @@ from gPhoton.gphoton_utils import read_lc as read_lc
 
 from PyQt5.QtWidgets import QFileDialog
 
+def fnPromptUserForfile(dialogCaption, dialogNameFilter):
+    # Set File Dialog Options
+    caption = dialogCaption
+    dialog = QFileDialog(caption=caption)
+    dialog.setFileMode(QFileDialog.ExistingFile)
+    dialog.setNameFilter(dialogNameFilter)
+    # Prompt User for file to import
+    dialog.exec_()
+    # Get array of File Names
+    filenames = dialog.selectedFiles()
+    return filenames
+
 @menubar_plugin("Load gPhoton CSV Plot")
-def my_plugin(session, data_collection):
+def my_plugin(session, dataLibrary):
     """
     Data loader customized for 'typical' gPhoton CSV Lightcurves, 
         specifically laoding t_mean and flux_bgsub
@@ -20,14 +32,20 @@ def my_plugin(session, data_collection):
     """
 
     # Prompt User via File Dialog for LightCurve CSVs
+    lightcurveFilenames = fnPromptUserForfile("Select gPhoton CSV Lightcurve file", 
+                                              "Lightcurve CSV (*.csv)")
 
     # Prompt User via File Dialog for CoAdd Fits
-
+    coaddFilenames = fnPromptUserForfile("Select gPhoton FITS CoAdd file", 
+                                              "CoAdd FITS (*.fits)")
     # Prompt User via File Dialog for Image Cube Fits
-
+    cubeFilenames = fnPromptUserForfile("Select gPhoton FITS Image Cube file", 
+                                              "Image Cube FITS (*.fits)")
 
     # Import Lightcurve CSVs to DataCollection()
-
+    for lightcurveFile in lightcurveFilenames:
+        print(lightcurveFile)
+        dataLibrary.append(load_data(lightcurveFile))
     # Import CoAdd Fits to DataCollection()
 
     # Import Image Cube Fits to DataCollection()
