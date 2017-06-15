@@ -59,18 +59,6 @@ def my_plugin(session, dataLibrary):
     return
 
     """
-    # Set File Dialog Options
-    caption = ("Select gPhoton CSV Lightcurve file")
-    dialog = QFileDialog(caption=caption)
-    dialog.setFileMode(QFileDialog.ExistingFile)
-    dialog.setNameFilter("Lightcurve CSV (*.csv)")
-
-    # Prompt User for file to import
-    dialog.exec_()
-
-    # Get File Name (Need to grab first file name)
-    filename = dialog.selectedFiles()[0]
-    
     dataArray = []
 
     # Read in CSV file using gPhoton.gphoton_utils.read_lc
