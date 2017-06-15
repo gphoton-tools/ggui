@@ -42,13 +42,12 @@ def my_plugin(session, dataLibrary):
     cubeFilenames = fnPromptUserForfile("Select gPhoton FITS Image Cube file", 
                                               "Image Cube FITS (*.fits)")
 
-    # Import Lightcurve CSVs to DataCollection()
+    # Import Lightcurve CSVs to DataCollection
     for lightcurveFile in lightcurveFilenames:
-        print(lightcurveFile)
         dataLibrary.append(load_data(lightcurveFile))
-    # Import CoAdd Fits to DataCollection()
+    # Import CoAdd Fits to DataCollection
 
-    # Import Image Cube Fits to DataCollection()
+    # Import Image Cube Fits to DataCollection
 
 
     # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
