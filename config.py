@@ -1,3 +1,5 @@
+from qtpy.QtWidgets import QFileDialog # See Issue Ticket #7
+
 from glue.core import Data, DataCollection
 from glue.core.data_factories import has_extension, load_data
 
@@ -7,7 +9,7 @@ from glue.config import menubar_plugin
 
 from gPhoton.gphoton_utils import read_lc as read_lc
 
-from PyQt5.QtWidgets import QFileDialog
+
 
 def fnPromptUserForfile(dialogCaption, dialogNameFilter):
     # Set File Dialog Options
