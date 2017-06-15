@@ -21,7 +21,7 @@ def fnPromptUserForfile(dialogCaption, dialogNameFilter):
     filenames = dialog.selectedFiles()
     return filenames
 
-@menubar_plugin("Load gPhoton CSV Plot")
+@menubar_plugin("gPhoton++ Analysis Package")
 def my_plugin(session, dataLibrary):
     """
     Data loader customized for 'typical' gPhoton CSV Lightcurves, 
@@ -44,13 +44,25 @@ def my_plugin(session, dataLibrary):
 
     # Import Lightcurve CSVs to DataCollection
     for lightcurveFile in lightcurveFilenames:
-        lightcurveData = load_data(lightcurveFile)
-        dataLibrary.append(lightcurveData)
+        # Load Data from file. Add to current Data Collection
+        csvData = load_data(lightcurveFile)
+        dataLibrary.append(csvData)
         # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
+        # Now that Glue has loaded, grab current instance of GlueApplication UI
         from glue.app.qt.application import GlueApplication
         glueApp = GlueApplication(dataLibrary)
+        # Generate new scatter widget
         scatter = glueApp.new_data_viewer(ScatterWidget)
+        # Cleanse raw csvData to only t_mean and flux_bgsub
+        lightcurveData = Data(Flux_BackgroundSubtracted=csvData['flux_bgsub'], 
+                              MeanTime=csvData['t_mean'], 
+                              label='lightcurve') 
+        # Add that data "subset" (not glue subset, just a subset) to Data Collection. Must be in Data Collection to use
+        dataLibrary.append(lightcurveData)
         scatter.add_data(lightcurveData)
+        scatter.xatt = lightcurveData.id['MeanTime']
+        scatter.yatt = lightcurveData.id['Flux_BackgroundSubtracted']
+        # 
         glueApp.start()
         
 
