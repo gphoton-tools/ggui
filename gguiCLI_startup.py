@@ -16,7 +16,7 @@ def fnPromptUserForfile(dialogCaption, dialogNameFilter):
     filenames = dialog.selectedFiles()
     return filenames
 
-def fnCreateNewScatterCanvas(dataCollection, dataToDisplay, xatt, yatt, glueApp):
+def fnScatterCanvas(dataCollection, dataToDisplay, xatt, yatt, glueApp):
     from glue.viewers.scatter.qt import ScatterWidget
     # Generate new scatter widget
     scatterCanvas = glueApp.new_data_viewer(ScatterWidget, dataToDisplay)
@@ -26,7 +26,7 @@ def fnCreateNewScatterCanvas(dataCollection, dataToDisplay, xatt, yatt, glueApp)
     scatterCanvas.yatt = dataToDisplay.id[yatt]
     # Specify Misc. Scatterplot Attributes
 
-def fnRenderImage(datacollection, imageDataToDisplay, glueApp):
+def fnImageCanvas(datacollection, imageDataToDisplay, glueApp):
     from glue.viewers.image.qt import ImageWidget, ImageWidgetBase
     # Generate new Image Widget
     imageCanvas = glueApp.new_data_viewer(ImageWidget, imageDataToDisplay)
@@ -35,12 +35,14 @@ def fnRenderImage(datacollection, imageDataToDisplay, glueApp):
 dataCollection = DataCollection()
 glueApp = GlueApplication(dataCollection)
 
+
 # Prompt User via File Dialog for LightCurve CSVs
 lightcurveFilenames = fnPromptUserForfile("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")
 # Prompt User via File Dialog for CoAdd Fits
 coaddFilenames = fnPromptUserForfile("Select gPhoton FITS CoAdd file", "CoAdd FITS (*.fits)")
 # Prompt User via File Dialog for Image Cube Fits
-cubeFilenames = [] #fnPromptUserForfile("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")
+cubeFilenames = fnPromptUserForfile("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")
+
 
 # Import Lightcurve CSVs to DataCollection
 for lightcurveFile in lightcurveFilenames:
@@ -54,25 +56,28 @@ for lightcurveFile in lightcurveFilenames:
                             label='Lightcurve of ' + lightcurveFile)
     dataCollection.append(lightcurveData)
     # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
-    fnCreateNewScatterCanvas(dataCollection, lightcurveData, 'MeanTime', 'Flux_BackgroundSubtracted', glueApp)
+    fnScatterCanvas(dataCollection, lightcurveData, 'MeanTime', 'Flux_BackgroundSubtracted', glueApp)
 
 # Import CoAdd Fits to DataCollection
 for coaddFile in coaddFilenames:
     # Load Image from file
     fitsImage = load_data(coaddFile)
-    # Import Image into Pandas Data Object
-    fitsData = Data(PRIMARY = fitsImage['PRIMARY'], label = "CoAdd Plot")
+    #fitsImage['label'] = "CoAdd Image of " + coaddFile
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for coadd Images
-    fnRenderImage(dataCollection, fitsImage, glueApp)
-
+    fnImageCanvas(dataCollection, fitsImage, glueApp)
 
 # Import Image Cube Fits to DataCollection
+for cubeFile in cubeFilenames:
+    # Load Image from file
+    fitsImage = load_data(cubeFile)
+    #fitsImage['label'] = "CoAdd Image of " + coaddFile
+    # Import Image to Data Collection for plotting
+    dataCollection.append(fitsImage)
+    # Generate 2D Image Viewer Canvas for Image Cube Fits
+    fnImageCanvas(dataCollection, fitsImage, glueApp)
 
-# Generate 2D Image Viewer Canvas for CoAdd Fits
-
-# Generate 2D Image Viewer Canvas for Image Cube Fits
 
 #start Glue
 glueApp.start()
