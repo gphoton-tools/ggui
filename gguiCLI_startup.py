@@ -19,19 +19,17 @@ def fnPromptUserForfile(dialogCaption, dialogNameFilter):
 def fnCreateNewScatterCanvas(dataCollection, dataToDisplay, xatt, yatt, glueApp):
     from glue.viewers.scatter.qt import ScatterWidget
     # Generate new scatter widget
-    scatterCanvas = glueApp.new_data_viewer(ScatterWidget)
+    scatterCanvas = glueApp.new_data_viewer(ScatterWidget, dataToDisplay)
     # Import scatter dataset
-    scatterCanvas.add_data(dataToDisplay)
+    #scatterCanvas.add_data(dataToDisplay)
     scatterCanvas.xatt = dataToDisplay.id[xatt]
     scatterCanvas.yatt = dataToDisplay.id[yatt]
     # Specify Misc. Scatterplot Attributes
 
 def fnRenderImage(datacollection, imageDataToDisplay, glueApp):
-    from glue.viewers.image.qt import ImageWidget
+    from glue.viewers.image.qt import ImageWidget, ImageWidgetBase
     # Generate new Image Widget
-    imageCanvas = glueApp.new_data_viewer(ImageWidget)
-    # Import image dataset
-    imageCanvas.add_Data(imageDataToDisplay)
+    imageCanvas = glueApp.new_data_viewer(ImageWidget, imageDataToDisplay)
 
 # Initialize Glue Application with blank Data Collection
 dataCollection = DataCollection()
@@ -42,7 +40,7 @@ lightcurveFilenames = fnPromptUserForfile("Select gPhoton CSV Lightcurve file", 
 # Prompt User via File Dialog for CoAdd Fits
 coaddFilenames = fnPromptUserForfile("Select gPhoton FITS CoAdd file", "CoAdd FITS (*.fits)")
 # Prompt User via File Dialog for Image Cube Fits
-cubeFilenames = fnPromptUserForfile("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")
+cubeFilenames = [] #fnPromptUserForfile("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")
 
 # Import Lightcurve CSVs to DataCollection
 for lightcurveFile in lightcurveFilenames:
@@ -62,6 +60,8 @@ for lightcurveFile in lightcurveFilenames:
 for coaddFile in coaddFilenames:
     # Load Image from file
     fitsImage = load_data(coaddFile)
+    # Import Image into Pandas Data Object
+    fitsData = Data(PRIMARY = fitsImage['PRIMARY'], label = "CoAdd Plot")
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for coadd Images

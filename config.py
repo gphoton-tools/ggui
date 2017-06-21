@@ -6,7 +6,6 @@ from glue.core.data_factories import has_extension, load_data
 from glue.core import application_base
 
 from glue.viewers.scatter.qt import ScatterWidget
-import gguiLightcurvePlot
 
 from glue.config import menubar_plugin
 
