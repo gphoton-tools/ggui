@@ -14,7 +14,36 @@ from gPhoton.gphoton_utils import read_lc as read_lc
 # Preferences Imports
 from glue.config import settings, preference_panes
 #from glue.external.qt import QtGui
+"""
 from qtpy import QtGui
+
+class MyPreferences(QtGui.QWidget):
+
+    def __init__(self, parent=None):
+
+        super(MyPreferences, self).__init__(parent=parent)
+
+        self.layout = QtGui.QFormLayout()
+
+        self.option1 = QtGui.QLineEdit()
+        self.option2 = QtGui.QCheckBox()
+
+        self.layout.addRow("Option 1", self.option1)
+        self.layout.addRow("Option 2", self.option2)
+
+        self.setLayout(self.layout)
+
+        self.option1.setText(settings.OPTION1)
+        self.option2.setChecked(settings.OPTION2)
+
+    def finalize(self):
+        settings.OPTION1 = self.option1.text()
+        settings.OPTION2 = self.option2.isChecked()
+
+settings.add('OPTION1', '')
+settings.add('OPTION2', False, bool)
+preference_panes.add('My preferences', MyPreferences)
+"""
 
 def fnPromptUserForfile(dialogCaption, dialogNameFilter):
     # Set File Dialog Options
@@ -120,21 +149,3 @@ def ggui_plugin(session, dataLibrary):
     return
 
     """
-
-class MyPreferences():
-        def __init__(self, parent=None):
-            super(MyPreferences, self).__init__()
-            #self.layout = QtGui.QFormLayout()
-            
-            self.option1 = QtGui.QCheckBox()
-            self.layout.addRow("Prompt for Lightcurve CSVs")
-
-            self.setLayout(self.layout)
-
-            self.option1.setChecked(settings.OPTION1)
-
-        def finalize(self):
-            settings.OPTION1 = self.option1.isChecked()
-
-settings.add('OPTION1', False, bool)
-preference_panes.add('gPhoton++ Preferences', MyPreferences)
