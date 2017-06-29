@@ -3,11 +3,11 @@ from glue.config import settings, preference_panes
 from qtpy import QtWidgets
 
 
-class MyPreferences(QtWidgets.QWidget):
+class GGUIPreferences(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
 
-        super(MyPreferences, self).__init__(parent=parent)
+        super(GGUIPreferences, self).__init__(parent=parent)
 
         self.layout = QtWidgets.QFormLayout()
 
@@ -34,4 +34,4 @@ class MyPreferences(QtWidgets.QWidget):
 settings.add('OPTION1', False, bool)
 settings.add('OPTION2', False, bool)
 settings.add('OPTION3', False, bool)
-preference_panes.add('My preferences', MyPreferences)
+preference_panes.add('GGUI Preferences', GGUIPreferences)
