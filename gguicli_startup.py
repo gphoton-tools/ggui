@@ -8,6 +8,7 @@ from glue.core.data_factories import load_data
 from glue.core import Data, DataCollection
 from glue.core.link_helpers import LinkSame
 from glue.app.qt.application import GlueApplication
+from glue.config import settings
 
 def prompt_user_for_file(dialogCaption, dialogNameFilter):
     """
@@ -57,6 +58,12 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp):
     # Set Scatter Canvas Attributes
     scatterCanvas.xatt = dataToDisplay.id[xatt]
     scatterCanvas.yatt = dataToDisplay.id[yatt]
+    #glueApp.add_widget(scatterCanvas, "Test Label", 1)
+
+def generateScatter():
+    from glue.viewers.scatter.qt import ScatterWidget
+    from glue.core.session import Session
+    scatter = ScatterWidget()
 
 def create_image_canvas(imageDataToDisplay, glueApp):
     """
@@ -77,17 +84,29 @@ def create_image_canvas(imageDataToDisplay, glueApp):
 # Initialize Glue Application with blank Data Collection
 dataCollection = DataCollection()
 glueApp = GlueApplication(dataCollection)
+glueApp.new_tab()
+tab = glueApp.tab_bar
+#import ipdb; ipdb.set_trace()
+#tab.setText("Testing")
+#generateScatter()
 
+
+lightcurveFilenames = []
+coaddFilenames = []
+cubeFilenames = []
 
 # Prompt User via File Dialog for LightCurve CSVs
-lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file",
-                                           "Lightcurve CSV (*.csv)")
+if settings.OPTION1 == True: 
+    lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file",
+                                               "Lightcurve CSV (*.csv)")
 # Prompt User via File Dialog for CoAdd Fits
-coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file",
-                                      "CoAdd FITS (*.fits)")
+if settings.OPTION2 == True: 
+    coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file",
+                                          "CoAdd FITS (*.fits)")
 # Prompt User via File Dialog for Image Cube Fits
-cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file",
-                                     "Image Cube FITS (*.fits)")
+if settings.OPTION3 == True:
+    cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file",
+                                         "Image Cube FITS (*.fits)")
 
 
 # Import Lightcurve CSVs to DataCollection
@@ -125,6 +144,9 @@ for cubeFile in cubeFilenames:
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for Image Cube Fits
     create_image_canvas(fitsImage, glueApp)
+
+
+viewers = glueApp.viewers
 
 #start Glue
 glueApp.start()
