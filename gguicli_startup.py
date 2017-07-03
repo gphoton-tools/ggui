@@ -35,7 +35,7 @@ def prompt_user_for_file(dialogCaption, dialogNameFilter):
     filenames = dialog.selectedFiles()
     return filenames
 
-def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp):
+def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp, xmin=None, xmax=None):
     """
     Function to generate new scatter widget. (Designed for modularity and organization)
 
@@ -48,6 +48,9 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp):
     :param yatt: Index of Glue Data Object to display along y axis
     :type yatt: str
 
+    :param xmin: Minimum value of X Axis
+    :type xmin: numpy.float64
+
     :param glueApp: Current instantiation of the Glue Application to spawn canvas into
     :type glueApp: glue.app.qt.application.GlueApplication
     """
@@ -58,6 +61,8 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp):
     # Set Scatter Canvas Attributes
     scatterCanvas.xatt = dataToDisplay.id[xatt]
     scatterCanvas.yatt = dataToDisplay.id[yatt]
+    if xmin != None: scatterCanvas.xmin = xmin
+    if xmax != None: scatterCanvas.xmax = xmax
     #glueApp.add_widget(scatterCanvas, "Test Label", 1)
 
 def generateScatter():
@@ -79,6 +84,29 @@ def create_image_canvas(imageDataToDisplay, glueApp):
     from glue.viewers.image.qt import ImageWidget
     # Generate new Image Widget
     glueApp.new_data_viewer(ImageWidget, imageDataToDisplay)
+
+def lightcurveChop(parentData, axis, timeInterval):
+    import numpy
+    # Calculate all time differences between points
+    timeDifferences = numpy.diff(parentData[axis])
+    # Find all indices of blank jumps greater than timeInterval
+    obsWindows = []
+    obsStart = parentData[axis, 0]
+    for index, difference in enumerate(timeDifferences):
+        if difference > timeInterval:
+            print(index, difference)
+            obsEnd = parentData['MeanTime', index]
+            obsWindows.append((obsStart,obsEnd))
+            obsStart = parentData['MeanTime', index + 1]
+    obsWindows.append((obsStart, parentData['MeanTime', -1]))
+    return obsWindows
+    """
+    chopMeanTimes = []
+    for chopIndex in chopIndices:
+        chopMeanTimes.append(parentData['MeanTime',chopIndex])
+    import ipdb; ipdb.set_trace()
+    """
+
 
 # ---------------------------- Begin main ---------------------------- #
 # Initialize Glue Application with blank Data Collection
@@ -121,9 +149,18 @@ for lightcurveFile in lightcurveFilenames:
                           MeanTime=csvData['t_mean'],
                           label='Lightcurve of ' + lightcurveFile)
     dataCollection.append(lightcurveData)
+
+    obsWindows = lightcurveChop(lightcurveData, "MeanTime", 3600)
     # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
     create_scatter_canvas(lightcurveData, 'MeanTime',
                           'Flux_BackgroundSubtracted', glueApp)
+    import ipdb; ipdb.set_trace()
+    create_scatter_canvas(lightcurveData, 'MeanTime',
+                          'Flux_BackgroundSubtracted', glueApp,
+                          obsWindows[0][0], obsWindows[0][1])
+    create_scatter_canvas(lightcurveData, 'MeanTime',
+                          'Flux_BackgroundSubtracted', glueApp,
+                          768413057.329, 768413154.427)
 
 # Import CoAdd Fits to DataCollection
 for coaddFile in coaddFilenames:
