@@ -64,14 +64,7 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp, xmin=None, xmax=No
     if xmin != None: scatterCanvas.xmin = xmin
     if xmax != None: scatterCanvas.xmax = xmax
     if windowTitle != None: scatterCanvas.window_title = windowTitle
-    #import ipdb; ipdb.set_trace()
     return scatterCanvas
-    #glueApp.add_widget(scatterCanvas, "Test Label", 1)
-
-def generateScatter():
-    from glue.viewers.scatter.qt import ScatterWidget
-    from glue.core.session import Session
-    scatter = ScatterWidget()
 
 def create_image_canvas(imageDataToDisplay, glueApp):
     """
@@ -94,23 +87,20 @@ def lightcurveChop(parentData, axis, timeInterval):
     timeDifferences = numpy.diff(parentData[axis])
     # Find all indices of blank jumps greater than timeInterval
     obsWindows = []
+    # Determine first observation window
     obsStart = parentData[axis, 0]
     for index, difference in enumerate(timeDifferences):
-        if difference > timeInterval:
+       # If the time difference is larger than specified time 
+       if difference > timeInterval:
+            # End time is the current index
             obsEnd = parentData['MeanTime', index]
+            # Append this time window as tuple to master array
             obsWindows.append((obsStart,obsEnd))
+            # Next window begins in next data point
             obsStart = parentData['MeanTime', index + 1]
+    # Add last window to master array
     obsWindows.append((obsStart, parentData['MeanTime', -1]))
-    #import gguiviewers
-    #import ipdb; ipdb.set_trace()
-    #test = gguiviewers.AutoChopPanel("AutoChop Argument")
     return obsWindows
-    """
-    chopMeanTimes = []
-    for chopIndex in chopIndices:
-        chopMeanTimes.append(parentData['MeanTime',chopIndex])
-    import ipdb; ipdb.set_trace()
-    """
 
     
 
@@ -126,7 +116,7 @@ tab = glueApp.tab_bar
 #generateScatter()
 
 
-lightcurveFilenames = ["cr_dra_lc.csv"]
+lightcurveFilenames = []
 coaddFilenames = []
 cubeFilenames = []
 
@@ -160,21 +150,10 @@ for lightcurveFile in lightcurveFilenames:
     obsWindows = lightcurveChop(lightcurveData, "MeanTime", 3600)
 
     # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
-    test = create_scatter_canvas(lightcurveData, 
-                          'MeanTime',
-                          'Flux_BackgroundSubtracted', 
-                          glueApp)
-    #test.tools.append('GGUIAutoChop')
-    
     create_scatter_canvas(lightcurveData, 
                           'MeanTime',
                           'Flux_BackgroundSubtracted', 
-                          glueApp,
-                          xmin=obsWindows[0][0], 
-                          xmax=obsWindows[0][1])
-    create_scatter_canvas(lightcurveData, 'MeanTime',
-                          'Flux_BackgroundSubtracted', glueApp,
-                          268413057.329, 268413154.427)
+                          glueApp)
     
 
 # Import CoAdd Fits to DataCollection
