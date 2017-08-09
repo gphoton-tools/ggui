@@ -81,7 +81,19 @@ def create_image_canvas(imageDataToDisplay, glueApp):
     # Generate new Image Widget
     glueApp.new_data_viewer(ImageWidget, imageDataToDisplay)
 
-def lightcurveChop(parentData, axis, timeInterval):
+def lightcurveChopList(parentData, axis, timeInterval):
+    """
+    Breaks observation data into observations separated by timeInterval. Returns list of times
+    
+    :param parentData: Glue (Pandas) Data Object containing CSV lightcurve data
+    :type parentData: glue.core.data.Data
+
+    :param axis: parameter to split across (usual = time)
+    :type axis: string
+
+    :param timeInterval: interval/amount to split parameter 'axis' across
+    :type timeInterval: numpy.float64
+    """
     import numpy
     # Calculate all time differences between points
     timeDifferences = numpy.diff(parentData[axis])
@@ -102,6 +114,8 @@ def lightcurveChop(parentData, axis, timeInterval):
     obsWindows.append((obsStart, parentData['MeanTime', -1]))
     return obsWindows
 
+def lightcurveChopImport(parentData, axis, timeInterval):
+    print("Not yet implemented")
     
 
 
@@ -147,7 +161,7 @@ for lightcurveFile in lightcurveFilenames:
                           label='Lightcurve of ' + lightcurveFile)
     dataCollection.append(lightcurveData)
 
-    obsWindows = lightcurveChop(lightcurveData, "MeanTime", 3600)
+    obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
 
     # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
     create_scatter_canvas(lightcurveData, 
