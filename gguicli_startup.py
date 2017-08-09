@@ -107,24 +107,32 @@ def lightcurveChopList(parentData, axis, timeInterval):
             # End time is the current index
             obsEnd = parentData['MeanTime', index]
             # Append this time window as tuple to master array
-            obsWindows.append((obsStart,obsEnd))
+            obsWindows.append((index, obsStart, obsEnd))
             # Next window begins in next data point
             obsStart = parentData['MeanTime', index + 1]
     # Add last window to master array
-    obsWindows.append((obsStart, parentData['MeanTime', -1]))
+    obsWindows.append((len(parentData[axis]), obsStart, parentData['MeanTime', -1]))
     return obsWindows
 
-def lightcurveChopImport(parentData, axis, timeInterval):
-    print("Not yet implemented")
-    
-
+def lightcurveChopImport(glueApp, dataCollection, parentData, obsWindows):
+    indxStart = 0
+    extensionList = parentData.component_ids()
+    for window in obsWindows:
+        indxEnd = window[0]
+        newChop = Data(label=str(indxStart))
+        for extension in extensionList:
+            #import ipdb; ipdb.set_trace()
+            newChop[str(extension)] = parentData[extension][indxStart:indxEnd]
+        dataCollection.append(newChop)
+        create_scatter_canvas(newChop,'MeanTime','Flux_BackgroundSubtracted',glueApp)
+        indxStart = indxEnd + 1
 
 # ---------------------------- Begin main ---------------------------- #
 # Initialize Glue Application with blank Data Collection
 dataCollection = DataCollection()
 glueApp = GlueApplication(dataCollection)
-glueApp.new_tab()
-tab = glueApp.tab_bar
+#glueApp.new_tab()
+#tab = glueApp.tab_bar
 #import ipdb; ipdb.set_trace()
 #tab.setText("Testing")
 #generateScatter()
@@ -162,6 +170,7 @@ for lightcurveFile in lightcurveFilenames:
     dataCollection.append(lightcurveData)
 
     obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
+    lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
 
     # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
     create_scatter_canvas(lightcurveData, 
