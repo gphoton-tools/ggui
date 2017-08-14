@@ -19,7 +19,9 @@ try: # Python 3.x
 except ImportError:  # Python 2.x
     import httplib 
 
-TEMPFILE = 'cr_dra_count_coadd.fits'
+#TEMPFILE = 'cr_dra_count_coadd.fits'
+TEMPFILE = 'Messier060_coadd.fits'
+
 
 def getFITSCornerCoords(filename):
     fitsImage = fits.open(filename)
@@ -94,12 +96,20 @@ def exportDS9Regions(jsonReturn, fileOutputName):
         #print(region.split())
         regionParse = region.split()
         ds9Region = ''
-        #import ipdb; ipdb.set_trace()
+        paramIgnore = 0
+        for param in regionParse:
+            #import ipdb; ipdb.set_trace()
+            try:
+                float(param)
+                break
+            except Exception: paramIgnore+=1; pass
         if regionParse[0] != "CIRCLE" and regionParse[0] != "POLYGON":
             print("Illegal/Unimplemented Shape Detected: ", regionParse[0], ". Skipping Object")
         else:
+            shape = regionParse[0]
             ds9Region = regionParse[0].lower() + "("
-            for param in regionParse[2:]:
+            #import ipdb; ipdb.set_trace()
+            for param in regionParse[paramIgnore:]:
                 ds9Region = ds9Region + param + ", "
             ds9Region = ds9Region[:-2] + ")"
             print(ds9Region)
@@ -113,17 +123,17 @@ def exportDS9Regions(jsonReturn, fileOutputName):
             if project[:4] == "hlsp":
                 styleArgs = styleArgs + ' ' + "color=yellow"
             elif mission == "HST" or mission == "HLA":
-                styleArgs = styleArgs + ' ' + "color=cyan"
-            elif mission == "KEPLER" or mission == "K2":
-                styleArgs = styleArgs + ' ' + "color=magenta"
-            elif mission == "PS1":
-                styleArgs = styleArgs + ' ' + "color=green"
-            elif mission == "SWIFT":
                 styleArgs = styleArgs + ' ' + "color=red"
-            elif mission == "GALEX":
+            elif mission == "KEPLER" or mission == "K2":
+                styleArgs = styleArgs + ' ' + "color=green"
+            elif mission == "PS1":
                 styleArgs = styleArgs + ' ' + "color=blue"
+            elif mission == "SWIFT":
+                styleArgs = styleArgs + ' ' + "color=cyan"
+            elif mission == "GALEX":
+                styleArgs = styleArgs + ' ' + "color=magenta"
             else:
-                styleArgs = styleArgs + ' ' + "color=white"
+                styleArgs = styleArgs + ' ' + "color=green dash=1"
             ds9Region = ds9Region + styleArgs
             print(ds9Region)
 

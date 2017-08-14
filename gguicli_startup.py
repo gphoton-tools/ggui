@@ -4,6 +4,7 @@
 .. moduleauthor:: Duy Nguyen <dtn5ah@virginia.edu>
 """
 
+# Note to Devs: Glue does not fully support upper imports. Imports must be done within functions
 from glue.core.data_factories import load_data
 from glue.core import Data, DataCollection
 from glue.core.link_helpers import LinkSame
@@ -93,6 +94,8 @@ def lightcurveChopList(parentData, axis, timeInterval):
 
     :param timeInterval: interval/amount to split parameter 'axis' across
     :type timeInterval: numpy.float64
+
+    :returns: list -- List of autochop regions
     """
     import numpy
     # Calculate all time differences between points
@@ -115,16 +118,39 @@ def lightcurveChopList(parentData, axis, timeInterval):
     return obsWindows
 
 def lightcurveChopImport(glueApp, dataCollection, parentData, obsWindows):
+    """
+    Receives list of obs windows, breaks dataseries accordingly, imports data object to collection
+    
+    :param glueApp: Current instantiation of the Glue Application to spawn canvas into
+    :type glueApp: glue.app.qt.application.GlueApplication
+
+    :param dataCollection: Library of imported data objects to current Glue interface
+    :type dataCollection: glue.core.data.DataCollection 
+
+    :param parentData: Glue (Pandas) Data Object containing CSV lightcurve data
+    :type parentData: glue.core.data.Data
+
+    :param obsWindows: List of observation windows with indices upon which to chop
+    :type obsWindows: list
+    """
+    from glue.core import Data
+    # Set Initial Window start to index 0
     indxStart = 0
+    # Get List of all extensions
     extensionList = parentData.component_ids()
     for window in obsWindows:
+        # Grab ending index from list
         indxEnd = window[0]
-        newChop = Data(label=str(indxStart))
+        # Instantiate new Data Object container for the chop
+        newChop = Data(label="AutoChop " + str(indxStart))
         for extension in extensionList:
-            #import ipdb; ipdb.set_trace()
+            # Break every extension into segments defined by indxStart and indxEnd
             newChop[str(extension)] = parentData[extension][indxStart:indxEnd]
+        # Import completed chop into dataCollection
         dataCollection.append(newChop)
-        create_scatter_canvas(newChop,'MeanTime','Flux_BackgroundSubtracted',glueApp)
+        # Display Chop (for debugging purposes)
+        #create_scatter_canvas(newChop,'MeanTime','Flux_BackgroundSubtracted',glueApp)
+        # Move new index start to next index beyond current window
         indxStart = indxEnd + 1
 
 # ---------------------------- Begin main ---------------------------- #
