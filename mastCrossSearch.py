@@ -1,3 +1,8 @@
+"""
+.. module:: mastCrossSearch
+    :synopsis: Search MAST Archive for matching observations on a given gPhoton GALEX WCS frame
+.. moduleauthor:: Duy Nguyen <dtn5ah@virginia.edu>
+"""
 # Science Imports
 from astropy.io import fits
 from astropy.wcs import WCS
@@ -48,29 +53,34 @@ def minCircle(cornerList, center):
     return radius
 
 def mastConeQuery(center, radius):
+    # Define target server
     server = 'mast.stsci.edu'
     requestsVersion = ".".join(map(str, sys.version_info[:3]))
 
+    # Define request parameters
     requestParams = {'service':'Mast.Caom.Cone',
-                         'params':{'ra':center.ra.degree,
-                                   'dec':center.dec.degree,
-                                   'radius':radius},
-                         'format':'json',
-                         'pagesize':2000,
-                         'removenullcolumns':True,
-                         'timeout':30,
-                         'removecache':True}
+                     'params':{'ra':center.ra.degree,
+                               'dec':center.dec.degree,
+                               'radius':radius},
+                     'format':'json',
+                     'pagesize':2000,
+                     'removenullcolumns':True,
+                     'timeout':30,
+                     'removecache':True}
     JSONquery = urlencode(json.dumps(requestParams))
 
+    # Define HTTP parameters
     httpHeaders = {"Content-type": "application/x-www-form-urlencoded",
                    "Accept": "text/plain",
                    "User-agent":"python-requests/" + requestsVersion}
 
+    # Connect to Server
     connMAST = httplib.HTTPSConnection(server)
+    # Invoke MAST Request
     connMAST.request("POST", "/api/v0/invoke", "request="+JSONquery, httpHeaders)
-    
-    
+    # Receive MAST Response
     httpResponse = connMAST.getresponse()
+    # Return HTTP Response objects
     header = httpResponse.getheaders()
     data = httpResponse.read().decode('utf-8')
     return header,data
@@ -86,6 +96,40 @@ def extractGGUIFields(jsonReturn):
         #print(i, "\t", mission, "\t", project, "\t", dataType, "\n\t\t", region)
     return gguiFields
 
+def appendRegionList(regOutFile, regionParse, paramIgnore):
+    shape = regionParse[0]
+    ds9Region = regionParse[0].lower() + "("
+    #import ipdb; ipdb.set_trace()
+    for param in regionParse[paramIgnore:]:
+        ds9Region = ds9Region + param + ", "
+    ds9Region = ds9Region[:-2] + ")"
+    print(ds9Region)
+
+    # DS9 Style Arguments
+    mission = obs['obs_collection']
+    project = obs['project']
+    #import ipdb; ipdb.set_trace()
+    if type(project) is type(None): project = "NULL"
+    styleArgs = ' ' + '#'
+    if project[:4] == "hlsp":
+        styleArgs = styleArgs + ' ' + "color=yellow"
+    elif mission == "HST" or mission == "HLA":
+        styleArgs = styleArgs + ' ' + "color=red"
+    elif mission == "KEPLER" or mission == "K2":
+        styleArgs = styleArgs + ' ' + "color=green"
+    elif mission == "PS1":
+        styleArgs = styleArgs + ' ' + "color=blue"
+    elif mission == "SWIFT":
+        styleArgs = styleArgs + ' ' + "color=cyan"
+    elif mission == "GALEX":
+        styleArgs = styleArgs + ' ' + "color=magenta"
+    else:
+        styleArgs = styleArgs + ' ' + "color=green dash=1"
+    ds9Region = ds9Region + styleArgs
+    print(ds9Region)
+    regOutFile.write(ds9Region + "\n")
+    
+
 def exportDS9Regions(jsonReturn, fileOutputName):
     gguiFields = []
     regOutFile = open(fileOutputName, "w")
@@ -93,12 +137,10 @@ def exportDS9Regions(jsonReturn, fileOutputName):
     # DS9 Geometry Syntax
     for i, obs in enumerate(jsonReturn['data']):
         region = obs['s_region']
-        #print(region.split())
         regionParse = region.split()
         ds9Region = ''
         paramIgnore = 0
         for param in regionParse:
-            #import ipdb; ipdb.set_trace()
             try:
                 float(param)
                 break
@@ -106,6 +148,7 @@ def exportDS9Regions(jsonReturn, fileOutputName):
         if regionParse[0] != "CIRCLE" and regionParse[0] != "POLYGON":
             print("Illegal/Unimplemented Shape Detected: ", regionParse[0], ". Skipping Object")
         else:
+            #appendRegionList(regOutFile, regionParse, paramIgnore)
             shape = regionParse[0]
             ds9Region = regionParse[0].lower() + "("
             #import ipdb; ipdb.set_trace()
@@ -136,7 +179,6 @@ def exportDS9Regions(jsonReturn, fileOutputName):
                 styleArgs = styleArgs + ' ' + "color=green dash=1"
             ds9Region = ds9Region + styleArgs
             print(ds9Region)
-
             regOutFile.write(ds9Region + "\n")
     regOutFile.close()
             
@@ -147,8 +189,10 @@ center = getFITSCenterCoords(TEMPFILE)
 # Get Radius of smallest enclosing circle of frame
 radius = minCircle(cornerCoords, center)
 
+# Perform Mast Cone Query; interpret results
 header,data = mastConeQuery(center, radius)
 jsonReturn = json.loads(data)
+# Extract Relevant information from return
 gguiFields = extractGGUIFields(jsonReturn)
 #print(gguiFields)
 exportDS9Regions(jsonReturn, TEMPFILE + ".reg")
