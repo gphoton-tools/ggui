@@ -36,7 +36,7 @@ def prompt_user_for_file(dialogCaption, dialogNameFilter):
     filenames = dialog.selectedFiles()
     return filenames
 
-def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp, xmin=None, xmax=None, windowTitle=None):
+def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, x_min=None, x_max=None, windowTitle=None):
     """
     Function to generate new scatter widget. (Designed for modularity and organization)
 
@@ -60,10 +60,10 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp, xmin=None, xmax=No
     # Generate new scatter widget
     scatterCanvas = glueApp.new_data_viewer(ScatterViewer, dataToDisplay)
     # Set Scatter Canvas Attributes
-    scatterCanvas.xatt = dataToDisplay.id[xatt]
-    scatterCanvas.yatt = dataToDisplay.id[yatt]
-    if xmin != None: scatterCanvas.xmin = xmin
-    if xmax != None: scatterCanvas.xmax = xmax
+    scatterCanvas.state.x_att = dataToDisplay.id[x_att]
+    scatterCanvas.state.y_att = dataToDisplay.id[y_att]
+    if x_min != None: scatterCanvas.state.x_min = x_min
+    if x_max != None: scatterCanvas.state.x_max = x_max
     if windowTitle != None: scatterCanvas.window_title = windowTitle
     return scatterCanvas
 
@@ -204,7 +204,6 @@ for lightcurveFile in lightcurveFilenames:
                           'Flux_BackgroundSubtracted', 
                           glueApp)
     
-
 # Import CoAdd Fits to DataCollection
 for coaddFile in coaddFilenames:
     # Load Image from file
