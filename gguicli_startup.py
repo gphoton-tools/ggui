@@ -48,7 +48,7 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp, xmin=None, xmax=No
 
     :param yatt: Index of Glue Data Object to display along y axis
     :type yatt: str
-
+ 
     :param xmin: Minimum value of X Axis
     :type xmin: numpy.float64
 
@@ -56,9 +56,9 @@ def create_scatter_canvas(dataToDisplay, xatt, yatt, glueApp, xmin=None, xmax=No
     :type glueApp: glue.app.qt.application.GlueApplication
     """
     # Note for devs: Import inside function due to Glue Startup Script Workorder
-    from glue.viewers.scatter.qt import ScatterWidget
+    from glue.viewers.scatter.qt import ScatterViewer
     # Generate new scatter widget
-    scatterCanvas = glueApp.new_data_viewer(ScatterWidget, dataToDisplay)
+    scatterCanvas = glueApp.new_data_viewer(ScatterViewer, dataToDisplay)
     # Set Scatter Canvas Attributes
     scatterCanvas.xatt = dataToDisplay.id[xatt]
     scatterCanvas.yatt = dataToDisplay.id[yatt]
@@ -78,9 +78,9 @@ def create_image_canvas(imageDataToDisplay, glueApp):
     :type glueApp: glue.app.qt.application.GlueApplication
     """
     # Note for devs: Import inside function due to Glue Startup Script Workorder
-    from glue.viewers.image.qt import ImageWidget
+    from glue.viewers.image.qt import ImageViewer
     # Generate new Image Widget
-    glueApp.new_data_viewer(ImageWidget, imageDataToDisplay)
+    glueApp.new_data_viewer(ImageViewer, imageDataToDisplay)
 
 def lightcurveChopList(parentData, axis, timeInterval):
     """
