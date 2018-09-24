@@ -36,7 +36,7 @@ def prompt_user_for_file(dialogCaption, dialogNameFilter):
     filenames = dialog.selectedFiles()
     return filenames
 
-def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, x_min=None, x_max=None, windowTitle=None):
+def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, plot_title=None, x_min=None, x_max=None):
     """
     Function to generate new scatter widget. (Designed for modularity and organization)
 
@@ -48,9 +48,15 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, x_min=None, x_ma
 
     :param yatt: Index of Glue Data Object to display along y axis
     :type yatt: str
+
+    :param plot_title: Title to be displayed on graph
+    :type plot_tite: str
  
     :param xmin: Minimum value of X Axis
     :type xmin: numpy.float64
+
+    :param xmax: Maximum value of X Axis
+    :type xmax: numpy.float64
 
     :param glueApp: Current instantiation of the Glue Application to spawn canvas into
     :type glueApp: glue.app.qt.application.GlueApplication
@@ -60,14 +66,14 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, x_min=None, x_ma
     # Generate new scatter widget
     scatterCanvas = glueApp.new_data_viewer(ScatterViewer, dataToDisplay)
     # Set Scatter Canvas Attributes
+    if plot_title: scatterCanvas.axes.set_title(plot_title)
     scatterCanvas.state.x_att = dataToDisplay.id[x_att]
     scatterCanvas.state.y_att = dataToDisplay.id[y_att]
-    if x_min != None: scatterCanvas.state.x_min = x_min
-    if x_max != None: scatterCanvas.state.x_max = x_max
-    if windowTitle != None: scatterCanvas.window_title = windowTitle
+    if x_min: scatterCanvas.state.x_min = x_min
+    if x_max: scatterCanvas.state.x_max = x_max
     return scatterCanvas
 
-def create_image_canvas(imageDataToDisplay, glueApp):
+def create_image_canvas(imageDataToDisplay, glueApp, plot_title=None):
     """
     Function to generate a new image widget. (Designed for consistency with above)
 
@@ -80,7 +86,8 @@ def create_image_canvas(imageDataToDisplay, glueApp):
     # Note for devs: Import inside function due to Glue Startup Script Workorder
     from glue.viewers.image.qt import ImageViewer
     # Generate new Image Widget
-    glueApp.new_data_viewer(ImageViewer, imageDataToDisplay)
+    imageCanvas = glueApp.new_data_viewer(ImageViewer, imageDataToDisplay)
+    if plot_title: imageCanvas.axes.set_title(plot_title)
 
 def lightcurveChopList(parentData, axis, timeInterval):
     """
@@ -202,7 +209,8 @@ for lightcurveFile in lightcurveFilenames:
     create_scatter_canvas(lightcurveData, 
                           'MeanTime',
                           'Flux_BackgroundSubtracted', 
-                          glueApp)
+                          glueApp,
+                          'Lightcurve')
     
 # Import CoAdd Fits to DataCollection
 for coaddFile in coaddFilenames:
@@ -212,7 +220,7 @@ for coaddFile in coaddFilenames:
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for coadd Images
-    create_image_canvas(fitsImage, glueApp)
+    create_image_canvas(fitsImage, glueApp, 'CoAdd')
 
 # Import Image Cube Fits to DataCollection
 for cubeFile in cubeFilenames:
@@ -222,7 +230,7 @@ for cubeFile in cubeFilenames:
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for Image Cube Fits
-    create_image_canvas(fitsImage, glueApp)
+    create_image_canvas(fitsImage, glueApp, 'Cube')
 
 
 viewers = glueApp.viewers
