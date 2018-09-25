@@ -10,6 +10,7 @@ from glue.core import Data, DataCollection
 from glue.core.link_helpers import LinkSame
 from glue.app.qt.application import GlueApplication
 from glue.config import settings
+import datetime
 
 def prompt_user_for_file(dialogCaption, dialogNameFilter):
     """
@@ -36,7 +37,7 @@ def prompt_user_for_file(dialogCaption, dialogNameFilter):
     filenames = dialog.selectedFiles()
     return filenames
 
-def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, plot_title=None, x_min=None, x_max=None):
+def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, window_title=None, plot_title=None, x_min=None, x_max=None):
     """
     Function to generate new scatter widget. (Designed for modularity and organization)
 
@@ -66,6 +67,7 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, plot_title=None,
     # Generate new scatter widget
     scatterCanvas = glueApp.new_data_viewer(ScatterViewer, dataToDisplay)
     # Set Scatter Canvas Attributes
+    if window_title: scatterCanvas.setWindowTitle(window_title)
     if plot_title: scatterCanvas.axes.set_title(plot_title)
     scatterCanvas.state.x_att = dataToDisplay.id[x_att]
     scatterCanvas.state.y_att = dataToDisplay.id[y_att]
@@ -73,7 +75,7 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, plot_title=None,
     if x_max: scatterCanvas.state.x_max = x_max
     return scatterCanvas
 
-def create_image_canvas(imageDataToDisplay, glueApp, plot_title=None):
+def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_title=None):
     """
     Function to generate a new image widget. (Designed for consistency with above)
 
@@ -87,7 +89,9 @@ def create_image_canvas(imageDataToDisplay, glueApp, plot_title=None):
     from glue.viewers.image.qt import ImageViewer
     # Generate new Image Widget
     imageCanvas = glueApp.new_data_viewer(ImageViewer, imageDataToDisplay)
+    if window_title: imageCanvas.setWindowTitle(window_title)
     if plot_title: imageCanvas.axes.set_title(plot_title)
+    return imageCanvas
 
 def lightcurveChopList(parentData, axis, timeInterval):
     """
@@ -191,6 +195,7 @@ if settings.OPTION3 == True:
 
 # Import Lightcurve CSVs to DataCollection
 for lightcurveFile in lightcurveFilenames:
+    print(lightcurveFile)
     # Load Data from file. Add to current Data Collection
     csvData = load_data(lightcurveFile)
     dataCollection.append(csvData)
@@ -210,7 +215,8 @@ for lightcurveFile in lightcurveFilenames:
                           'MeanTime',
                           'Flux_BackgroundSubtracted', 
                           glueApp,
-                          'Lightcurve')
+                          window_title=("Full Lightcurve of: " + lightcurveFile),
+                          plot_title='Lightcurve')
     
 # Import CoAdd Fits to DataCollection
 for coaddFile in coaddFilenames:
@@ -220,7 +226,10 @@ for coaddFile in coaddFilenames:
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for coadd Images
-    create_image_canvas(fitsImage, glueApp, 'CoAdd')
+    create_image_canvas(fitsImage, 
+                        glueApp, 
+                        window_title=('CoAdd Image of :' + coaddFile),
+                        plot_title='CoAdd')
 
 # Import Image Cube Fits to DataCollection
 for cubeFile in cubeFilenames:
@@ -230,7 +239,10 @@ for cubeFile in cubeFilenames:
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for Image Cube Fits
-    create_image_canvas(fitsImage, glueApp, 'Cube')
+    create_image_canvas(fitsImage, 
+                        glueApp, 
+                        window_title=('3D Image Cube of :' + cubeFile),
+                        plot_title=('Cube: [' + str(datetime.datetime.now()) + ']'))
 
 
 viewers = glueApp.viewers
