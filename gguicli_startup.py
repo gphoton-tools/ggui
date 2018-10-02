@@ -10,6 +10,7 @@ from glue.core import Data, DataCollection
 from glue.core.link_helpers import LinkSame
 from glue.app.qt.application import GlueApplication
 from glue.config import settings
+import yaml
 import datetime
 
 def prompt_user_for_file(dialogCaption, dialogNameFilter):
@@ -179,22 +180,35 @@ lightcurveFilenames = []
 coaddFilenames = []
 cubeFilenames = []
 
-# Prompt User via File Dialog for LightCurve CSVs
-if settings.OPTION1 == True: 
-    lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file",
-                                               "Lightcurve CSV (*.csv)")
-# Prompt User via File Dialog for CoAdd Fits
-if settings.OPTION2 == True: 
-    coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file",
-                                          "CoAdd FITS (*.fits)")
-# Prompt User via File Dialog for Image Cube Fits
-if settings.OPTION3 == True:
-    cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file",
-                                         "Image Cube FITS (*.fits)")
-
+ggui_load_format = input("Load type (y)aml or (m)anual: ")
+if ggui_load_format == 'y':
+    ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
+    #with open('/mnt/c/ggui/ggui/dataProducts/cr_dra.yaml', 'r') as f:
+    with open(ggui_yaml, 'r') as f:
+        targ_dict = yaml.load(f)
+        for targ_name, files in targ_dict.items():
+            lightcurveFilenames.append((targ_name, files['lightcurve']))
+            coaddFilenames.append((targ_name, files['coadd']))
+            cubeFilenames.append((targ_name, files['cube']))
+elif ggui_load_format == 'm':
+    # Prompt User via File Dialog for LightCurve CSVs
+    if settings.OPTION1 == True: 
+        lightcurveFilenames.append(("Target", prompt_user_for_file("Select gPhoton CSV Lightcurve file",
+                                                "Lightcurve CSV (*.csv)")[0]))
+    # Prompt User via File Dialog for CoAdd Fits
+    if settings.OPTION2 == True: 
+        coaddFilenames.append(("Target", prompt_user_for_file("Select gPhoton FITS CoAdd file",
+                                            "CoAdd FITS (*.fits)")[0]))
+    # Prompt User via File Dialog for Image Cube Fits
+    if settings.OPTION3 == True:
+        cubeFilenames.append(("Target", prompt_user_for_file("Select gPhoton FITS Image Cube file",
+                                            "Image Cube FITS (*.fits)")[0]))
+else:
+    print("Unrecognized character")
+    exit(-1)
 
 # Import Lightcurve CSVs to DataCollection
-for lightcurveFile in lightcurveFilenames:
+for targ_name, lightcurveFile in lightcurveFilenames:
     print(lightcurveFile)
     # Load Data from file. Add to current Data Collection
     csvData = load_data(lightcurveFile)
@@ -216,10 +230,11 @@ for lightcurveFile in lightcurveFilenames:
                           'Flux_BackgroundSubtracted', 
                           glueApp,
                           window_title=("Full Lightcurve of: " + lightcurveFile),
-                          plot_title='Lightcurve')
+                          plot_title='Lightcurve of ' + targ_name)
     
 # Import CoAdd Fits to DataCollection
-for coaddFile in coaddFilenames:
+for targ_name, coaddFile in coaddFilenames:
+    print(coaddFile)
     # Load Image from file
     fitsImage = load_data(coaddFile)
     #fitsImage['label'] = "CoAdd Image of " + coaddFile
@@ -228,11 +243,12 @@ for coaddFile in coaddFilenames:
     # Generate 2D Image Viewer Canvas for coadd Images
     create_image_canvas(fitsImage, 
                         glueApp, 
-                        window_title=('CoAdd Image of :' + coaddFile),
-                        plot_title='CoAdd')
+                        window_title=('CoAdd Image of: ' + coaddFile),
+                        plot_title='CoAdd of ' + targ_name)
 
 # Import Image Cube Fits to DataCollection
-for cubeFile in cubeFilenames:
+for targ_name, cubeFile in cubeFilenames:
+    print(cubeFile)
     # Load Image from file
     fitsImage = load_data(cubeFile)
     #fitsImage['label'] = "CoAdd Image of " + coaddFile
@@ -241,9 +257,8 @@ for cubeFile in cubeFilenames:
     # Generate 2D Image Viewer Canvas for Image Cube Fits
     create_image_canvas(fitsImage, 
                         glueApp, 
-                        window_title=('3D Image Cube of :' + cubeFile),
-                        plot_title=('Cube: [' + str(datetime.datetime.now()) + ']'))
-
+                        window_title=('3D Image Cube of: ' + cubeFile),
+                        plot_title=('Cube of ' + targ_name + ': [' + str(datetime.datetime.now()) + ']'))
 
 viewers = glueApp.viewers
 
