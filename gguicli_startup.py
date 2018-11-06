@@ -175,8 +175,10 @@ def lightcurveChopImport(glueApp, dataCollection, parentData, obsWindows):
 # ---------------------------- Begin main ---------------------------- #
 X_MONITOR_SIZE = 1080
 Y_MONITOR_SIZE = 1920
-y_glue_win_size = Y_MONITOR_SIZE - 320
-x_glue_win_size = X_MONITOR_SIZE - 145
+WINDOWS_Y_OFFSET = 320
+WINDOWS_X_OFFSET = 145
+y_glue_win_size = Y_MONITOR_SIZE - WINDOWS_Y_OFFSET
+x_glue_win_size = X_MONITOR_SIZE - WINDOWS_X_OFFSET
 # Initialize Glue Application with blank Data Collection
 dataCollection = DataCollection()
 glueApp = GlueApplication(dataCollection)
