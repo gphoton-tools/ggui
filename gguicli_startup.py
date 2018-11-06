@@ -252,7 +252,7 @@ for targ_name, lightcurveFile in lightcurveFilenames:
                           window_title=("Full Lightcurve of: " + lightcurveFile),
                           plot_title='Lightcurve of ' + targ_name,
                           x_window_size=y_glue_win_size,
-                          y_window_size=x_glue_win_size/2,
+                          y_window_size=x_glue_win_size/3,
                           x_window_pos=1,
                           y_window_pos=1
     )
@@ -269,10 +269,10 @@ for targ_name, coaddFile in coaddFilenames:
                         glueApp, 
                         window_title=('CoAdd Image of: ' + coaddFile),
                         plot_title='CoAdd of ' + targ_name,
-                        x_window_size=y_glue_win_size/2,
-                        y_window_size=x_glue_win_size/2,
-                        x_window_pos=1,
-                        y_window_pos=x_glue_win_size/2
+                        x_window_size   =   y_glue_win_size/2,
+                        y_window_size   =   int(x_glue_win_size*float(2.0/3.0)),
+                        x_window_pos    =   1,
+                        y_window_pos    =   int(x_glue_win_size/3)
     )
 
 # Import Image Cube Fits to DataCollection
@@ -283,14 +283,14 @@ for targ_name, cubeFile in cubeFilenames:
     # Import Image to Data Collection for plotting
     dataCollection.append(fitsImage)
     # Generate 2D Image Viewer Canvas for Image Cube Fits
-    create_image_canvas(fitsImage, 
-                        glueApp, 
+    create_image_canvas(fitsImage,
+                        glueApp,
                         window_title=('3D Image Cube of: ' + cubeFile),
                         plot_title=('Cube of ' + targ_name + ': [' + str(datetime.datetime.now()) + ']'),
-                        x_window_size=y_glue_win_size/2,
-                        y_window_size=x_glue_win_size/2,
-                        x_window_pos=y_glue_win_size/2,
-                        y_window_pos=x_glue_win_size/2
+                        x_window_size   =   y_glue_win_size/2,
+                        y_window_size   =   int(x_glue_win_size*float(2.0/3.0)),
+                        x_window_pos    =   y_glue_win_size/2,
+                        y_window_pos    =   int(x_glue_win_size/3)
     )
 
 viewers = glueApp.viewers
