@@ -10,6 +10,7 @@ from glue.core import Data, DataCollection
 from glue.core.link_helpers import LinkSame
 from glue.app.qt.application import GlueApplication
 from glue.config import settings
+from math import floor
 import yaml
 import datetime
 
@@ -173,12 +174,14 @@ def lightcurveChopImport(glueApp, dataCollection, parentData, obsWindows):
         indxStart = indxEnd + 1
 
 # ---------------------------- Begin main ---------------------------- #
-X_MONITOR_SIZE = 1080
-Y_MONITOR_SIZE = 1920
-WINDOWS_Y_OFFSET = 320
-WINDOWS_X_OFFSET = 145
-y_glue_win_size = Y_MONITOR_SIZE - WINDOWS_Y_OFFSET
-x_glue_win_size = X_MONITOR_SIZE - WINDOWS_X_OFFSET
+X_MONITOR_RES = 1080
+WIN_OS_X_OFFSET = 145
+x_glue_win_size = X_MONITOR_RES - WIN_OS_X_OFFSET
+
+Y_MONITOR_RES = 1920
+WIN_OS_Y_OFFSET = 320
+y_glue_win_size = Y_MONITOR_RES - WIN_OS_Y_OFFSET
+
 # Initialize Glue Application with blank Data Collection
 dataCollection = DataCollection()
 glueApp = GlueApplication(dataCollection)
@@ -196,7 +199,6 @@ cubeFilenames = []
 ggui_load_format = input("Load type (y)aml or (m)anual: ")
 if ggui_load_format == 'y':
     ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
-    #with open('/mnt/c/ggui/ggui/dataProducts/cr_dra.yaml', 'r') as f:
     with open(ggui_yaml, 'r') as f:
         targ_dict = yaml.load(f)
         for targ_name, files in targ_dict.items():
@@ -251,10 +253,10 @@ for targ_name, lightcurveFile in lightcurveFilenames:
                           glueApp,
                           window_title=("Full Lightcurve of: " + lightcurveFile),
                           plot_title='Lightcurve of ' + targ_name,
-                          x_window_size=y_glue_win_size,
-                          y_window_size=x_glue_win_size/3,
-                          x_window_pos=1,
-                          y_window_pos=1
+                          x_window_size =   y_glue_win_size,
+                          y_window_size =   floor(x_glue_win_size/3),
+                          x_window_pos  =   1,
+                          y_window_pos  =   1
     )
     
 # Import CoAdd Fits to DataCollection
@@ -269,10 +271,10 @@ for targ_name, coaddFile in coaddFilenames:
                         glueApp, 
                         window_title=('CoAdd Image of: ' + coaddFile),
                         plot_title='CoAdd of ' + targ_name,
-                        x_window_size   =   y_glue_win_size/2,
-                        y_window_size   =   int(x_glue_win_size*float(2.0/3.0)),
+                        x_window_size   =   floor(y_glue_win_size/2),
+                        y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
                         x_window_pos    =   1,
-                        y_window_pos    =   int(x_glue_win_size/3)
+                        y_window_pos    =   floor(x_glue_win_size/3)
     )
 
 # Import Image Cube Fits to DataCollection
@@ -287,10 +289,10 @@ for targ_name, cubeFile in cubeFilenames:
                         glueApp,
                         window_title=('3D Image Cube of: ' + cubeFile),
                         plot_title=('Cube of ' + targ_name + ': [' + str(datetime.datetime.now()) + ']'),
-                        x_window_size   =   y_glue_win_size/2,
-                        y_window_size   =   int(x_glue_win_size*float(2.0/3.0)),
-                        x_window_pos    =   y_glue_win_size/2,
-                        y_window_pos    =   int(x_glue_win_size/3)
+                        x_window_size   =   floor(y_glue_win_size/2),
+                        y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
+                        x_window_pos    =   floor(y_glue_win_size/2),
+                        y_window_pos    =   floor(x_glue_win_size/3)
     )
 
 viewers = glueApp.viewers
