@@ -14,31 +14,6 @@ from math import floor
 import yaml
 import datetime
 
-def prompt_user_for_file(dialogCaption, dialogNameFilter):
-    """
-    Modular QtWidget File-Selection Dialog to prompt user for file import.
-        Returns array of filenames selected
-
-    :param dialogCaption: Caption to display along top of file dialog window
-    :type dialogCaption: str
-
-    :param dialogNameFilter: Filters file dialog to certain extension
-    :type dialogNameFilter: str
-
-    :returns: list -- Python list of filenames selected by user
-    """
-    # Note for devs: Import inside function due to Glue Startup Script Workorder
-    from qtpy.QtWidgets import QFileDialog # See GitHub Issue Ticket #7
-    # Set File Dialog Options
-    dialog = QFileDialog(caption=dialogCaption)
-    dialog.setFileMode(QFileDialog.ExistingFiles)
-    dialog.setNameFilter(dialogNameFilter)
-    # Prompt User for file to import
-    dialog.exec_()
-    # Get array of File Names
-    filenames = dialog.selectedFiles()
-    return filenames
-
 def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, window_title=None, plot_title=None, x_min=None, x_max=None, x_window_size=None, y_window_size=None, x_window_pos=None, y_window_pos=None):
     """
     Function to generate new scatter widget. (Designed for modularity and organization)
@@ -174,128 +149,248 @@ def lightcurveChopImport(glueApp, dataCollection, parentData, obsWindows):
         indxStart = indxEnd + 1
 
 # ---------------------------- Begin main ---------------------------- #
-X_MONITOR_RES = 1080
-WIN_OS_X_OFFSET = 145
-x_glue_win_size = X_MONITOR_RES - WIN_OS_X_OFFSET
 
-Y_MONITOR_RES = 1920
-WIN_OS_Y_OFFSET = 320
-y_glue_win_size = Y_MONITOR_RES - WIN_OS_Y_OFFSET
+def getGguiDataProducts():
+    #gGuiTargetLibrary = {}
+    '''
+    targetNames = []
+    lightcurveFilenames = []
+    coaddFilenames = []
+    cubeFilenames = []
+    '''
 
-# Initialize Glue Application with blank Data Collection
-dataCollection = DataCollection()
-glueApp = GlueApplication(dataCollection)
-#glueApp.new_tab()
-#tab = glueApp.tab_bar
-#import ipdb; ipdb.set_trace()
-#tab.setText("Testing")
-#generateScatter()
+    def prompt_user_for_file(dialogCaption, dialogNameFilter):
+        """
+        Modular QtWidget File-Selection Dialog to prompt user for file import.
+            Returns array of filenames selected
 
+        :param dialogCaption: Caption to display along top of file dialog window
+        :type dialogCaption: str
 
-lightcurveFilenames = []
-coaddFilenames = []
-cubeFilenames = []
+        :param dialogNameFilter: Filters file dialog to certain extension
+        :type dialogNameFilter: str
 
-ggui_load_format = input("Load type (y)aml or (m)anual: ")
-if ggui_load_format == 'y':
-    ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
-    with open(ggui_yaml, 'r') as f:
-        targ_dict = yaml.load(f)
-        for targ_name, files in targ_dict.items():
-            lightcurveFilenames.append((targ_name, files['lightcurve']))
-            coaddFilenames.append((targ_name, files['coadd']))
-            cubeFilenames.append((targ_name, files['cube']))
-elif ggui_load_format == 'm':
-    # Prompt User via File Dialog for LightCurve CSVs
-    if settings.OPTION1 == True: 
-        lightcurveFilenames.append(("Target", prompt_user_for_file("Select gPhoton CSV Lightcurve file",
-                                                "Lightcurve CSV (*.csv)")[0]))
-    # Prompt User via File Dialog for CoAdd Fits
-    if settings.OPTION2 == True: 
-        coaddFilenames.append(("Target", prompt_user_for_file("Select gPhoton FITS CoAdd file",
-                                            "CoAdd FITS (*.fits)")[0]))
-    # Prompt User via File Dialog for Image Cube Fits
-    if settings.OPTION3 == True:
-        cubeFilenames.append(("Target", prompt_user_for_file("Select gPhoton FITS Image Cube file",
-                                            "Image Cube FITS (*.fits)")[0]))
-elif ggui_load_format == 'd':
-    with open('C:\\ggui\\dataProducts\\cr_dra_win.yaml', 'r') as f:
-        targ_dict = yaml.load(f)
-        for targ_name, files in targ_dict.items():
-            lightcurveFilenames.append((targ_name, files['lightcurve']))
-            coaddFilenames.append((targ_name, files['coadd']))
-            cubeFilenames.append((targ_name, files['cube']))
-else:
-    print("Unrecognized character")
-    exit(-1)
+        :returns: list -- Python list of filenames selected by user
+        """
+        # Note for devs: Import inside function due to Glue Startup Script Workorder
+        from qtpy.QtWidgets import QFileDialog # See GitHub Issue Ticket #7
+        # Set File Dialog Options
+        dialog = QFileDialog(caption=dialogCaption)
+        dialog.setFileMode(QFileDialog.ExistingFiles)
+        dialog.setNameFilter(dialogNameFilter)
+        # Prompt User for file to import
+        dialog.exec_()
+        # Get array of File Names
+        filenames = dialog.selectedFiles()
+        return filenames
 
-# Import Lightcurve CSVs to DataCollection
-for targ_name, lightcurveFile in lightcurveFilenames:
-    print(lightcurveFile)
-    # Load Data from file. Add to current Data Collection
-    csvData = load_data(lightcurveFile)
-    dataCollection.append(csvData)
-    # Cleanse raw csvData to only t_mean and flux_bgsub.
-    # Add that data "subset" (not glue subset, just a subset) to Data Collection.
-    # Must be in Data Collection to use
-    lightcurveData = Data(Flux_BackgroundSubtracted=csvData['flux_bgsub'],
-                          MeanTime=csvData['t_mean'],
-                          label='Lightcurve of ' + lightcurveFile)
-    dataCollection.append(lightcurveData)
+    ggui_load_format = input("Load type (y)aml or (m)anual: ")
+    if ggui_load_format == 'y':
+        ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
+        with open(ggui_yaml, 'r') as f:
+            return yaml.load(f)
+            '''
+            for targ_name, files in targ_dict.items():
+                targetNames.append(targ_name)
+                lightcurveFilenames.append((targ_name, files['lightcurve']))
+                coaddFilenames.append((targ_name, files['coadd']))
+                cubeFilenames.append((targ_name, files['cube']))
+            '''
+    elif ggui_load_format == 'm':
+        
+        
+        # Prompt User via File Dialog for LightCurve CSVs
+        if settings.OPTION1 == True: 
+            lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")[0]
+        # Prompt User via File Dialog for CoAdd Fits
+        if settings.OPTION2 == True: 
+            coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file", "CoAdd FITS (*.fits)")[0]
+        # Prompt User via File Dialog for Image Cube Fits
+        if settings.OPTION3 == True:
+            cubeFilenames = prompt_user_for_file(("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0])
+#        if settings.OPTION3 == True: 
+#            cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0])
 
-    obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
-    lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
+        return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
+    elif ggui_load_format == 'd':
+        with open('C:\\ggui\\dataProducts\\cr_dra_win.yaml', 'r') as f:
+            return yaml.load(f)
+            '''
+            for targ_name, files in targ_dict.items():
+                lightcurveFilenames.append((targ_name, files['lightcurve']))
+                coaddFilenames.append((targ_name, files['coadd']))
+                cubeFilenames.append((targ_name, files['cube']))
+            '''
+    else:
+        print("Unrecognized character")
+        exit(-1)
 
-    # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
-    create_scatter_canvas(lightcurveData, 
-                          'MeanTime',
-                          'Flux_BackgroundSubtracted', 
-                          glueApp,
-                          window_title=("Full Lightcurve of: " + lightcurveFile),
-                          plot_title='Lightcurve of ' + targ_name,
-                          x_window_size =   y_glue_win_size,
-                          y_window_size =   floor(x_glue_win_size/3),
-                          x_window_pos  =   1,
-                          y_window_pos  =   1
-    )
+def loadTargetFiles(glueApp, dataCollection, targetFiles):
+    def loadLightcurve(glueApp, dataCollection, lcFileName):
+        print(lcFileName)
+        # Load Data from file. Add to current Data Collection
+        csvData = load_data(lightcurveFile)
+        dataCollection.append(csvData)
+        # Cleanse raw csvData to only t_mean and flux_bgsub.
+        # Add that data "subset" (not glue subset, just a subset) to Data Collection.
+        # Must be in Data Collection to use
+        lightcurveData = Data(Flux_BackgroundSubtracted=csvData['flux_bgsub'],
+                            MeanTime=csvData['t_mean'],
+                            label='Lightcurve of ' + lightcurveFile)
+        dataCollection.append(lightcurveData)
+        # AutoChop Lightcurve and import those chops
+        obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
+        lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
+        # Generate 2D ScatterPlot Canvas for Lightcurve CSVs and add to Glue
+        lcWidget = create_scatter_canvas(lightcurveData, 
+                            'MeanTime',
+                            'Flux_BackgroundSubtracted', 
+                            glueApp,
+                            window_title=("Full Lightcurve of: " + lightcurveFile),
+                            plot_title='Lightcurve of ' + targ_name,
+                            x_window_size =   y_glue_win_size,
+                            y_window_size =   floor(x_glue_win_size/3),
+                            x_window_pos  =   1,
+                            y_window_pos  =   1
+        )
+
+    def loadCoadd(glueApp, dataCollection, coaddFileName):
+        print(coaddFile)
+        # Load Image from file
+        fitsImage = load_data(coaddFile)
+        # Import Image to Data Collection for plotting
+        dataCollection.append(fitsImage)
+        # Generate 2D Image Viewer Canvas for coadd Images
+        caWidget = create_image_canvas(fitsImage, 
+                            glueApp, 
+                            window_title=('CoAdd Image of: ' + coaddFile),
+                            plot_title='CoAdd of ' + targ_name,
+                            x_window_size   =   floor(y_glue_win_size/2),
+                            y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
+                            x_window_pos    =   1,
+                            y_window_pos    =   floor(x_glue_win_size/3)
+        )
+
+    def loadCube(glueApp, dataCollection, cubeFileName):
+        print(cubeFile)
+        # Load Image from file
+        fitsImage = load_data(cubeFile)
+        # Import Image to Data Collection for plotting
+        dataCollection.append(fitsImage)
+        # Generate 2D Image Viewer Canvas for Image Cube Fits
+        cubeWidget = create_image_canvas(fitsImage,
+                            glueApp,
+                            window_title=('3D Image Cube of: ' + cubeFile),
+                            plot_title=('Cube of ' + targ_name + ': [' + str(datetime.datetime.now()) + ']'),
+                            x_window_size   =   floor(y_glue_win_size/2),
+                            y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
+                            x_window_pos    =   floor(y_glue_win_size/2),
+                            y_window_pos    =   floor(x_glue_win_size/3)
+        )
+
+    # Defines which function loads which datatype
+    loadFunctions = {'lightcurve': loadLightcurve, 'coadd': loadCoadd, 'cube': loadCube}
+    # For each target file, call its corresponding load function
+    for key, value in targetFiles:
+        loadFunctions[key](glueApp, dataCollection, targetFiles[key])
+
+def main():
+    X_MONITOR_RES = 1080
+    WIN_OS_X_OFFSET = 145
+    x_glue_win_size = X_MONITOR_RES - WIN_OS_X_OFFSET
+
+    Y_MONITOR_RES = 1920
+    WIN_OS_Y_OFFSET = 320
+    y_glue_win_size = Y_MONITOR_RES - WIN_OS_Y_OFFSET
+
+    # Initialize Glue Application with blank Data Collection
+    dataCollection = DataCollection()
+    glueApp = GlueApplication(dataCollection)
+    #glueApp.new_tab()
+    #tabBar = glueApp.tab_bar
+    #tabBar.rename_tab(0,"Testing")
+    #import ipdb; ipdb.set_trace()
+    #tab.setText("Testing")
+
+    gGuiTargetList = getGguiDataProducts()
+    targNames = gGuiTargetList.keys()
     
-# Import CoAdd Fits to DataCollection
-for targ_name, coaddFile in coaddFilenames:
-    print(coaddFile)
-    # Load Image from file
-    fitsImage = load_data(coaddFile)
-    # Import Image to Data Collection for plotting
-    dataCollection.append(fitsImage)
-    # Generate 2D Image Viewer Canvas for coadd Images
-    create_image_canvas(fitsImage, 
-                        glueApp, 
-                        window_title=('CoAdd Image of: ' + coaddFile),
-                        plot_title='CoAdd of ' + targ_name,
-                        x_window_size   =   floor(y_glue_win_size/2),
-                        y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
-                        x_window_pos    =   1,
-                        y_window_pos    =   floor(x_glue_win_size/3)
-    )
+    print(str(len(targNames) + " targets received. Loading " + targNames[0] + " as default.")
 
-# Import Image Cube Fits to DataCollection
-for targ_name, cubeFile in cubeFilenames:
-    print(cubeFile)
-    # Load Image from file
-    fitsImage = load_data(cubeFile)
-    # Import Image to Data Collection for plotting
-    dataCollection.append(fitsImage)
-    # Generate 2D Image Viewer Canvas for Image Cube Fits
-    create_image_canvas(fitsImage,
-                        glueApp,
-                        window_title=('3D Image Cube of: ' + cubeFile),
-                        plot_title=('Cube of ' + targ_name + ': [' + str(datetime.datetime.now()) + ']'),
-                        x_window_size   =   floor(y_glue_win_size/2),
-                        y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
-                        x_window_pos    =   floor(y_glue_win_size/2),
-                        y_window_pos    =   floor(x_glue_win_size/3)
-    )
+    loadTargetFiles(glueApp, dataCollection, gGuiTargetList[targNames[0]])
+    '''
+    # Import Lightcurve CSVs to DataCollection
+    for targ_name, lightcurveFile in lightcurveFilenames:
+        print(lightcurveFile)
+        # Load Data from file. Add to current Data Collection
+        csvData = load_data(lightcurveFile)
+        dataCollection.append(csvData)
+        # Cleanse raw csvData to only t_mean and flux_bgsub.
+        # Add that data "subset" (not glue subset, just a subset) to Data Collection.
+        # Must be in Data Collection to use
+        lightcurveData = Data(Flux_BackgroundSubtracted=csvData['flux_bgsub'],
+                            MeanTime=csvData['t_mean'],
+                            label='Lightcurve of ' + lightcurveFile)
+        dataCollection.append(lightcurveData)
 
-viewers = glueApp.viewers
+        obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
+        lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
 
-#start Glue
-glueApp.start()
+        # Generate 2D ScatterPlot Canvas for Lightcurve CSVs
+        lcWidget = create_scatter_canvas(lightcurveData, 
+                            'MeanTime',
+                            'Flux_BackgroundSubtracted', 
+                            glueApp,
+                            window_title=("Full Lightcurve of: " + lightcurveFile),
+                            plot_title='Lightcurve of ' + targ_name,
+                            x_window_size =   y_glue_win_size,
+                            y_window_size =   floor(x_glue_win_size/3),
+                            x_window_pos  =   1,
+                            y_window_pos  =   1
+        )
+        
+    # Import CoAdd Fits to DataCollection
+    for targ_name, coaddFile in coaddFilenames:
+        print(coaddFile)
+        # Load Image from file
+        fitsImage = load_data(coaddFile)
+        # Import Image to Data Collection for plotting
+        dataCollection.append(fitsImage)
+        # Generate 2D Image Viewer Canvas for coadd Images
+        caWidget = create_image_canvas(fitsImage, 
+                            glueApp, 
+                            window_title=('CoAdd Image of: ' + coaddFile),
+                            plot_title='CoAdd of ' + targ_name,
+                            x_window_size   =   floor(y_glue_win_size/2),
+                            y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
+                            x_window_pos    =   1,
+                            y_window_pos    =   floor(x_glue_win_size/3)
+        )
+
+    # Import Image Cube Fits to DataCollection
+    for targ_name, cubeFile in cubeFilenames:
+        print(cubeFile)
+        # Load Image from file
+        fitsImage = load_data(cubeFile)
+        # Import Image to Data Collection for plotting
+        dataCollection.append(fitsImage)
+        # Generate 2D Image Viewer Canvas for Image Cube Fits
+        cubeWidget = create_image_canvas(fitsImage,
+                            glueApp,
+                            window_title=('3D Image Cube of: ' + cubeFile),
+                            plot_title=('Cube of ' + targ_name + ': [' + str(datetime.datetime.now()) + ']'),
+                            x_window_size   =   floor(y_glue_win_size/2),
+                            y_window_size   =   floor(x_glue_win_size*(2.0/3.0)),
+                            x_window_pos    =   floor(y_glue_win_size/2),
+                            y_window_pos    =   floor(x_glue_win_size/3)
+        )
+    #viewers = glueApp.viewers
+    '''
+    #start Glue
+    glueApp.start()
+    print("Hello World")
+
+
+
+if __name__ == '__main__':
+    main()
