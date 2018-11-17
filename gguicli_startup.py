@@ -208,8 +208,6 @@ def getGguiDataProducts():
         # Prompt User via File Dialog for Image Cube Fits
         if settings.OPTION3 == True:
             cubeFilenames = prompt_user_for_file(("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0])
-#        if settings.OPTION3 == True: 
-#            cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0])
 
         return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
     elif ggui_load_format == 'd':
