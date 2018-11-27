@@ -14,6 +14,8 @@ from math import floor
 import yaml
 import datetime
 
+import qtTabLayouts
+
 X_MONITOR_RES = 1080
 WIN_OS_X_OFFSET = 145
 x_glue_win_size = X_MONITOR_RES - WIN_OS_X_OFFSET
@@ -318,6 +320,8 @@ def main():
     targNames = list(gGuiTargetList.keys()) 
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
     loadTarget(glueApp, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
+    
+    #glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
     
     #start Glue
     glueApp.start()
