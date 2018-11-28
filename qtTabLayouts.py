@@ -14,10 +14,13 @@ class overviewTabLayout(QtWidgets.QWidget):
         #print("Session: " + str(session.application))
 
         glueApp = session.application
+        print(str(glueApp.viewers))
 
-        lightcurveViewer = glueApp.choose_new_data_viewer()
-        coAddViewer = glueApp.choose_new_data_viewer()
-        cubeViewer = glueApp.choose_new_data_viewer()
+        #lightcurveViewer = glueApp.choose_new_data_viewer()
+        #coAddViewer = glueApp.choose_new_data_viewer()
+        #cubeViewer = glueApp.choose_new_data_viewer()
+        lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
+        
         self.setGeometry(100,100,200,50)
         #button1 = QtWidgets.QPushButton("One", self)
         #button1.move(0,0)
