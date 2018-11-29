@@ -2,11 +2,26 @@ import sys
 from qtpy import QtWidgets
 from glue.config import qt_fixed_layout_tab
 
-#$@qt_fixed_layout_tab
-#def setCustomTabLayout(overviewTabLayout):
-#    pass
-
 @qt_fixed_layout_tab
+class overviewTabLayout(QtWidgets.QMdiArea):
+    def __init__(self, parent=None, session=None):
+        super().__init__()
+
+        layout = QtWidgets.QGridLayout()
+        layout.setSpacing(1)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+ 
+        glueApp = session.application
+        lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
+
+        #loadWidgets(lightcurveViewer, coAddViewer, cubeViewer)
+        layout.addWidget(lightcurveViewer, 0, 0, 1, 2)
+        layout.addWidget(cubeViewer, 1, 1)
+        layout.addWidget(coAddViewer, 1, 0)
+
+'''
+#@qt_fixed_layout_tab
 class overviewTabLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, session=None):
         super(overviewTabLayout, self).__init__(parent)
@@ -38,10 +53,10 @@ class overviewTabLayout(QtWidgets.QWidget):
         layout.addWidget(lightcurveViewer, 0, 0, 1, 2)
         layout.addWidget(cubeViewer, 1, 1)
         layout.addWidget(coAddViewer, 1, 0)
+        #self.activeSubWindow = lightcurveViewer
+        print("\n\nErrors Below:\n---------------------------------")
     
-
-
-@qt_fixed_layout_tab
+#@qt_fixed_layout_tab
 class testLayout(QtWidgets.QWidget):
     def __init__(self, parent=None, session=None):
         super(testLayout, self).__init__(parent)
@@ -60,7 +75,7 @@ class testLayout(QtWidgets.QWidget):
 
     def activeSubWindow(self):
         print("Hello World!")
-
+'''
 '''
 myQApp = QtWidgets.QApplication(sys.argv)
 myWidget = testLayout()
