@@ -191,6 +191,7 @@ def getGguiDataProducts():
         return filenames
 
     ggui_load_format = input("Load type (y)aml or (m)anual: ")
+    #ggui_load_format = 'd'
     if ggui_load_format == 'y':
         ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
         with open(ggui_yaml, 'r') as f:
@@ -321,7 +322,7 @@ def main():
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
     loadTarget(glueApp, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
     
-    #glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
+    glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
     
     #start Glue
     glueApp.start()
