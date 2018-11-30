@@ -230,13 +230,13 @@ def getGguiDataProducts():
         print("Unrecognized character")
         exit(-1)
 
-def loadTarget(glueApp, dataCollection, targetName, targetFiles):
+def loadTarget(glueApp, fixedTab, dataCollection, targetName, targetFiles):
     """
     Given a specific 
 
     :returns: dict -- Dictionary of gGui Targets and corresponding file locations
     """
-    def loadLightcurve(glueApp, dataCollection, targ_name, lcFileName):
+    def loadLightcurve(glueApp, fixedTab, dataCollection, targ_name, lcFileName):
         print(lcFileName)
         # Load Data from file. Add to current Data Collection
         csvData = load_data(lcFileName)
@@ -263,8 +263,9 @@ def loadTarget(glueApp, dataCollection, targetName, targetFiles):
                             x_window_pos  =   1,
                             y_window_pos  =   1
         )
+        fixedTab.loadLightcurve(lcWidget)
 
-    def loadCoadd(glueApp, dataCollection, targ_name, coaddFileName):
+    def loadCoadd(glueApp, fixedTab, dataCollection, targ_name, coaddFileName):
         print(coaddFileName)
         # Load Image from file
         fitsImage = load_data(coaddFileName)
@@ -280,8 +281,9 @@ def loadTarget(glueApp, dataCollection, targetName, targetFiles):
                             x_window_pos    =   1,
                             y_window_pos    =   floor(x_glue_win_size/3)
         )
+        fixedTab.loadCoadd(caWidget)
 
-    def loadCube(glueApp, dataCollection, targ_name, cubeFileName):
+    def loadCube(glueApp, fixedTab, dataCollection, targ_name, cubeFileName):
         print(cubeFileName)
         # Load Image from file
         fitsImage = load_data(cubeFileName)
@@ -297,32 +299,36 @@ def loadTarget(glueApp, dataCollection, targetName, targetFiles):
                             x_window_pos    =   floor(y_glue_win_size/2),
                             y_window_pos    =   floor(x_glue_win_size/3)
         )
+        fixedTab.loadCube(cubeWidget)
 
     # Defines which function loads which datatype
     loadFunctions = {'lightcurve': loadLightcurve, 'coadd': loadCoadd, 'cube': loadCube}
     # For each target file, call its corresponding load function
     for dataProductType in targetFiles:
         #dataProductType, filePath = gGuiDataProductListing
-        loadFunctions[dataProductType](glueApp, dataCollection, targetName, targetFiles[dataProductType])
+        loadFunctions[dataProductType](glueApp, fixedTab, dataCollection, targetName, targetFiles[dataProductType])
 
 def main():
     # Initialize Glue Application with blank Data Collection
     dataCollection = DataCollection()
     glueApp = GlueApplication(dataCollection)
     #glueApp.new_tab()
-    #tabBar = glueApp.tab_bar
-    #tabBar.rename_tab(0,"Testing")
-    #import ipdb; ipdb.set_trace()
-    #tab.setText("Testing")
+    tabBar = glueApp.tab_widget
+    fixedTab=qtTabLayouts.overviewTabLayout()
+    tabBar.addTab(fixedTab, "Overview Tab")
+    tabBar.setCurrentWidget(fixedTab)
+    fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
 
     # Get list of targets from user
     gGuiTargetList = getGguiDataProducts()
     # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
     targNames = list(gGuiTargetList.keys()) 
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
-    loadTarget(glueApp, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
+    loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
     
-    glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
+    
+
+    #glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
     
     #start Glue
     glueApp.start()
