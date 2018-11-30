@@ -7,18 +7,28 @@ class overviewTabLayout(QtWidgets.QMdiArea):
     def __init__(self, parent=None, session=None):
         super().__init__()
 
-        layout = QtWidgets.QGridLayout()
-        layout.setSpacing(1)
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
+        self.layout = QtWidgets.QGridLayout()
+        self.layout.setSpacing(1)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.layout)
  
-        glueApp = session.application
-        lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
+        #glueApp = session.application
+        #lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
 
-        #loadWidgets(lightcurveViewer, coAddViewer, cubeViewer)
-        layout.addWidget(lightcurveViewer, 0, 0, 1, 2)
-        layout.addWidget(cubeViewer, 1, 1)
-        layout.addWidget(coAddViewer, 1, 0)
+    def loadLightcurve(self, lightCurveViewer):
+        self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
+
+    def loadCoadd(self, coAddViewer):
+        self.layout.addWidget(coAddViewer, 1, 0)
+
+    def loadCube(self, cubeViewer):
+        self.layout.addWidget(cubeViewer, 1, 1)
+    
+    def loadWidgets(self, lightcurveViewer, coAddViewer, cubeViewer):
+        self.layout.addWidget(lightcurveViewer, 0, 0, 1, 2)
+        self.layout.addWidget(cubeViewer, 1, 1)
+        self.layout.addWidget(coAddViewer, 1, 0)
+
 
 '''
 #@qt_fixed_layout_tab
