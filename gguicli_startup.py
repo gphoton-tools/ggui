@@ -51,6 +51,9 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, window_title=Non
     """
     # Note for devs: Import inside function due to Glue Startup Script Workorder
     from glue.viewers.scatter.qt import ScatterViewer
+    sv = ScatterViewer(glueApp.session)
+    sv.add_data(dataToDisplay)
+    return sv
     # Generate new scatter widget
     scatterCanvas = glueApp.new_data_viewer(ScatterViewer, dataToDisplay)
     # Set Scatter Canvas Attributes
@@ -79,6 +82,10 @@ def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_tit
     """
     # Note for devs: Import inside function due to Glue Startup Script Workorder
     from glue.viewers.image.qt import ImageViewer
+    sv = ImageViewer(glueApp.session)
+    sv.add_data(imageDataToDisplay)
+    return sv
+    
     # Generate new Image Widget
     imageCanvas = glueApp.new_data_viewer(ImageViewer, imageDataToDisplay)
     if window_title: imageCanvas.setWindowTitle(window_title)
