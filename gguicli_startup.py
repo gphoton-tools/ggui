@@ -271,6 +271,11 @@ def loadTarget(glueApp, fixedTab, dataCollection, targetName, targetFiles):
                             y_window_pos  =   1
         )
         fixedTab.loadLightcurve(lcWidget)
+        #fixedTab.addSubWindow(lcWidget)
+        glueApp._viewer_in_focus = lcWidget
+        glueApp._update_focus_decoration()
+        glueApp._update_plot_dashboard()
+        #fixedTab.setActiveSubWindow(lcWidget)
 
     def loadCoadd(glueApp, fixedTab, dataCollection, targ_name, coaddFileName):
         print(coaddFileName)
@@ -289,6 +294,7 @@ def loadTarget(glueApp, fixedTab, dataCollection, targetName, targetFiles):
                             y_window_pos    =   floor(x_glue_win_size/3)
         )
         fixedTab.loadCoadd(caWidget)
+        #fixedTab.addSubWindow(caWidget)
 
     def loadCube(glueApp, fixedTab, dataCollection, targ_name, cubeFileName):
         print(cubeFileName)
@@ -307,6 +313,7 @@ def loadTarget(glueApp, fixedTab, dataCollection, targetName, targetFiles):
                             y_window_pos    =   floor(x_glue_win_size/3)
         )
         fixedTab.loadCube(cubeWidget)
+        #fixedTab.addSubWindow(cubeWidget)
 
     # Defines which function loads which datatype
     loadFunctions = {'lightcurve': loadLightcurve, 'coadd': loadCoadd, 'cube': loadCube}
@@ -326,13 +333,15 @@ def main():
     tabBar.setCurrentWidget(fixedTab)
     fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
 
+    fixedTab.tileSubWindows()
+
     # Get list of targets from user
     gGuiTargetList = getGguiDataProducts()
     # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
     targNames = list(gGuiTargetList.keys()) 
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
     loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
-    
+    #print("###: " + str(fixedTab.activeSubWindow()))
     
 
     #glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
