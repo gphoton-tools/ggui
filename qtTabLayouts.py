@@ -2,6 +2,20 @@ import sys
 from qtpy import QtWidgets
 from glue.config import qt_fixed_layout_tab
 
+from glue.viewers.scatter.qt import ScatterViewer
+from glue.viewers.image.qt import ImageViewer
+class duyScatterViewer(ScatterViewer):
+    def mousePressEvent(self, event):
+        self._session.application._viewer_in_focus = self
+        self._session.application._update_focus_decoration()
+        self._session.application._update_plot_dashboard()
+
+class duyImageViewer(ImageViewer):
+    def mousePressEvent(self, event):
+        self._session.application._viewer_in_focus = self
+        self._session.application._update_focus_decoration()
+        self._session.application._update_plot_dashboard()
+
 @qt_fixed_layout_tab
 class overviewTabLayout(QtWidgets.QMdiArea):
     def __init__(self, parent=None, session=None):
@@ -28,6 +42,12 @@ class overviewTabLayout(QtWidgets.QMdiArea):
         self.layout.addWidget(lightcurveViewer, 0, 0, 1, 2)
         self.layout.addWidget(cubeViewer, 1, 1)
         self.layout.addWidget(coAddViewer, 1, 0)
+
+    def mousePressEvent(self, mouseEvent):
+        print("Hello World")
+
+    def dropEvent(self, event):
+        print("Drop Event")
 
 
 '''

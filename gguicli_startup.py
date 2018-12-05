@@ -50,8 +50,11 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, window_title=Non
     :type glueApp: glue.app.qt.application.GlueApplication
     """
     # Note for devs: Import inside function due to Glue Startup Script Workorder
-    from glue.viewers.scatter.qt import ScatterViewer
-    sv = ScatterViewer(glueApp.session)
+    #from glue.viewers.scatter.qt import ScatterViewer
+    #sv = ScatterViewer(glueApp.session)
+    #sv.add_data(dataToDisplay)
+
+    sv = qtTabLayouts.duyScatterViewer(glueApp.session)
     sv.add_data(dataToDisplay)
     return sv
     # Generate new scatter widget
@@ -81,8 +84,8 @@ def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_tit
     :type glueApp: glue.app.qt.application.GlueApplication
     """
     # Note for devs: Import inside function due to Glue Startup Script Workorder
-    from glue.viewers.image.qt import ImageViewer
-    sv = ImageViewer(glueApp.session)
+    #from glue.viewers.image.qt import ImageViewer
+    sv = qtTabLayouts.duyImageViewer(glueApp.session)
     sv.add_data(imageDataToDisplay)
     return sv
     
@@ -272,9 +275,6 @@ def loadTarget(glueApp, fixedTab, dataCollection, targetName, targetFiles):
         )
         fixedTab.loadLightcurve(lcWidget)
         #fixedTab.addSubWindow(lcWidget)
-        glueApp._viewer_in_focus = lcWidget
-        glueApp._update_focus_decoration()
-        glueApp._update_plot_dashboard()
         #fixedTab.setActiveSubWindow(lcWidget)
 
     def loadCoadd(glueApp, fixedTab, dataCollection, targ_name, coaddFileName):
