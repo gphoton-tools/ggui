@@ -16,19 +16,32 @@ class duyImageViewer(ImageViewer):
         self._session.application._update_focus_decoration()
         self._session.application._update_plot_dashboard()
 
+glueDataProductClasses = {'lightcurve': duyScatterViewer, 'coadd': duyImageViewer, 'cube': duyImageViewer}
+
 @qt_fixed_layout_tab
 class overviewTabLayout(QtWidgets.QMdiArea):
-    def __init__(self, parent=None, session=None):
+    
+    
+
+    def __init__(self, parent=None, session=None, targData={}):
         super().__init__()
+        viewerSetters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
+
 
         self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(1)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
  
-        #glueApp = session.application
+        glueApp = session.application
         #lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
 
+        for dataType, data in targData.items():
+            glueApp.data_collection.append(data)
+            viewer = glueDataProductClasses[dataType](session)
+            viewer.add_data(data)
+            viewerSetters[dataType](viewer)
+       
     def loadLightcurve(self, lightCurveViewer):
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
 
@@ -37,17 +50,6 @@ class overviewTabLayout(QtWidgets.QMdiArea):
 
     def loadCube(self, cubeViewer):
         self.layout.addWidget(cubeViewer, 1, 1)
-    
-    def loadWidgets(self, lightcurveViewer, coAddViewer, cubeViewer):
-        self.layout.addWidget(lightcurveViewer, 0, 0, 1, 2)
-        self.layout.addWidget(cubeViewer, 1, 1)
-        self.layout.addWidget(coAddViewer, 1, 0)
-
-    def mousePressEvent(self, mouseEvent):
-        print("Hello World")
-
-    def dropEvent(self, event):
-        print("Drop Event")
 
 
 '''

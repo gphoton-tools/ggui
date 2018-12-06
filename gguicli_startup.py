@@ -73,7 +73,7 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, window_title=Non
     #scatterCanvas.position = 100,100
     return scatterCanvas
 
-def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_title=None, x_window_size=None, y_window_size=None, x_window_pos=None, y_window_pos=None):
+def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_title=None):
     """
     Function to generate a new image widget. (Designed for consistency with above)
 
@@ -93,8 +93,6 @@ def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_tit
     imageCanvas = glueApp.new_data_viewer(ImageViewer, imageDataToDisplay)
     if window_title: imageCanvas.setWindowTitle(window_title)
     if plot_title: imageCanvas.axes.set_title(plot_title)
-    if x_window_size and y_window_size: imageCanvas.viewer_size = x_window_size, y_window_size
-    if x_window_pos and y_window_pos: imageCanvas.position = x_window_pos, y_window_pos
     return imageCanvas
 
 def lightcurveChopList(parentData, axis, timeInterval):
@@ -327,20 +325,40 @@ def main():
     dataCollection = DataCollection()
     glueApp = GlueApplication(dataCollection)
     #glueApp.new_tab()
-    tabBar = glueApp.tab_widget
-    fixedTab=qtTabLayouts.overviewTabLayout()
-    tabBar.addTab(fixedTab, "Overview Tab")
-    tabBar.setCurrentWidget(fixedTab)
-    fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
-
-    fixedTab.tileSubWindows()
 
     # Get list of targets from user
     gGuiTargetList = getGguiDataProducts()
     # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
     targNames = list(gGuiTargetList.keys()) 
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
-    loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
+    
+    #lightcurveData = load_data(gGuiTargetList[targNames[0]]['lightcurve'])
+    #coaddData = load_data(gGuiTargetList[targNames[0]]['coadd'])
+    #cubeData = load_data(gGuiTargetList[targNames[0]]['cube'])
+    
+    def extractTargetData(targetFiles):
+        print("Extracting target data")
+        dataDict = {}
+        for dataProductType in targetFiles:
+            dataDict[dataProductType] = load_data(targetFiles[dataProductType])
+        return dataDict
+    targData = extractTargetData(gGuiTargetList[targNames[0]])
+
+    #loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
+   
+   
+    tabBar = glueApp.tab_widget
+    fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targData=targData)
+    tabBar.addTab(fixedTab, "Overview Tab")
+    tabBar.setCurrentWidget(fixedTab)
+    fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
+
+    #fixedTab.tileSubWindows()
+
+   
+   
+   
+   
     #print("###: " + str(fixedTab.activeSubWindow()))
     
 
