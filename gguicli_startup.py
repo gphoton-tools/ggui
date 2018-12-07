@@ -69,8 +69,6 @@ def create_scatter_canvas(dataToDisplay, x_att, y_att, glueApp, window_title=Non
     if x_window_size and y_window_size: scatterCanvas.viewer_size = x_window_size, y_window_size
     if x_window_pos and y_window_pos: scatterCanvas.position = x_window_pos, y_window_pos
 
-    #scatterCanvas.position = 100,100
-    #scatterCanvas.position = 100,100
     return scatterCanvas
 
 def create_image_canvas(imageDataToDisplay, glueApp, window_title=None, plot_title=None):
@@ -332,10 +330,7 @@ def main():
     targNames = list(gGuiTargetList.keys()) 
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
     
-    #lightcurveData = load_data(gGuiTargetList[targNames[0]]['lightcurve'])
-    #coaddData = load_data(gGuiTargetList[targNames[0]]['coadd'])
-    #cubeData = load_data(gGuiTargetList[targNames[0]]['cube'])
-    
+    #loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
     def extractTargetData(targetFiles):
         print("Extracting target data")
         dataDict = {}
@@ -344,25 +339,13 @@ def main():
         return dataDict
     targData = extractTargetData(gGuiTargetList[targNames[0]])
 
-    #loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
-   
-   
     tabBar = glueApp.tab_widget
-    fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targData=targData)
+    fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targData)
     tabBar.addTab(fixedTab, "Overview Tab")
     tabBar.setCurrentWidget(fixedTab)
     fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
-
     #fixedTab.tileSubWindows()
-
-   
-   
-   
-   
     #print("###: " + str(fixedTab.activeSubWindow()))
-    
-
-    #glueApp.choose_new_fixed_layout_tab(qtTabLayouts.overviewTabLayout)
     
     #start Glue
     glueApp.start()

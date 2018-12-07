@@ -16,14 +16,10 @@ class duyImageViewer(ImageViewer):
         self._session.application._update_focus_decoration()
         self._session.application._update_plot_dashboard()
 
-glueDataProductClasses = {'lightcurve': duyScatterViewer, 'coadd': duyImageViewer, 'cube': duyImageViewer}
-
 @qt_fixed_layout_tab
 class overviewTabLayout(QtWidgets.QMdiArea):
     
-    
-
-    def __init__(self, parent=None, session=None, targData={}):
+    def __init__(self, parent=None, session=None, targName="Target", targData={}):
         super().__init__()
         viewerSetters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
 
@@ -38,18 +34,33 @@ class overviewTabLayout(QtWidgets.QMdiArea):
 
         for dataType, data in targData.items():
             glueApp.data_collection.append(data)
-            viewer = glueDataProductClasses[dataType](session)
-            viewer.add_data(data)
-            viewerSetters[dataType](viewer)
+            viewerSetters[dataType](session, data, targName)
        
-    def loadLightcurve(self, lightCurveViewer):
+    def loadLightcurve(self, session, lightCurveData, targName):
+        lightCurveViewer = duyScatterViewer(session)
+        lightCurveViewer.add_data(lightCurveData)
+        lightCurveViewer.axes.set_title("Full Lightcurve of " + targName)
+        lightCurveViewer.state.x_att = lightCurveData.id['t_mean']
+        lightCurveViewer.state.y_att = lightCurveData.id['flux_bgsub']
+        
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
+        self.lightcurveViewer = lightCurveViewer
 
-    def loadCoadd(self, coAddViewer):
-        self.layout.addWidget(coAddViewer, 1, 0)
+    def loadCoadd(self, session, coaddData, targName):
+        coaddViewer = duyImageViewer(session)
+        coaddViewer.add_data(coaddData)
+        coaddViewer.axes.set_title("CoAdd of " + targName)
 
-    def loadCube(self, cubeViewer):
+        self.layout.addWidget(coaddViewer, 1, 0)
+        self.coaddViewer = coaddViewer
+
+    def loadCube(self, session, cubeData, targName):
+        cubeViewer = duyImageViewer(session)
+        cubeViewer.add_data(cubeData)
+        cubeViewer.axes.set_title("Cube of " + targName)
+        
         self.layout.addWidget(cubeViewer, 1, 1)
+        self.cubeViewer = cubeViewer
 
 
 '''
