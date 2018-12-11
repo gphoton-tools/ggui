@@ -21,6 +21,8 @@ def main():
     # Initialize Glue Application with blank Data Collection
     dataCollection = DataCollection()
     glueApp = GlueApplication(dataCollection)
+    # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
+    defaultTab = glueApp.current_tab
     #glueApp.new_tab()
 
     # Get list of targets from user
@@ -108,12 +110,14 @@ def main():
             dataDict[dataProductType] = load_data(targetFiles[dataProductType])
         return dataDict
     targData = extractTargetData(gGuiTargetList[targNames[0]])
-
+    
     tabBar = glueApp.tab_widget
     fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targData)
     tabBar.addTab(fixedTab, "Overview Tab")
+    #glueApp.close_tab(0, False)
     tabBar.setCurrentWidget(fixedTab)
     fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
+    
     #fixedTab.tileSubWindows()
     #print("###: " + str(fixedTab.activeSubWindow()))
     
@@ -121,6 +125,9 @@ def main():
     #obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
     #lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
 
+    # Delete first default tab
+    glueApp.close_tab(glueApp.get_tab_index(defaultTab), False)
+    
     #start Glue
     glueApp.start()
 
