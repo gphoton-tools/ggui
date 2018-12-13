@@ -113,7 +113,7 @@ def main():
     
     tabBar = glueApp.tab_widget
     fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targData)
-    tabBar.addTab(fixedTab, "Overview Tab")
+    tabBar.addTab(fixedTab, "Overview of " + str(targNames[0]))
     #glueApp.close_tab(0, False)
     tabBar.setCurrentWidget(fixedTab)
     fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
