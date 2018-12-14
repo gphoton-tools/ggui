@@ -13,6 +13,9 @@ class targetManager(QtWidgets.QWidget):
     def getTarget(self, targName):
         return self.targetCatalog.get(targName, {})
 
+    def getTargetNames(self):
+        return self.targetCatalog.keys()
+
 
 @menubar_plugin("Do something")
 def my_plugin(session, data_collection):
