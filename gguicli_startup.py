@@ -6,13 +6,11 @@
 
 # Note to Devs: Glue does not fully support upper imports. Imports must be done within functions
 from glue.core.data_factories import load_data
-from glue.core import Data, DataCollection
+from glue.core import DataCollection
 from glue.core.link_helpers import LinkSame
 from glue.app.qt.application import GlueApplication
 from glue.config import settings
-from math import floor
 import yaml
-import datetime
 
 import qtTabLayouts
 from autochop import lightcurveChopList, lightcurveChopImport
