@@ -62,16 +62,7 @@ def main():
             ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
             with open(ggui_yaml, 'r') as f:
                 return yaml.load(f)
-                '''
-                for targ_name, files in targ_dict.items():
-                    targetNames.append(targ_name)
-                    lightcurveFilenames.append((targ_name, files['lightcurve']))
-                    coaddFilenames.append((targ_name, files['coadd']))
-                    cubeFilenames.append((targ_name, files['cube']))
-                '''
         elif ggui_load_format == 'm':
-            
-            
             # Prompt User via File Dialog for LightCurve CSVs
             if settings.OPTION1 == True: 
                 lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")[0]
@@ -81,17 +72,10 @@ def main():
             # Prompt User via File Dialog for Image Cube Fits
             if settings.OPTION3 == True:
                 cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
-
             return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
         elif ggui_load_format == 'd':
             with open('C:\\ggui\\dataProducts\\cr_dra_win.yaml', 'r') as f:
                 return yaml.load(f)
-                '''
-                for targ_name, files in targ_dict.items():
-                    lightcurveFilenames.append((targ_name, files['lightcurve']))
-                    coaddFilenames.append((targ_name, files['coadd']))
-                    cubeFilenames.append((targ_name, files['cube']))
-                '''
         else:
             print("Unrecognized character")
             exit(-1)
