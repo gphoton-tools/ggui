@@ -15,12 +15,16 @@ import yaml
 import qtTabLayouts
 from autochop import lightcurveChopList, lightcurveChopImport
 
+from targetManager import targetManager
+
 def main():
     # Initialize Glue Application with blank Data Collection
     dataCollection = DataCollection()
     glueApp = GlueApplication(dataCollection)
     # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
     defaultTab = glueApp.current_tab
+
+    targManager = targetManager()
 
     # Get list of targets from user
     def getGguiDataProducts():
@@ -59,8 +63,7 @@ def main():
         #ggui_load_format = 'd'
         if ggui_load_format == 'y':
             ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
-            with open(ggui_yaml, 'r') as f:
-                return yaml.load(f)
+            targManager.loadGguiYaml(ggui_yaml)
         elif ggui_load_format == 'm':
             # Prompt User via File Dialog for LightCurve CSVs
             if settings.OPTION1 == True: 
@@ -71,29 +74,23 @@ def main():
             # Prompt User via File Dialog for Image Cube Fits
             if settings.OPTION3 == True:
                 cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
-            return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
+            #return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
+            targManager.loadTargetDict({"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}})
         elif ggui_load_format == 'd':
-            with open('C:\\ggui\\dataProducts\\cr_dra_win.yaml', 'r') as f:
-                return yaml.load(f)
+            targManager.loadGguiYaml('C:\\ggui\\dataProducts\\cr_dra_win.yaml')
         else:
             print("Unrecognized character")
             exit(-1)
-    gGuiTargetList = getGguiDataProducts()
+    getGguiDataProducts()
     # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
-    targNames = list(gGuiTargetList.keys()) 
+    targNames = list(targManager.getTargetNames())
     print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
+    targManager.setPrimaryTarget(targNames[0])
     
-    #loadTarget(glueApp, fixedTab, dataCollection, targNames[0], gGuiTargetList[targNames[0]])
-    def extractTargetData(targetFiles):
-        print("Extracting target data")
-        dataDict = {}
-        for dataProductType in targetFiles:
-            dataDict[dataProductType] = load_data(targetFiles[dataProductType])
-        return dataDict
-    targData = extractTargetData(gGuiTargetList[targNames[0]])
+    targData = targManager.getPrimaryData()
     
-    tabBar = glueApp.tab_widget
     fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targData)
+    tabBar = glueApp.tab_widget
     tabBar.addTab(fixedTab, "Overview of " + str(targNames[0]))
     #glueApp.close_tab(0, False)
     tabBar.setCurrentWidget(fixedTab)
