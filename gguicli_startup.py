@@ -66,14 +66,11 @@ def main():
             targManager.loadGguiYaml(ggui_yaml)
         elif ggui_load_format == 'm':
             # Prompt User via File Dialog for LightCurve CSVs
-            if settings.OPTION1 == True: 
-                lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")[0]
+            lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")[0]
             # Prompt User via File Dialog for CoAdd Fits
-            if settings.OPTION2 == True: 
-                coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file", "CoAdd FITS (*.fits)")[0]
+            coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file", "CoAdd FITS (*.fits)")[0]
             # Prompt User via File Dialog for Image Cube Fits
-            if settings.OPTION3 == True:
-                cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
+            cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
             #return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
             targManager.loadTargetDict({"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}})
         elif ggui_load_format == 'd':
