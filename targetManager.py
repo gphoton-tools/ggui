@@ -9,7 +9,8 @@ class targetManager(QtWidgets.QWidget):
         super().__init__()
 
         self.targetCatalog = {}
-        self.primaryTarget = None
+        self.primaryTarget = ""
+        self.primaryData = {}
 
     def loadGguiYaml(self, gguiYamlPath):
         self.targetCatalog.update(yaml.load(open(gguiYamlPath, 'r')))
@@ -18,19 +19,18 @@ class targetManager(QtWidgets.QWidget):
         self.targetCatalog.update(targDict)
 
     def setPrimaryTarget(self, targName):
-        self.primaryTarget = targName
+        if targName is not self.primaryTarget:
+            self.primaryTarget = targName
+            self.primaryData.clear()
+            targetFiles = self.targetCatalog.get(self.primaryTarget)
+            for dataProductType in targetFiles:
+                self.primaryData[dataProductType] = load_data(targetFiles[dataProductType])
     
     def getPrimaryData(self):
-        targetFiles = self.targetCatalog.get(self.primaryTarget)
-        dataDict = {}
-        for dataProductType in targetFiles:
-            dataDict[dataProductType] = load_data(targetFiles[dataProductType])
-        return dataDict
-    
+        return self.primaryData
 
-    
-    def getTarget(self, targName):
-        return self.targetCatalog.get(targName, {})
+    def getPrimaryName(self):
+        return self.primaryTarget
 
     def getTargetNames(self):
         return self.targetCatalog.keys()
