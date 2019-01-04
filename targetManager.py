@@ -24,7 +24,10 @@ class targetManager(QtWidgets.QWidget):
             self.primaryData.clear()
             targetFiles = self.targetCatalog.get(self.primaryTarget)
             for dataProductType in targetFiles:
-                self.primaryData[dataProductType] = load_data(targetFiles[dataProductType])
+                self.primaryData[dataProductType] = {}
+                for band, bandFile in targetFiles[dataProductType].items():
+                    #self.primaryData[dataProductType] = load_data(targetFiles[dataProductType])
+                    self.primaryData[dataProductType][band] =load_data(bandFile)
     
     def getPrimaryData(self):
         return self.primaryData
