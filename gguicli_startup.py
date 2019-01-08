@@ -62,7 +62,7 @@ def main():
         ggui_load_format = input("Load type (y)aml or (m)anual: ")
         #ggui_load_format = 'd'
         if ggui_load_format == 'y':
-            ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml)")[0]
+            ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)")[0]
             targManager.loadGguiYaml(ggui_yaml)
         elif ggui_load_format == 'm':
             # Prompt User via File Dialog for LightCurve CSVs
