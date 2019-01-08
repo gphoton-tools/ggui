@@ -81,20 +81,15 @@ def main():
     getGguiDataProducts()
     # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
     targNames = list(targManager.getTargetNames())
-    print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
     targManager.setPrimaryTarget(targNames[0])
+    print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
     
-    targData = targManager.getPrimaryData()
-    
-    fixedTab=qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targData)
-    tabBar = glueApp.tab_widget
-    tabBar.addTab(fixedTab, "Overview of " + str(targNames[0]))
-    #glueApp.close_tab(0, False)
-    tabBar.setCurrentWidget(fixedTab)
+    # Create Overview Tab using target manager's primary target
+    fixedTab = qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targManager.getPrimaryData())
+    glueApp.tab_widget.addTab(fixedTab, "Overview of " + str(targNames[0]))
+    # Set Overview Tab to focus
+    glueApp.tab_widget.setCurrentWidget(fixedTab)
     fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
-    
-    #fixedTab.tileSubWindows()
-    #print("###: " + str(fixedTab.activeSubWindow()))
     
     # Note for later. This is how you autochop :P
     #obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
