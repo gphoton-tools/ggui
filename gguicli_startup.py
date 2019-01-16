@@ -24,7 +24,7 @@ def main():
     # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
     defaultTab = glueApp.current_tab
 
-    targManager = targetManager()
+    targManager = targetManager(glueApp)
 
     # Get list of targets from user
     def getGguiDataProducts():
