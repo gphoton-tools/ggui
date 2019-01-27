@@ -4,7 +4,16 @@ from glue.config import qt_fixed_layout_tab
 
 from glue.viewers.scatter.qt import ScatterViewer
 from glue.viewers.image.qt import ImageViewer
-class duyScatterViewer(ScatterViewer):
+class gguiOverviewScatterViewer(ScatterViewer):
+    def __init__(self, session, lightCurveData, targName):
+        super().__init__(session)
+
+        self.axes.set_title("Full Lightcurve of " + targName)
+        for band, bandData in lightCurveData.items():
+            super().add_data(bandData)
+        # See DevNote 01: Python Scope
+        self.state.x_att = bandData.id['t_mean']
+        self.state.y_att = bandData.id['flux_bgsub']
     def mousePressEvent(self, event):
         self._session.application._viewer_in_focus = self
         self._session.application._update_focus_decoration()
@@ -38,17 +47,10 @@ class overviewTabLayout(QtWidgets.QMdiArea):
             viewerSetters[dataType](session, data, targName)
        
     def loadLightcurve(self, session, lightCurveData, targName):
-        lightCurveViewer = duyScatterViewer(session)
-        for band, bandData in lightCurveData.items():
-            lightCurveViewer.add_data(bandData)
-            
-        lightCurveViewer.axes.set_title("Full Lightcurve of " + targName)
-        # See DevNote 01: Python Scope
-        lightCurveViewer.state.x_att = bandData.id['t_mean']
-        lightCurveViewer.state.y_att = bandData.id['flux_bgsub']
+        lightCurveViewer = gguiOverviewScatterViewer(session, lightCurveData, targName)
         
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
-        self.lightcurveViewer = lightCurveViewer
+        self.lightCurveViewer = lightCurveViewer
 
     def loadCoadd(self, session, coaddData, targName):
         coaddViewer = duyImageViewer(session)
