@@ -10,7 +10,7 @@ class gguiOverviewScatterViewer(ScatterViewer):
 
         self.axes.set_title("Full Lightcurve of " + targName)
         for band, bandData in lightCurveData.items():
-            super().add_data(bandData)
+            self.add_data(bandData)
         # See DevNote 01: Python Scope
         self.state.x_att = bandData.id['t_mean']
         self.state.y_att = bandData.id['flux_bgsub']
