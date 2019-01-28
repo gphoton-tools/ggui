@@ -1,19 +1,38 @@
 import sys
+import pathlib
 from qtpy import QtWidgets
-from glue.config import qt_fixed_layout_tab
+from glue.config import qt_fixed_layout_tab, viewer_tool
+from glue.viewers.common.qt.tool import Tool
 
 from glue.viewers.scatter.qt import ScatterViewer
 from glue.viewers.image.qt import ImageViewer
 class gguiOverviewScatterViewer(ScatterViewer):
+    
+    tools = ['select:rectangle', 'select:xrange',
+             'select:yrange', 'select:circle',
+             'select:polygon', 'fuv_toggle', 'nuv_toggle']
+
     def __init__(self, session, lightCurveData, targName):
         super().__init__(session)
-
         self.axes.set_title("Full Lightcurve of " + targName)
+        
+        self.dataLib = {}
         for band, bandData in lightCurveData.items():
             self.add_data(bandData)
+            # Horrible performance. Go back and fix!
+            for index, layerData in enumerate([layers.layer for layers in self.state.layers]):
+                if layerData == bandData:
+                    self.dataLib[band] = {'Data': bandData, 'layer': self.state.layers[index]}
+                    break
+
         # See DevNote 01: Python Scope
         self.state.x_att = bandData.id['t_mean']
         self.state.y_att = bandData.id['flux_bgsub']
+
+    def toggleBandScatter(self, band):
+        if self.dataLib.get(band).get('layer'):
+            self.dataLib[band]['layer'].visible = not self.dataLib[band]['layer'].visible
+
     def mousePressEvent(self, event):
         self._session.application._viewer_in_focus = self
         self._session.application._update_focus_decoration()
@@ -24,6 +43,30 @@ class duyImageViewer(ImageViewer):
         self._session.application._viewer_in_focus = self
         self._session.application._update_focus_decoration()
         self._session.application._update_plot_dashboard()
+
+@viewer_tool
+class fuvToggleTool(Tool):
+    icon = str(pathlib.Path.cwd() / 'icons' / 'FUV_transparent.png')
+    tool_id = 'fuv_toggle'
+    tool_tip = 'Toggle the FUV Dataset'
+
+    def __init__(self, viewer):
+        super().__init__(viewer)
+
+    def activate(self):
+        self.viewer.toggleBandScatter('FUV')
+
+@viewer_tool
+class nuvToggleTool(Tool):
+    icon = str(pathlib.Path.cwd() / 'icons' / 'NUV_transparent.png')
+    tool_id = 'nuv_toggle'
+    tool_tip = 'Toggle the NUV Dataset'
+
+    def __init__(self, viewer):
+        super().__init__(viewer)
+
+    def activate(self):
+        self.viewer.toggleBandScatter('NUV')
 
 @qt_fixed_layout_tab
 class overviewTabLayout(QtWidgets.QMdiArea):
@@ -48,7 +91,7 @@ class overviewTabLayout(QtWidgets.QMdiArea):
        
     def loadLightcurve(self, session, lightCurveData, targName):
         lightCurveViewer = gguiOverviewScatterViewer(session, lightCurveData, targName)
-        
+
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
         self.lightCurveViewer = lightCurveViewer
 
