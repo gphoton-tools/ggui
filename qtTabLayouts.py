@@ -2,7 +2,7 @@ import sys
 import pathlib
 from qtpy import QtWidgets
 from glue.config import qt_fixed_layout_tab, viewer_tool
-from glue.viewers.common.qt.tool import Tool
+from glue.viewers.common.qt.tool import Tool, CheckableTool
 
 from glue.viewers.scatter.qt import ScatterViewer
 from glue.viewers.image.qt import ImageViewer
@@ -47,7 +47,7 @@ class duyImageViewer(ImageViewer):
         self._session.application._update_plot_dashboard()
 
 @viewer_tool
-class fuvToggleTool(Tool):
+class fuvToggleTool(CheckableTool):
     icon = str(pathlib.Path.cwd() / 'icons' / 'FUV_transparent.png')
     tool_id = 'fuv_toggle'
     tool_tip = 'Toggle the FUV Dataset'
@@ -56,7 +56,10 @@ class fuvToggleTool(Tool):
         super().__init__(viewer)
 
     def activate(self):
-        self.viewer.toggleBandScatter('FUV')
+        self.viewer.toggleBandScatter('FUV', True)
+
+    def deactivate(self):
+        self.viewer.toggleBandScatter('FUV', False)
 
 @viewer_tool
 class nuvToggleTool(Tool):
