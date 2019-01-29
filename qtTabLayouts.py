@@ -29,6 +29,8 @@ class gguiOverviewScatterViewer(ScatterViewer):
         self.state.x_att = bandData.id['t_mean']
         self.state.y_att = bandData.id['flux_bgsub']
 
+        self.toggleBandScatter('FUV', False)
+        
     def toggleBandScatter(self, band, value=None):
         if self.dataLib.get(band).get('layer'):
             if value is None: value = not self.dataLib[band]['layer'].visible
