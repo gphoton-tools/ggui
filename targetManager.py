@@ -38,7 +38,7 @@ class targetManager(QtWidgets.QWidget):
                         #dataCollection.add_link(LinkSame(somehow add all bands here stored in the bands key above))
                         #Can only link two fields at a time. Need to go through all combinations
                         import itertools
-                        for linkingPair in (set(frozenset(t) for t in itertools.permutations(self.primaryData['lightcurve'].values(),2))):
+                        for linkingPair in (set(frozenset(t) for t in itertools.permutations(self.primaryData[dataProductType].values(),2))):
                         #for linkingPair in (set(tuple(sorted(t)) for t in itertools.permutations(self.primaryData['lightcurve'].values(),2))):
                             accessor = tuple(linkingPair)
                             self.glueParent.data_collection.add_link(LinkSame(accessor[0].id[glueAttribute],accessor[1].id[glueAttribute]))
