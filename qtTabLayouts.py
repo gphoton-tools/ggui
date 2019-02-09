@@ -99,11 +99,18 @@ class overviewTabLayout(QtWidgets.QMdiArea):
     def loadLightcurve(self, session, lightCurveData, targName):
         lightCurveViewer = gguiLightcurveViewer(session, lightCurveData, targName)
 
+        lightCurveViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(lightCurveData.keys()))
+        lightCurveViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(lightCurveData.keys()))
+        
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
         self.lightCurveViewer = lightCurveViewer
 
     def loadCoadd(self, session, coaddData, targName):
         coaddViewer = duyImageViewer(session, coaddData, targName)
+
+        coaddViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(coaddData.keys()))
+        coaddViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(coaddData.keys()))
+
         coaddViewer.axes.set_title("CoAdd of " + targName)
 
         self.layout.addWidget(coaddViewer, 1, 0)
@@ -111,6 +118,10 @@ class overviewTabLayout(QtWidgets.QMdiArea):
 
     def loadCube(self, session, cubeData, targName):
         cubeViewer = duyImageViewer(session, cubeData, targName)
+
+        cubeViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(cubeData.keys()))
+        cubeViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(cubeData.keys()))
+        
         cubeViewer.axes.set_title("Cube of " + targName)
         
         self.layout.addWidget(cubeViewer, 1, 1)
