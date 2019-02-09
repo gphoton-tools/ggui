@@ -33,7 +33,9 @@ class targetManager(QtWidgets.QWidget):
 
                 bands = self.primaryData[dataProductType].keys()
                 if len(bands) > 1:
-                    attributesToGlue = {'lightcurve': ['t_mean', 'flux_bgsub'], 'coadd': ['Right Ascension', 'Declination'], 'cube': ['Right Ascension', 'Declination']}
+                    attributesToGlue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
+                                        'coadd': ['Right Ascension', 'Declination'], 
+                                        'cube': ['Right Ascension', 'Declination', 'World 0']}
                     for glueAttribute in attributesToGlue[dataProductType]:
                         #dataCollection.add_link(LinkSame(somehow add all bands here stored in the bands key above))
                         #Can only link two fields at a time. Need to go through all combinations
