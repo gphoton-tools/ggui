@@ -4,20 +4,18 @@ from qtpy import QtWidgets
 from glue.config import qt_fixed_layout_tab, viewer_tool
 from glue.viewers.common.qt.tool import Tool
 
+from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
 from glue.viewers.scatter.qt import ScatterViewer
 from glue.viewers.image.qt import ImageViewer
-class gguiOverviewScatterViewer(ScatterViewer):
     
-    tools = ['select:rectangle', 'select:xrange',
-             'select:yrange', 'select:circle',
-             'select:polygon', 'fuv_toggle', 'nuv_toggle']
+class gguiOverviewBaseViewer(MatplotlibDataViewer):
 
-    def __init__(self, session, lightCurveData, targName):
+    tools = ['fuv_toggle', 'nuv_toggle']
+    
+    def __init__(self, session, data, targName):
         super().__init__(session)
-        self.axes.set_title("Full Lightcurve of " + targName)
-        
         self.dataLib = {}
-        for band, bandData in lightCurveData.items():
+        for band, bandData in data.items():
             self.add_data(bandData)
             # Horrible performance. Go back and fix!
             for index, layerData in enumerate([layers.layer for layers in self.state.layers]):
@@ -25,12 +23,6 @@ class gguiOverviewScatterViewer(ScatterViewer):
                     self.dataLib[band] = {'Data': bandData, 'layer': self.state.layers[index]}
                     break
 
-        # See DevNote 01: Python Scope
-        self.state.x_att = bandData.id['t_mean']
-        self.state.y_att = bandData.id['flux_bgsub']
-
-        self.toggleBandScatter('FUV', False)
-        
     def toggleBandScatter(self, band, value=None):
         if self.dataLib.get(band).get('layer'):
             if value is None: value = not self.dataLib[band]['layer'].visible
@@ -42,11 +34,22 @@ class gguiOverviewScatterViewer(ScatterViewer):
         self._session.application._update_focus_decoration()
         self._session.application._update_plot_dashboard()
 
-class duyImageViewer(ImageViewer):
-    def mousePressEvent(self, event):
-        self._session.application._viewer_in_focus = self
-        self._session.application._update_focus_decoration()
-        self._session.application._update_plot_dashboard()
+
+class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
+
+    def __init__(self, session, lightCurveData, targName):
+        super().__init__(session, lightCurveData, targName)
+        
+        self.axes.set_title("Full Lightcurve of " + targName)
+    
+        # See DevNote 01: Python Scope
+        bandData = list(self.dataLib.values())[0]['Data']
+        self.state.x_att = bandData.id['t_mean']
+        self.state.y_att = bandData.id['flux_bgsub']
+        
+
+class duyImageViewer(gguiOverviewBaseViewer, ImageViewer):
+    pass
 
 @viewer_tool
 class fuvToggleTool(Tool):
@@ -94,24 +97,20 @@ class overviewTabLayout(QtWidgets.QMdiArea):
             viewerSetters[dataType](session, data, targName)
        
     def loadLightcurve(self, session, lightCurveData, targName):
-        lightCurveViewer = gguiOverviewScatterViewer(session, lightCurveData, targName)
+        lightCurveViewer = gguiLightcurveViewer(session, lightCurveData, targName)
 
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
         self.lightCurveViewer = lightCurveViewer
 
     def loadCoadd(self, session, coaddData, targName):
-        coaddViewer = duyImageViewer(session)
-        for band, bandFile in coaddData.items():
-            coaddViewer.add_data(bandFile)
+        coaddViewer = duyImageViewer(session, coaddData, targName)
         coaddViewer.axes.set_title("CoAdd of " + targName)
 
         self.layout.addWidget(coaddViewer, 1, 0)
         self.coaddViewer = coaddViewer
 
     def loadCube(self, session, cubeData, targName):
-        cubeViewer = duyImageViewer(session)
-        for band, bandFile in cubeData.items():
-            cubeViewer.add_data(bandFile)
+        cubeViewer = duyImageViewer(session, cubeData, targName)
         cubeViewer.axes.set_title("Cube of " + targName)
         
         self.layout.addWidget(cubeViewer, 1, 1)
