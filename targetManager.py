@@ -14,9 +14,6 @@ class targetManager(QtWidgets.QWidget):
         self.primaryTarget = ""
         self.primaryData = {}
 
-    def loadGguiYaml(self, gguiYamlPath):
-        self.targetCatalog.update(yaml.load(open(gguiYamlPath, 'r')))
-
     def loadTargetDict(self, targDict):
         self.targetCatalog.update(targDict)
 
@@ -46,7 +43,6 @@ class targetManager(QtWidgets.QWidget):
                             self.glueParent.data_collection.add_link(LinkSame(accessor[0].id[glueAttribute],accessor[1].id[glueAttribute]))
                             #self.glueParent.data_collection.add_link(LinkSame(linkingPair[0].id[glueAttribute]))
 
-    
     def getPrimaryData(self):
         return self.primaryData
 
