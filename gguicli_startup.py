@@ -29,15 +29,11 @@ class gGuiGlueApplication(GlueApplication):
 
         # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
         targNames = list(self.target_manager.getTargetNames())
-        self.target_manager.setPrimaryTarget(targNames[0])
         print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
+            self.target_manager.setPrimaryTarget(targNames[0])        
 
         # Create Overview Tab using target manager's primary target
-        fixedTab = qtTabLayouts.overviewTabLayout(session=self.session, targName=targNames[0], targData=self.target_manager.getPrimaryData())
-        self.tab_widget.addTab(fixedTab, "Overview of " + str(targNames[0]))
-        # Set Overview Tab to focus
-        self.tab_widget.setCurrentWidget(fixedTab)
-        fixedTab.subWindowActivated.connect(self._update_viewer_in_focus)
+            self.create_overview_tab(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
 
         # Delete first default tab
         self.close_tab(self.get_tab_index(defaultTab), False)
@@ -45,6 +41,13 @@ class gGuiGlueApplication(GlueApplication):
     def load_targets(self, targetDictionary):
         self.target_manager.loadTargetDict(targetDictionary)
 
+    def create_overview_tab(self, target_name, target_data):
+        fixedTab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
+        self.tab_widget.addTab(fixedTab, "Overview of " + str(target_name))
+        # Set Overview Tab to focus
+        self.tab_widget.setCurrentWidget(fixedTab)
+        fixedTab.subWindowActivated.connect(self._update_viewer_in_focus)
+    
     def next_target():
         pass
 
