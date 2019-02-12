@@ -27,7 +27,7 @@ def main():
     targManager = targetManager(glueApp)
 
     # Get list of targets from user
-    def getGguiDataProducts():
+    def get_ggui_data_products():
         """
         Prompts user to load gGui Data Products
 
@@ -62,8 +62,9 @@ def main():
         ggui_load_format = input("Load type (y)aml or (m)anual: ")
         #ggui_load_format = 'd'
         if ggui_load_format == 'y':
-            ggui_yaml = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)")[0]
-            targManager.loadGguiYaml(ggui_yaml)
+            ggui_yaml_path = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)")[0]
+            return yaml.load(open(ggui_yaml_path, 'r'))
+            #targManager.loadGguiYaml(ggui_yaml)
         elif ggui_load_format == 'm':
             # Prompt User via File Dialog for LightCurve CSVs
             lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")[0]
@@ -72,9 +73,11 @@ def main():
             # Prompt User via File Dialog for Image Cube Fits
             cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
             #return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
-            targManager.loadTargetDict({"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}})
+            return {"Target": {'lightcurve': {'UnknownBand': lightcurveFilenames}, 'coadd': {'UnknownBand': coaddFilenames}, 'cube': {'UnknownBand': cubeFilenames}}}
+            #targManager.loadTargetDict({"Target": {'lightcurve': {'UnknownBand': lightcurveFilenames}, 'coadd': {'UnknownBand': coaddFilenames}, 'cube': {'UnknownBand': cubeFilenames}}})
         elif ggui_load_format == 'd':
-            targManager.loadGguiYaml('C:\\ggui\\dataProducts\\cr_dra_win.yaml')
+            return yaml.load(open('C:\\ggui\\dataProducts\\cr_dra_win_MultiBand.yaml', 'r'))
+            #targManager.loadGguiYaml('C:\\ggui\\dataProducts\\cr_dra_win_SpoofMultiBand.yaml')
         else:
             print("Unrecognized character")
             exit(-1)
