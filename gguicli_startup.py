@@ -17,37 +17,38 @@ from autochop import lightcurveChopList, lightcurveChopImport
 
 from targetManager import targetManager
 
-class gGuiGlueApplication(GlueApplication):
+class ggui_glue_application(GlueApplication):
     
-    def __init__(self, dataCollection=DataCollection(), target_dict={}):
-        super().__init__(dataCollection)
-    # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
+    def __init__(self, data_collection=DataCollection(), target_dict={}):
+        super().__init__(data_collection)
+        # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         defaultTab = self.current_tab
         
         self.target_manager = targetManager(self)
         self.load_targets(target_dict)
 
         if target_dict:
-        # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
-        targNames = list(self.target_manager.getTargetNames())
-        print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
-            self.target_manager.setPrimaryTarget(targNames[0])        
+            # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
+            targ_names = list(self.target_manager.getTargetNames())
+            print(str(len(targ_names)) + " targets received. Loading " + str(targ_names[0]) + " as default.")
+            self.target_manager.setPrimaryTarget(targ_names[0])        
 
-        # Create Overview Tab using target manager's primary target
+            # Create Overview Tab using target manager's primary target
             self.create_overview_tab(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
 
-        # Delete first default tab
-        self.close_tab(self.get_tab_index(defaultTab), False)
+            # Delete first default tab
+            self.close_tab(self.get_tab_index(defaultTab), False)
 
-    def load_targets(self, targetDictionary):
-        self.target_manager.loadTargetDict(targetDictionary)
+    def load_targets(self, target_dict):
+        self.target_manager.loadTargetDict(target_dict)
 
     def create_overview_tab(self, target_name, target_data):
-        fixedTab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
-        self.tab_widget.addTab(fixedTab, "Overview of " + str(target_name))
+        overview_tab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
+        #overview_tab.subWindowActivated.connect(self._update_viewer_in_focus)
+
+        self.tab_widget.addTab(overview_tab, "Overview of " + str(target_name))
         # Set Overview Tab to focus
-        self.tab_widget.setCurrentWidget(fixedTab)
-        fixedTab.subWindowActivated.connect(self._update_viewer_in_focus)
+        self.tab_widget.setCurrentWidget(overview_tab)
     
     def next_target():
         pass
@@ -110,12 +111,12 @@ def main():
             exit(-1)
 
     # Initialize Glue Application with blank Data Collection
-    glueApp = gGuiGlueApplication(target_dict=get_ggui_data_products())
+    ggui_app = ggui_glue_application(target_dict=get_ggui_data_products())
     
     # Start gGui
     #targManager.show()
-    glueApp.start()
-    
+    ggui_app.start()
+
     # Note for later. This is how you autochop :P
     #obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
     #lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)

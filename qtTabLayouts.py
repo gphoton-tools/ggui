@@ -7,9 +7,9 @@ from glue.viewers.common.qt.tool import Tool
 from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
 from glue.viewers.scatter.qt import ScatterViewer
 from glue.viewers.image.qt import ImageViewer
-    
-class gguiOverviewBaseViewer(MatplotlibDataViewer):
 
+class gguiOverviewBaseViewer(MatplotlibDataViewer):
+    
     tools = ['fuv_toggle', 'nuv_toggle']
     
     def __init__(self, session, data, targName):
@@ -22,7 +22,7 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
                 if layerData == bandData:
                     self.dataLib[band] = {'Data': bandData, 'layer': self.state.layers[index]}
                     break
-
+        
     def toggleBandScatter(self, band, value=None):
         if self.dataLib.get(band).get('layer'):
             if value is None: value = not self.dataLib[band]['layer'].visible
