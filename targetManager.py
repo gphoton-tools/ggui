@@ -2,7 +2,6 @@ from qtpy import QtWidgets
 from glue.config import menubar_plugin
 from glue.core.link_helpers import LinkSame
 
-import yaml
 from glue.core.data_factories import load_data
 
 class targetManager(QtWidgets.QWidget):
