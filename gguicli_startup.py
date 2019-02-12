@@ -17,15 +17,38 @@ from autochop import lightcurveChopList, lightcurveChopImport
 
 from targetManager import targetManager
 
-def main():
-    # Initialize Glue Application with blank Data Collection
-    dataCollection = DataCollection()
-    glueApp = GlueApplication(dataCollection)
+class gGuiGlueApplication(GlueApplication):
+    def __init__(self, dataCollection, target_dict):
+        super().__init__(dataCollection)
     # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
-    defaultTab = glueApp.current_tab
+        defaultTab = self.current_tab
+        
+        self.target_manager = targetManager(self)
 
-    targManager = targetManager(glueApp)
+        self.load_targets(target_dict)
 
+        # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
+        targNames = list(self.target_manager.getTargetNames())
+        self.target_manager.setPrimaryTarget(targNames[0])
+        print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
+
+        # Create Overview Tab using target manager's primary target
+        fixedTab = qtTabLayouts.overviewTabLayout(session=self.session, targName=targNames[0], targData=self.target_manager.getPrimaryData())
+        self.tab_widget.addTab(fixedTab, "Overview of " + str(targNames[0]))
+        # Set Overview Tab to focus
+        self.tab_widget.setCurrentWidget(fixedTab)
+        fixedTab.subWindowActivated.connect(self._update_viewer_in_focus)
+
+        # Delete first default tab
+        self.close_tab(self.get_tab_index(defaultTab), False)
+
+    def load_targets(self, targetDictionary):
+        self.target_manager.loadTargetDict(targetDictionary)
+
+    def next_target():
+        pass
+
+def main():
     # Get list of targets from user
     def get_ggui_data_products():
         """
@@ -81,28 +104,18 @@ def main():
         else:
             print("Unrecognized character")
             exit(-1)
-    getGguiDataProducts()
-    # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
-    targNames = list(targManager.getTargetNames())
-    targManager.setPrimaryTarget(targNames[0])
-    print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
+
+    # Initialize Glue Application with blank Data Collection
+    dataCollection = DataCollection()
+    glueApp = gGuiGlueApplication(dataCollection, get_ggui_data_products())
     
-    # Create Overview Tab using target manager's primary target
-    fixedTab = qtTabLayouts.overviewTabLayout(session=glueApp.session, targName=targNames[0], targData=targManager.getPrimaryData())
-    glueApp.tab_widget.addTab(fixedTab, "Overview of " + str(targNames[0]))
-    # Set Overview Tab to focus
-    glueApp.tab_widget.setCurrentWidget(fixedTab)
-    fixedTab.subWindowActivated.connect(glueApp._update_viewer_in_focus)
+    # Start gGui
+    #targManager.show()
+    glueApp.start()
     
     # Note for later. This is how you autochop :P
     #obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
     #lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
-
-    # Delete first default tab
-    glueApp.close_tab(glueApp.get_tab_index(defaultTab), False)
-    
-    #start Glue
-    glueApp.start()
 
 if __name__ == '__main__':
     main()
