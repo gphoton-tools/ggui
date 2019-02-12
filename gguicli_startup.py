@@ -18,15 +18,16 @@ from autochop import lightcurveChopList, lightcurveChopImport
 from targetManager import targetManager
 
 class gGuiGlueApplication(GlueApplication):
-    def __init__(self, dataCollection, target_dict):
+    
+    def __init__(self, dataCollection=DataCollection(), target_dict={}):
         super().__init__(dataCollection)
     # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         defaultTab = self.current_tab
         
         self.target_manager = targetManager(self)
-
         self.load_targets(target_dict)
 
+        if target_dict:
         # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
         targNames = list(self.target_manager.getTargetNames())
         print(str(len(targNames)) + " targets received. Loading " + str(targNames[0]) + " as default.")
@@ -109,8 +110,7 @@ def main():
             exit(-1)
 
     # Initialize Glue Application with blank Data Collection
-    dataCollection = DataCollection()
-    glueApp = gGuiGlueApplication(dataCollection, get_ggui_data_products())
+    glueApp = gGuiGlueApplication(target_dict=get_ggui_data_products())
     
     # Start gGui
     #targManager.show()
