@@ -1,7 +1,8 @@
+from collections import OrderedDict
+
 from qtpy import QtWidgets
 from glue.config import menubar_plugin
 from glue.core.link_helpers import LinkSame
-
 from glue.core.data_factories import load_data
 
 class targetManager(QtWidgets.QWidget):
@@ -9,24 +10,25 @@ class targetManager(QtWidgets.QWidget):
         super().__init__()
         self.glueParent = glueParent
 
-        self.targetCatalog = {}
-        self.primaryTarget = ""
+        self.targetCatalog = OrderedDict()
+        self.primaryName = ""
         self.primaryData = {}
 
     def loadTargetDict(self, targDict):
         self.targetCatalog.update(targDict)
 
     def setPrimaryTarget(self, targName):
-        if targName is not self.primaryTarget:
-            self.primaryTarget = targName
+        if targName is not self.primaryName:
+            self.primaryName = targName
             self.primaryData.clear()
-            targetFiles = self.targetCatalog.get(self.primaryTarget)
+            targetFiles = self.targetCatalog.get(self.primaryName)
+            # For each gGui Data Type...
             for dataProductType in targetFiles:
                 self.primaryData[dataProductType] = {}
+                # Load every band's data
                 for band, bandFile in targetFiles[dataProductType].items():
-                    #self.primaryData[dataProductType] = load_data(targetFiles[dataProductType])
                     self.primaryData[dataProductType][band] = load_data(bandFile)
-
+                # If we have multiple bands, glue them together
                 bands = self.primaryData[dataProductType].keys()
                 if len(bands) > 1:
                     attributesToGlue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
@@ -46,7 +48,7 @@ class targetManager(QtWidgets.QWidget):
         return self.primaryData
 
     def getPrimaryName(self):
-        return self.primaryTarget
+        return self.primaryName
 
     def getTargetNames(self):
         return self.targetCatalog.keys()
