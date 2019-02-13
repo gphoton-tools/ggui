@@ -76,7 +76,8 @@ def main():
             :returns: list -- Python list of filenames selected by user
             """
             # Note for devs: Import inside function due to Glue Startup Script Workorder
-            from qtpy.QtWidgets import QFileDialog # See GitHub Issue Ticket #7
+            from qtpy.QtWidgets import QApplication, QFileDialog # See GitHub Issue Ticket #7
+            x = QApplication([])
             # Set File Dialog Options
             dialog = QFileDialog(caption=dialogCaption)
             dialog.setFileMode(QFileDialog.ExistingFiles)
