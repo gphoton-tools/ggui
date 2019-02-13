@@ -12,7 +12,7 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
     
     tools = ['fuv_toggle', 'nuv_toggle']
     
-    def __init__(self, session, data, targName):
+    def __init__(self, session, data):
         super().__init__(session)
         self.dataLib = {}
         for band, bandData in data.items():
@@ -37,10 +37,8 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
 
 class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
 
-    def __init__(self, session, lightCurveData, targName):
-        super().__init__(session, lightCurveData, targName)
-        
-        self.axes.set_title("Full Lightcurve of " + targName)
+    def __init__(self, session, lightCurveData):
+        super().__init__(session, lightCurveData)
     
         # See DevNote 01: Python Scope
         bandData = list(self.dataLib.values())[0]['Data']
@@ -97,16 +95,18 @@ class overviewTabLayout(QtWidgets.QMdiArea):
             viewerSetters[dataType](session, data, targName)
        
     def loadLightcurve(self, session, lightCurveData, targName):
-        lightCurveViewer = gguiLightcurveViewer(session, lightCurveData, targName)
+        lightCurveViewer = gguiLightcurveViewer(session, lightCurveData)
 
         lightCurveViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(lightCurveData.keys()))
         lightCurveViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(lightCurveData.keys()))
+        
+        lightCurveViewer.axes.set_title("Full Lightcurve of " + targName)
         
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
         self.lightCurveViewer = lightCurveViewer
 
     def loadCoadd(self, session, coaddData, targName):
-        coaddViewer = duyImageViewer(session, coaddData, targName)
+        coaddViewer = duyImageViewer(session, coaddData)
 
         coaddViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(coaddData.keys()))
         coaddViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(coaddData.keys()))
@@ -117,7 +117,7 @@ class overviewTabLayout(QtWidgets.QMdiArea):
         self.coaddViewer = coaddViewer
 
     def loadCube(self, session, cubeData, targName):
-        cubeViewer = duyImageViewer(session, cubeData, targName)
+        cubeViewer = duyImageViewer(session, cubeData)
 
         cubeViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(cubeData.keys()))
         cubeViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(cubeData.keys()))
