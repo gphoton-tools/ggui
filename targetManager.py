@@ -53,8 +53,16 @@ class targetManager(QtWidgets.QWidget):
     def getTargetNames(self):
         return self.targetCatalog.keys()
 
+    def next_target(self):
+        current_target_index = list(self.targetCatalog.keys()).index(self.primaryName)
+        next_target_index = current_target_index + 1
+        if next_target_index > int(len(self.targetCatalog.keys())) - 1:
+            next_target_index = 0
+        next_target_name = list(self.targetCatalog.keys())[next_target_index]
+        self.setPrimaryTarget(next_target_name)
 
-@menubar_plugin("Do something")
-def my_plugin(session, data_collection):
     
+@menubar_plugin("Next Target")
+def next_target_plugin(session, data_collection):
+    session.application.next_target()
     return

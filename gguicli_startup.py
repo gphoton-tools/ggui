@@ -50,8 +50,8 @@ class ggui_glue_application(GlueApplication):
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(overview_tab)
     
-    def next_target():
-        pass
+    def next_target(self):
+        self.target_manager.next_target()
 
 def main():
     # Get list of targets from user
