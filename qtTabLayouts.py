@@ -78,7 +78,6 @@ class overviewTabLayout(QtWidgets.QMdiArea):
     
     def __init__(self, parent=None, session=None, targName="Target", targData={}):
         super().__init__()
-        viewerSetters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
 
 
         self.layout = QtWidgets.QGridLayout()
@@ -86,14 +85,22 @@ class overviewTabLayout(QtWidgets.QMdiArea):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
  
-        glueApp = session.application
+        self.load_data(session, targName, targData)
+        #glueApp = session.application
         #lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
 
-        for dataType, data in targData.items():
-            for band, bandData in targData[dataType].items():
-                glueApp.data_collection.append(bandData)
-            viewerSetters[dataType](session, data, targName)
+        #for dataType, data in targData.items():
+        #    for band, bandData in targData[dataType].items():
+        #        glueApp.data_collection.append(bandData)
+        #    viewerSetters[dataType](session, data, targName)
        
+    def load_data(self, session, target_name, target_data):
+        viewer_setters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
+        for dataType, data in target_data.items():
+            for band, bandData in target_data[dataType].items():
+                session.application.data_collection.append(bandData)
+            viewer_setters[dataType](session, data, target_name)
+    
     def loadLightcurve(self, session, lightCurveData, targName):
         lightCurveViewer = gguiLightcurveViewer(session, lightCurveData)
 

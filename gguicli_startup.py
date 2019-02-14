@@ -43,12 +43,12 @@ class ggui_glue_application(GlueApplication):
         self.target_manager.loadTargetDict(target_dict)
 
     def create_overview_tab(self, target_name, target_data):
-        overview_tab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
+        self.overview_tab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
         #overview_tab.subWindowActivated.connect(self._update_viewer_in_focus)
 
-        self.tab_widget.addTab(overview_tab, "Overview of " + str(target_name))
+        self.tab_widget.addTab(self.overview_tab, "Overview of " + str(target_name))
         # Set Overview Tab to focus
-        self.tab_widget.setCurrentWidget(overview_tab)
+        self.tab_widget.setCurrentWidget(self.overview_tab)
     
     def next_target(self):
         self.target_manager.next_target()

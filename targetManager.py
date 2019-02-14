@@ -65,4 +65,7 @@ class targetManager(QtWidgets.QWidget):
 @menubar_plugin("Next Target")
 def next_target_plugin(session, data_collection):
     session.application.next_target()
-    return
+    session.application.overview_tab.load_data(session, 
+                                               session.application.target_manager.getPrimaryName(), 
+                                               session.application.target_manager.getPrimaryData())
+
