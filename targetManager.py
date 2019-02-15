@@ -64,7 +64,13 @@ class targetManager(QtWidgets.QWidget):
     
 @menubar_plugin("Next Target")
 def next_target_plugin(session, data_collection):
+    # Remove the existing primary target's datasets
+    for band_data_set in list(session.application.target_manager.getPrimaryData().values()):
+        for band_data in band_data_set.values():
+            session.application.data_collection.remove(band_data)
+    # Advance target manager to the next target
     session.application.next_target()
+    # Regenerate the overview tab with the new data
     session.application.overview_tab.load_data(session, 
                                                session.application.target_manager.getPrimaryName(), 
                                                session.application.target_manager.getPrimaryData())
