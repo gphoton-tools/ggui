@@ -103,10 +103,6 @@ def main():
             cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
             #return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
             return {"Target": {'lightcurve': {'UnknownBand': lightcurveFilenames}, 'coadd': {'UnknownBand': coaddFilenames}, 'cube': {'UnknownBand': cubeFilenames}}}
-            #targManager.loadTargetDict({"Target": {'lightcurve': {'UnknownBand': lightcurveFilenames}, 'coadd': {'UnknownBand': coaddFilenames}, 'cube': {'UnknownBand': cubeFilenames}}})
-        elif ggui_load_format == 'd':
-            return yaml.load(open('C:\\ggui\\dataProducts\\cr_dra_win_MultiBand.yaml', 'r'))
-            #targManager.loadGguiYaml('C:\\ggui\\dataProducts\\cr_dra_win_SpoofMultiBand.yaml')
         else:
             print("Unrecognized character")
             exit(-1)
