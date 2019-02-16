@@ -12,16 +12,16 @@ import yaml
 import qtTabLayouts
 from autochop import lightcurveChopList, lightcurveChopImport
 
-from targetManager import targetManager
+from targetManager import target_manager
 
 class ggui_glue_application(GlueApplication):
     
     def __init__(self, data_collection=DataCollection(), target_dict={}):
         super().__init__(data_collection)
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
-        defaultTab = self.current_tab
+        default_tab = self.current_tab
         
-        self.target_manager = targetManager(self)
+        self.target_manager = target_manager(self)
         self.load_targets(target_dict)
 
         if target_dict:
@@ -34,7 +34,7 @@ class ggui_glue_application(GlueApplication):
             self.create_overview_tab(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
 
             # Delete first default tab
-            self.close_tab(self.get_tab_index(defaultTab), False)
+            self.close_tab(self.get_tab_index(default_tab), False)
 
     def load_targets(self, target_dict):
         self.target_manager.loadTargetDict(target_dict)

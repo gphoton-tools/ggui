@@ -5,7 +5,7 @@ from glue.config import menubar_plugin
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
 
-class targetManager(QtWidgets.QWidget):
+class target_manager(QtWidgets.QWidget):
     def __init__(self, glueParent):
         super().__init__()
         self.glueParent = glueParent
