@@ -49,6 +49,10 @@ class ggui_glue_application(GlueApplication):
     
     def next_target(self):
         self.target_manager.next_target()
+        # Regenerate the overview tab with the new data
+        self.overview_tab.load_data(self.session,
+                                    self.target_manager.getPrimaryName(),
+                                    self.target_manager.getPrimaryData())
 
 def main():
     # Get list of targets from user
