@@ -100,3 +100,8 @@ def lightcurveChop(parentData, axis, timeInterval):
         chopMeanTimes.append(parentData['MeanTime',chopIndex])
     import ipdb; ipdb.set_trace()
     """
+
+# Note for later. This is how you autochop :P
+#from autochop import lightcurveChopList, lightcurveChopImport
+#obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
+#lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)

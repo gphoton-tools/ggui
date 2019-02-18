@@ -10,7 +10,6 @@ from glue.app.qt.application import GlueApplication
 import yaml
 
 import qtTabLayouts
-from autochop import lightcurveChopList, lightcurveChopImport
 
 from targetManager import target_manager
 
@@ -114,10 +113,6 @@ def main():
     # Start gGui
     #targManager.show()
     ggui_app.start()
-
-    # Note for later. This is how you autochop :P
-    #obsWindows = lightcurveChopList(lightcurveData, "MeanTime", 3600)
-    #lightcurveChopImport(glueApp, dataCollection, lightcurveData, obsWindows)
 
 if __name__ == '__main__':
     main()
