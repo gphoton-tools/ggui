@@ -14,6 +14,10 @@ import qtTabLayouts
 from targetManager import target_manager
 
 class ggui_glue_application(GlueApplication):
+    """
+    Primary gGui Application Class. Integrates gGui framework into Glue 
+    (target manager, custom tab generation, etc.)
+    """
     
     def __init__(self, data_collection=DataCollection(), target_dict={}):
         super().__init__(data_collection)
@@ -35,10 +39,23 @@ class ggui_glue_application(GlueApplication):
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
 
-    def load_targets(self, target_dict):
+    def load_targets(self, target_dict: dict):
+        """
+        Imports gGui-compliant data (see yaml standard) into
+        target manager
+
+        :param target_dict: Dictionary of gPhoton data files with target name and corresponding band
+        """
         self.target_manager.loadTargetDict(target_dict)
 
-    def create_overview_tab(self, target_name, target_data):
+    def create_overview_tab(self, target_name: str, target_data: dict):
+        """
+        Creates an overview tab of gPhoton lightcurve, coadd, and cube data.
+        Automatically constructs the tab, adds it to gGui and sets focus to it.
+
+        :param target_name: The name of the target
+        :param target_data: The corresponding gPhoton data of the target
+        """
         self.overview_tab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
         #overview_tab.subWindowActivated.connect(self._update_viewer_in_focus)
 
@@ -47,6 +64,10 @@ class ggui_glue_application(GlueApplication):
         self.tab_widget.setCurrentWidget(self.overview_tab)
     
     def next_target(self):
+        """
+        Advances gGui to the next target registered in its target manager
+        """
+        # Command target manager to load the next target's data
         self.target_manager.next_target()
         # Regenerate the overview tab with the new data
         self.overview_tab.load_data(self.session,
@@ -55,25 +76,18 @@ class ggui_glue_application(GlueApplication):
 
 def main():
     # Get list of targets from user
-    def get_ggui_data_products():
+    def get_ggui_data_files() -> dict:
         """
-        Prompts user to load gGui Data Products
-
-        :returns: dict -- Dictionary of gGui Targets and corresponding file locations
+        Prompts user to load gGui Data Products. Returns gGui-compliant dictionary of gPhoton data files
         """
 
-        def prompt_user_for_file(dialogCaption, dialogNameFilter):
+        def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
             """
             Modular QtWidget File-Selection Dialog to prompt user for file import.
                 Returns array of filenames selected
 
             :param dialogCaption: Caption to display along top of file dialog window
-            :type dialogCaption: str
-
             :param dialogNameFilter: Filters file dialog to certain extension
-            :type dialogNameFilter: str
-
-            :returns: list -- Python list of filenames selected by user
             """
             # Note for devs: Import inside function due to Glue Startup Script Workorder
             from qtpy.QtWidgets import QApplication, QFileDialog # See GitHub Issue Ticket #7
@@ -108,7 +122,7 @@ def main():
             exit(-1)
 
     # Initialize Glue Application with blank Data Collection
-    ggui_app = ggui_glue_application(target_dict=get_ggui_data_products())
+    ggui_app = ggui_glue_application(target_dict=get_ggui_data_files())
     
     # Start gGui
     #targManager.show()
