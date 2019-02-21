@@ -21,7 +21,15 @@ class target_manager(QtWidgets.QWidget):
         self.setWindowTitle("gGui Target Manager")
         self.setGeometry(100,100,200,50)
         self.QListWidget = QtWidgets.QListWidget(self)
+        self.QListWidget.itemClicked.connect(self.targClick)
 
+    def targClick(self, item):
+        if item.text() is not self._primary_name:
+            self.setPrimaryTarget(item.text())
+            self._glue_parent.overview_tab.load_data(self._glue_parent.session,
+                                                     self.getPrimaryName(),
+                                                     self.getPrimaryData())
+    
     def loadTargetDict(self, targDict):
         # Add incoming dictionary to internal cache
         self._target_catalog.update(targDict)
@@ -29,7 +37,6 @@ class target_manager(QtWidgets.QWidget):
         self.QListWidget.addItems(targDict.keys())
 
     def setPrimaryTarget(self, targName):
-        
         if targName is not self._primary_name:
             # Set GUI's primary target to specified
             self.QListWidget.setCurrentItem(self.QListWidget.findItems(targName, QtCore.Qt.MatchExactly)[0])
