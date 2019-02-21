@@ -24,10 +24,17 @@ class target_manager(QtWidgets.QWidget):
         self.QListWidget = QtWidgets.QListWidget(self)
 
     def loadTargetDict(self, targDict):
+        # Add incoming dictionary to internal cache
         self._target_catalog.update(targDict)
+        # Add new items to GUI
+        self.QListWidget.addItems(targDict.keys())
 
     def setPrimaryTarget(self, targName):
+        
         if targName is not self._primary_name:
+            # Set GUI's primary target to specified
+            self.QListWidget.setCurrentItem(self.QListWidget.findItems(targName, QtCore.Qt.MatchExactly)[0])
+            
             self._primary_name = targName
             self._primary_data.clear()
             target_files = self._target_catalog.get(self._primary_name)
