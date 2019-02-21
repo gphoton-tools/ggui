@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from PyQt5 import QtWidgets, QtCore
-from glue.config import menubar_plugin
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
 
@@ -93,8 +92,3 @@ class target_manager(QtWidgets.QWidget):
         self.setPrimaryTarget(next_target_name)
 
     
-@menubar_plugin("Next Target")
-def next_target_plugin(session, _):
-    # Command gGui to advance targets
-    session.application.next_target()
-

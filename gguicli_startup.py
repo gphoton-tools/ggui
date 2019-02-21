@@ -5,12 +5,13 @@
 """
 
 # Note to Devs: Glue does not fully support upper imports. Imports must be done within functions
-from glue.core import DataCollection
-from glue.app.qt.application import GlueApplication
 import yaml
 
-import qtTabLayouts
+from glue.core import DataCollection
+from glue.app.qt.application import GlueApplication
+from glue.config import menubar_plugin
 
+import qtTabLayouts
 from targetManager import target_manager
 
 class ggui_glue_application(GlueApplication):
@@ -73,6 +74,11 @@ class ggui_glue_application(GlueApplication):
         self.overview_tab.load_data(self.session,
                                     self.target_manager.getPrimaryName(),
                                     self.target_manager.getPrimaryData())
+
+@menubar_plugin("Next Target")
+def next_target_plugin(session, _):
+    # Command gGui to advance targets
+    session.application.next_target()
 
 def main():
     # Get list of targets from user
