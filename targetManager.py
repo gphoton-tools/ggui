@@ -37,7 +37,16 @@ class target_manager(QtWidgets.QWidget):
         self.QListWidget.addItems(targDict.keys())
 
     def setPrimaryTarget(self, targName):
+        # Don't bother doing anything if we're changing to the current target!
         if targName is not self._primary_name:
+            # If we have data loaded, remove it
+            if self._primary_data: 
+                def unload_primary_data():
+                    for band_data_set in list(self._primary_data.values()):
+                        for band_data in band_data_set.values():
+                            self._glue_parent.data_collection.remove(band_data)                
+                unload_primary_data()
+            
             # Set GUI's primary target to specified
             self.QListWidget.setCurrentItem(self.QListWidget.findItems(targName, QtCore.Qt.MatchExactly)[0])
             
@@ -85,11 +94,7 @@ class target_manager(QtWidgets.QWidget):
 
     
 @menubar_plugin("Next Target")
-def next_target_plugin(session, data_collection):
-    # Remove the existing primary target's datasets
-    for band_data_set in list(session.application.target_manager.getPrimaryData().values()):
-        for band_data in band_data_set.values():
-            session.application.data_collection.remove(band_data)
+def next_target_plugin(session, _):
     # Command gGui to advance targets
     session.application.next_target()
 
