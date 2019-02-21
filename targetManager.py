@@ -29,13 +29,13 @@ class target_manager(QtWidgets.QWidget):
                                                      self.getPrimaryName(),
                                                      self.getPrimaryData())
     
-    def loadTargetDict(self, targDict):
+    def loadTargetDict(self, targDict: dict):
         # Add incoming dictionary to internal cache
         self._target_catalog.update(targDict)
         # Add new items to GUI
         self.QListWidget.addItems(targDict.keys())
 
-    def setPrimaryTarget(self, targName):
+    def setPrimaryTarget(self, targName: str):
         # Don't bother doing anything if we're changing to the current target!
         if targName is not self._primary_name:
             # If we have data loaded, remove it
@@ -49,8 +49,10 @@ class target_manager(QtWidgets.QWidget):
             # Set GUI's primary target to specified
             self.QListWidget.setCurrentItem(self.QListWidget.findItems(targName, QtCore.Qt.MatchExactly)[0])
             
+            # Clear existing target cache
             self._primary_name = targName
             self._primary_data.clear()
+            
             target_files = self._target_catalog.get(self._primary_name)
             # For each gGui Data Type...
             for data_product_type in target_files:
@@ -84,10 +86,13 @@ class target_manager(QtWidgets.QWidget):
         return self._target_catalog.keys()
 
     def next_target(self):
+        # Determine the index we're switching to...
         current_target_index = list(self._target_catalog.keys()).index(self._primary_name)
         next_target_index = current_target_index + 1
+        # And wrap around to the front if we're currently on the last target
         if next_target_index > int(len(self._target_catalog.keys())) - 1:
             next_target_index = 0
+        # Command Target Manager to switch primary targets
         next_target_name = list(self._target_catalog.keys())[next_target_index]
         self.setPrimaryTarget(next_target_name)
 
