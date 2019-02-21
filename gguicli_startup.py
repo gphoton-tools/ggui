@@ -40,6 +40,8 @@ class ggui_glue_application(GlueApplication):
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
 
+            self.target_manager.show()
+
     def load_targets(self, target_dict: dict):
         """
         Imports gGui-compliant data (see yaml standard) into
