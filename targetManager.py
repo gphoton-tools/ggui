@@ -18,6 +18,11 @@ class target_manager(QtWidgets.QWidget):
         self._primary_name = ""
         self._primary_data = {}
 
+        # Initialize GUI Elements
+        self.setWindowTitle("gGui Target Manager")
+        self.setGeometry(100,100,200,50)
+        self.QListWidget = QtWidgets.QListWidget(self)
+
     def loadTargetDict(self, targDict):
         self._target_catalog.update(targDict)
 
