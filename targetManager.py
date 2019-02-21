@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from qtpy import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from glue.config import menubar_plugin
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
@@ -13,7 +13,6 @@ class target_manager(QtWidgets.QWidget):
     def __init__(self, glue_parent):
         super().__init__()
         self._glue_parent = glue_parent
-
         self._target_catalog = OrderedDict()
         self._primary_name = ""
         self._primary_data = {}
