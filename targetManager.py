@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, QtCore
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
 
-class target_manager(QtWidgets.QWidget):
+class target_manager(QtWidgets.QToolBar):
     """
     Class that handles the loading of gPhoton data and management of multiple
     gGui targets
@@ -17,14 +17,15 @@ class target_manager(QtWidgets.QWidget):
         self._primary_data = {}
 
         # Initialize GUI Elements
-        self.setWindowTitle("gGui Target Manager")
-        self.setGeometry(100,100,200,50)
-        self.QListWidget = QtWidgets.QListWidget(self)
-        self.QListWidget.itemClicked.connect(self.targClick)
+        self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
 
-    def targClick(self, item):
-        if item.text() is not self._primary_name:
-            self.setPrimaryTarget(item.text())
+        self.QComboBox = QtWidgets.QComboBox(self)
+        self.QComboBox.currentTextChanged.connect(self.targClick)
+        self.addWidget(self.QComboBox)
+
+    def targClick(self, target_name):
+        if target_name is not self._primary_name:
+            self.setPrimaryTarget(target_name)
             self._glue_parent.overview_tab.load_data(self._glue_parent.session,
                                                      self.getPrimaryName(),
                                                      self.getPrimaryData())
@@ -33,7 +34,7 @@ class target_manager(QtWidgets.QWidget):
         # Add incoming dictionary to internal cache
         self._target_catalog.update(targDict)
         # Add new items to GUI
-        self.QListWidget.addItems(targDict.keys())
+        self.QComboBox.addItems(targDict.keys())
 
     def setPrimaryTarget(self, targName: str):
         # Don't bother doing anything if we're changing to the current target!
@@ -47,7 +48,7 @@ class target_manager(QtWidgets.QWidget):
                 unload_primary_data()
             
             # Set GUI's primary target to specified
-            self.QListWidget.setCurrentItem(self.QListWidget.findItems(targName, QtCore.Qt.MatchExactly)[0])
+            self.QComboBox.setCurrentText(targName)
             
             # Clear existing target cache
             self._primary_name = targName

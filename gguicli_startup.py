@@ -26,6 +26,7 @@ class ggui_glue_application(GlueApplication):
         default_tab = self.current_tab
         
         self.target_manager = target_manager(self)
+        self.addToolBar(self.target_manager)
         self.load_targets(target_dict)
 
         if target_dict:
@@ -39,8 +40,6 @@ class ggui_glue_application(GlueApplication):
 
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
-
-            self.target_manager.show()
 
     def load_targets(self, target_dict: dict):
         """
