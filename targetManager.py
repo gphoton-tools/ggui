@@ -97,4 +97,15 @@ class target_manager(QtWidgets.QToolBar):
         next_target_name = list(self._target_catalog.keys())[next_target_index]
         self.setPrimaryTarget(next_target_name)
 
+    def previous_target(self):
+        # Determine the index we're switching to...
+        current_target_index = list(self._target_catalog.keys()).index(self._primary_name)
+        next_target_index = current_target_index - 1
+        # And wrap around to the back if we're currently on the first target
+        if next_target_index > 0:
+            next_target_index = int(len(self._target_catalog.keys())) - 1
+        # Command Target Manager to switch primary targets
+        next_target_name = list(self._target_catalog.keys())[next_target_index]
+        self.setPrimaryTarget(next_target_name)
+
     
