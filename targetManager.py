@@ -1,8 +1,10 @@
 from collections import OrderedDict
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
+
+import pathlib
 
 class target_manager(QtWidgets.QToolBar):
     """
@@ -18,10 +20,14 @@ class target_manager(QtWidgets.QToolBar):
 
         # Initialize GUI Elements
         self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
-
+        # Add Back Button
+        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowBack.png')), "Backward", self.previous_target)
+        # Add Combo Box
         self.QComboBox = QtWidgets.QComboBox(self)
         self.QComboBox.currentTextChanged.connect(self.targClick)
         self.addWidget(self.QComboBox)
+        # Add Forward Button
+        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowForward.png')), "Forward", self.next_target)
 
     def targClick(self, target_name):
         if target_name is not self._primary_name:
