@@ -25,8 +25,7 @@ class ggui_glue_application(GlueApplication):
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
         
-        self.target_manager = target_manager(self)
-        self.target_manager.register_target_change_callback(self.primary_target_changed)
+        self.target_manager = target_manager(self, self.primary_target_changed)
         self.addToolBar(self.target_manager)
         # NOTE: QT will automatically update target manager's primary target with the first entry in this dict.
         self.load_targets(target_dict)
