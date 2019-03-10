@@ -42,7 +42,7 @@ class ggui_glue_application(GlueApplication):
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
 
-    def primary_target_changed(self, new_target_name):
+    def primary_target_changed(self, _):
         # Update all tabs with new target info
         self.overview_tab.load_data(self.session,
                                     self.target_manager.getPrimaryName(),
