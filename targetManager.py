@@ -22,13 +22,13 @@ class target_manager(QtWidgets.QToolBar):
         # Initialize GUI Elements
         self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
         # Add Back Button
-        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowBack.png')), "Backward", self.previous_target)
+        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowBack.png')), "Previous Target", self.previous_target)
         # Add Combo Box
         self.QComboBox = QtWidgets.QComboBox(self)
         self.QComboBox.currentTextChanged.connect(self.setPrimaryTarget)
         self.addWidget(self.QComboBox)
         # Add Forward Button
-        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowForward.png')), "Forward", self.next_target)
+        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowForward.png')), "Next Target", self.next_target)
 
         if target_change_callback:
             self.register_target_change_callback(target_change_callback)
