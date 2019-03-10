@@ -73,22 +73,6 @@ class ggui_glue_application(GlueApplication):
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(self.overview_tab)
     
-    def next_target(self):
-        """
-        Advances gGui to the next target registered in its target manager
-        """
-        # Command target manager to load the next target's data
-        self.target_manager.next_target()
-        # Regenerate the overview tab with the new data
-        self.overview_tab.load_data(self.session,
-                                    self.target_manager.getPrimaryName(),
-                                    self.target_manager.getPrimaryData())
-
-@menubar_plugin("Next Target")
-def next_target_plugin(session, _):
-    # Command gGui to advance targets
-    session.application.next_target()
-
 def main():
     # Get list of targets from user
     def get_ggui_data_files() -> dict:
