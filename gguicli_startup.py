@@ -26,20 +26,28 @@ class ggui_glue_application(GlueApplication):
         default_tab = self.current_tab
         
         self.target_manager = target_manager(self)
+        self.target_manager.register_target_change_callback(self.primary_target_changed)
         self.addToolBar(self.target_manager)
+        # NOTE: QT will automatically update target manager's primary target with the first entry in this dict.
         self.load_targets(target_dict)
 
         if target_dict:
             # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
             targ_names = list(self.target_manager.getTargetNames())
             print(str(len(targ_names)) + " targets received. Loading " + str(targ_names[0]) + " as default.")
-            self.target_manager.setPrimaryTarget(targ_names[0])        
+            #self.target_manager.setPrimaryTarget(targ_names[0])
 
             # Create Overview Tab using target manager's primary target
             self.create_overview_tab(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
 
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
+
+    def primary_target_changed(self, new_target_name):
+        # Update all tabs with new target info
+        self.overview_tab.load_data(self.session,
+                                    self.target_manager.getPrimaryName(),
+                                    self.target_manager.getPrimaryData())
 
     def load_targets(self, target_dict: dict):
         """

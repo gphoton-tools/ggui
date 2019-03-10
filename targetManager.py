@@ -11,12 +11,13 @@ class target_manager(QtWidgets.QToolBar):
     Class that handles the loading of gPhoton data and management of multiple
     gGui targets
     """
-    def __init__(self, glue_parent):
+    def __init__(self, glue_parent, target_change_callback=None):
         super().__init__()
         self._glue_parent = glue_parent
         self._target_catalog = OrderedDict()
         self._primary_name = ""
         self._primary_data = {}
+        self._target_change_callbacks = []
 
         # Initialize GUI Elements
         self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
@@ -24,17 +25,16 @@ class target_manager(QtWidgets.QToolBar):
         self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowBack.png')), "Backward", self.previous_target)
         # Add Combo Box
         self.QComboBox = QtWidgets.QComboBox(self)
-        self.QComboBox.currentTextChanged.connect(self.targClick)
+        self.QComboBox.currentTextChanged.connect(self.setPrimaryTarget)
         self.addWidget(self.QComboBox)
         # Add Forward Button
         self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowForward.png')), "Forward", self.next_target)
 
-    def targClick(self, target_name):
-        if target_name is not self._primary_name:
-            self.setPrimaryTarget(target_name)
-            self._glue_parent.overview_tab.load_data(self._glue_parent.session,
-                                                     self.getPrimaryName(),
-                                                     self.getPrimaryData())
+        if target_change_callback:
+            self.register_target_change_callback(target_change_callback)
+
+    def register_target_change_callback(self, callback):
+        self._target_change_callbacks.append(callback)
     
     def loadTargetDict(self, targDict: dict):
         # Add incoming dictionary to internal cache
@@ -44,7 +44,7 @@ class target_manager(QtWidgets.QToolBar):
 
     def setPrimaryTarget(self, targName: str):
         # Don't bother doing anything if we're changing to the current target!
-        if targName is not self._primary_name:
+        if targName != self._primary_name:
             # If we have data loaded, remove it
             if self._primary_data: 
                 def unload_primary_data():
@@ -52,9 +52,6 @@ class target_manager(QtWidgets.QToolBar):
                         for band_data in band_data_set.values():
                             self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
-            
-            # Set GUI's primary target to specified
-            self.QComboBox.setCurrentText(targName)
             
             # Clear existing target cache
             self._primary_name = targName
@@ -67,6 +64,8 @@ class target_manager(QtWidgets.QToolBar):
                 # Load every band's data
                 for band, band_file in target_files[data_product_type].items():
                     self._primary_data[data_product_type][band] = load_data(band_file)
+                    #confirm this is the same object as what was stored in the data collection:
+                    self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
                 # If we have multiple bands, glue them together
                 bands = self._primary_data[data_product_type].keys()
                 if len(bands) > 1:
@@ -82,6 +81,10 @@ class target_manager(QtWidgets.QToolBar):
                             accessor = tuple(linking_pair)
                             self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
                             #self._glue_parent.data_collection.add_link(LinkSame(linking_pair[0].id[glue_attribute]))
+
+            # Notify all stakeholders of target change
+            for callback in self._target_change_callbacks:
+                callback(self._primary_name)
 
     def getPrimaryData(self):
         return self._primary_data
@@ -101,7 +104,7 @@ class target_manager(QtWidgets.QToolBar):
             next_target_index = 0
         # Command Target Manager to switch primary targets
         next_target_name = list(self._target_catalog.keys())[next_target_index]
-        self.setPrimaryTarget(next_target_name)
+        self.QComboBox.setCurrentText(next_target_name) # QComboBox will initiate primary target switching
 
     def previous_target(self):
         # Determine the index we're switching to...
@@ -112,6 +115,6 @@ class target_manager(QtWidgets.QToolBar):
             next_target_index = int(len(self._target_catalog.keys())) - 1
         # Command Target Manager to switch primary targets
         next_target_name = list(self._target_catalog.keys())[next_target_index]
-        self.setPrimaryTarget(next_target_name)
+        self.QComboBox.setCurrentText(next_target_name) # QComboBox will initiate primary target switching
 
     

@@ -1,6 +1,6 @@
 import sys
 import pathlib
-from qtpy import QtWidgets
+from PyQt5 import QtWidgets
 from glue.config import qt_fixed_layout_tab, viewer_tool
 from glue.viewers.common.qt.tool import Tool
 
@@ -97,8 +97,6 @@ class overviewTabLayout(QtWidgets.QMdiArea):
     def load_data(self, session, target_name, target_data):
         viewer_setters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
         for dataType, data in target_data.items():
-            for band, bandData in target_data[dataType].items():
-                session.application.data_collection.append(bandData)
             viewer_setters[dataType](session, data, target_name)
     
     def loadLightcurve(self, session, lightCurveData, targName):
