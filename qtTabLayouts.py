@@ -85,14 +85,8 @@ class overviewTabLayout(QtWidgets.QMdiArea):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
  
+        if targName and targData:
         self.load_data(session, targName, targData)
-        #glueApp = session.application
-        #lightcurveViewer, coAddViewer, cubeViewer = glueApp.viewers[0]
-
-        #for dataType, data in targData.items():
-        #    for band, bandData in targData[dataType].items():
-        #        glueApp.data_collection.append(bandData)
-        #    viewerSetters[dataType](session, data, targName)
        
     def load_data(self, session, target_name, target_data):
         viewer_setters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
