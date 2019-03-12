@@ -47,6 +47,7 @@ class ggui_glue_application(GlueApplication):
         self.overview_widget.load_data(self.session,
                                     self.target_manager.getPrimaryName(),
                                     self.target_manager.getPrimaryData())
+        self.tab_widget.setTabText(self.get_tab_index(self.overview_widget), "Overview of " + str(self.target_manager.getPrimaryName()))
 
     def load_targets(self, target_dict: dict):
         """
