@@ -37,14 +37,14 @@ class ggui_glue_application(GlueApplication):
             #self.target_manager.setPrimaryTarget(targ_names[0])
 
             # Create Overview Tab using target manager's primary target
-            self.create_overview_tab(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
+            self.create_overview_widget(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
 
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
 
     def primary_target_changed(self, _):
         # Update all tabs with new target info
-        self.overview_tab.load_data(self.session,
+        self.overview_widget.load_data(self.session,
                                     self.target_manager.getPrimaryName(),
                                     self.target_manager.getPrimaryData())
 
@@ -57,7 +57,7 @@ class ggui_glue_application(GlueApplication):
         """
         self.target_manager.loadTargetDict(target_dict)
 
-    def create_overview_tab(self, target_name: str, target_data: dict):
+    def create_overview_widget(self, target_name: str, target_data: dict):
         """
         Creates an overview tab of gPhoton lightcurve, coadd, and cube data.
         Automatically constructs the tab, adds it to gGui and sets focus to it.
@@ -65,12 +65,12 @@ class ggui_glue_application(GlueApplication):
         :param target_name: The name of the target
         :param target_data: The corresponding gPhoton data of the target
         """
-        self.overview_tab = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
-        #overview_tab.subWindowActivated.connect(self._update_viewer_in_focus)
+        self.overview_widget = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
+        #overview_widget.subWindowActivated.connect(self._update_viewer_in_focus)
 
-        self.tab_widget.addTab(self.overview_tab, "Overview of " + str(target_name))
+        self.tab_widget.addTab(self.overview_widget, "Overview of " + str(target_name))
         # Set Overview Tab to focus
-        self.tab_widget.setCurrentWidget(self.overview_tab)
+        self.tab_widget.setCurrentWidget(self.overview_widget)
     
 def main():
     # Get list of targets from user
