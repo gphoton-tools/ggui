@@ -30,6 +30,7 @@ class target_manager(QtWidgets.QToolBar):
         # Add Forward Button
         self.addAction(QtGui.QIcon(str(pathlib.Path.cwd() / 'icons' / 'ArrowForward.png')), "Next Target", self.next_target)
 
+        # If the initializer wants to know about target changes, register its provided callback
         if target_change_callback:
             self.register_target_change_callback(target_change_callback)
 

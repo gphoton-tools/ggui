@@ -25,19 +25,26 @@ class ggui_glue_application(GlueApplication):
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
         
+        # Initialize blank overview tab
+        def init_overview_tab(self):
+            # Initialize blank overview_widget
+            self.overview_widget = qtTabLayouts.overviewTabLayout(session=self.session)
+            self.tab_widget.addTab(self.overview_widget, "gGui Overview Tab: No Data Loaded")
+            # Set Overview Tab to focus
+            self.tab_widget.setCurrentWidget(self.overview_widget)
+        init_overview_tab(self)
+
+        # Initialize empty Target Manager
         self.target_manager = target_manager(self, self.primary_target_changed)
         self.addToolBar(self.target_manager)
-        # NOTE: QT will automatically update target manager's primary target with the first entry in this dict.
-        self.load_targets(target_dict)
 
         if target_dict:
             # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
             targ_names = list(self.target_manager.getTargetNames())
-            print(str(len(targ_names)) + " targets received. Loading " + str(targ_names[0]) + " as default.")
-            #self.target_manager.setPrimaryTarget(targ_names[0])
+            print(str(len(target_dict.keys())) + " targets received. Loading " + str(list(target_dict.keys())[0]) + " as default.")
 
-            # Create Overview Tab using target manager's primary target
-            self.create_overview_widget(self.target_manager.getPrimaryName(), self.target_manager.getPrimaryData())
+            # NOTE: Upon first load, Target Manager will automatically update target manager's primary target with the first entry in this dict.
+            self.load_targets(target_dict)
 
             # Delete first default tab
             self.close_tab(self.get_tab_index(default_tab), False)
