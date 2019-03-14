@@ -52,6 +52,15 @@ class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
         self.state.y_att = bandData.id['flux_bgsub']
         
 
+        for datalayer in self.dataLib.values():
+            # Set all layers to display a solid line
+            datalayer['layer'].linestyle = 'solid'
+            datalayer['layer'].line_visible = True
+            # Set, and Enable, flux (y axis) error
+            datalayer['layer'].yerr_att = datalayer['data'].id['flux_bgsub_err']
+            datalayer['layer'].yerr_visible = True
+
+
 class duyImageViewer(gguiOverviewBaseViewer, ImageViewer):
     pass
 
