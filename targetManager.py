@@ -64,12 +64,13 @@ class target_manager(QtWidgets.QToolBar):
                 self._primary_data[data_product_type] = {}
                 # Load every band's data
                 for band, band_file in target_files[data_product_type].items():
+                    if band_file:
                     self._primary_data[data_product_type][band] = load_data(band_file)
                     #confirm this is the same object as what was stored in the data collection:
                     self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
                 # If we have multiple bands, glue them together
-                bands = self._primary_data[data_product_type].keys()
-                if len(bands) > 1:
+                #bands = self._primary_data[data_product_type].keys()
+                if len(self._primary_data[data_product_type].keys()) > 1:
                     attributes_to_glue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
                                         'coadd': ['Right Ascension', 'Declination'], 
                                         'cube': ['Right Ascension', 'Declination', 'World 0']}
