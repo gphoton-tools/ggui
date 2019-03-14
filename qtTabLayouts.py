@@ -20,8 +20,13 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
             # Horrible performance. Go back and fix!
             for index, layerData in enumerate([layers.layer for layers in self.state.layers]):
                 if layerData == bandData:
-                    self.dataLib[band] = {'Data': bandData, 'layer': self.state.layers[index]}
+                    self.dataLib[band] = {'data': bandData, 'layer': self.state.layers[index]}
                     break
+        # Associate FUV datasets with the color blue, and NUV datasets with the color red
+        if 'FUV' in self.dataLib:
+            self.dataLib['FUV']['layer'].color = 'blue'
+        if 'NUV' in self.dataLib:
+            self.dataLib['NUV']['layer'].color = 'red'
         
     def toggleBandScatter(self, band, value=None):
         if self.dataLib.get(band).get('layer'):
@@ -41,7 +46,8 @@ class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
         super().__init__(session, lightCurveData)
     
         # See DevNote 01: Python Scope
-        bandData = list(self.dataLib.values())[0]['Data']
+        # Set lightcurve axes to flux vs time
+        bandData = list(self.dataLib.values())[0]['data']
         self.state.x_att = bandData.id['t_mean']
         self.state.y_att = bandData.id['flux_bgsub']
         
