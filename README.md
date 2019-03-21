@@ -21,7 +21,7 @@ pipenv shell
 ```
 2. Use the included CLI startup script:
 ```console
-python ./gguicli_startup.py
+python .\ggui.py
 ```
 
 ## Revision History
