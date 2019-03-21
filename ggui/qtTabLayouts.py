@@ -66,7 +66,7 @@ class duyImageViewer(gguiOverviewBaseViewer, ImageViewer):
 
 @viewer_tool
 class fuvToggleTool(Tool):
-    icon = str(pathlib.Path.cwd() / 'icons' / 'FUV_transparent.png')
+    icon = str(pathlib.Path.cwd().parent / 'icons' / 'FUV_transparent.png')
     tool_id = 'fuv_toggle'
     tool_tip = 'Toggle the FUV Dataset'
 
@@ -78,7 +78,7 @@ class fuvToggleTool(Tool):
 
 @viewer_tool
 class nuvToggleTool(Tool):
-    icon = str(pathlib.Path.cwd() / 'icons' / 'NUV_transparent.png')
+    icon = str(pathlib.Path.cwd().parent / 'icons' / 'NUV_transparent.png')
     tool_id = 'nuv_toggle'
     tool_tip = 'Toggle the NUV Dataset'
 
