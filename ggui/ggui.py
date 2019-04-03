@@ -6,10 +6,13 @@
 
 # Note to Devs: Glue does not fully support upper imports. Imports must be done within functions
 import yaml
+import argparse
+import pathlib
 
 from glue.core import DataCollection
 from glue.app.qt.application import GlueApplication
 from glue.config import menubar_plugin
+from PyQt5 import QtWidgets
 
 import qtTabLayouts
 from targetManager import target_manager
@@ -46,8 +49,8 @@ class ggui_glue_application(GlueApplication):
             # NOTE: Upon first load, Target Manager will automatically update target manager's primary target with the first entry in this dict.
             self.load_targets(target_dict)
 
-            # Delete first default tab
-            self.close_tab(self.get_tab_index(default_tab), False)
+        # Delete first default tab
+        self.close_tab(self.get_tab_index(default_tab), False)
 
     def primary_target_changed(self, _):
         # Update all tabs with new target info
@@ -79,60 +82,49 @@ class ggui_glue_application(GlueApplication):
         self.tab_widget.addTab(self.overview_widget, "Overview of " + str(target_name))
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(self.overview_widget)
-    
-def main():
-    # Get list of targets from user
-    def get_ggui_data_files() -> dict:
-        """
-        Prompts user to load gGui Data Products. Returns gGui-compliant dictionary of gPhoton data files
-        """
 
+def main():
+    # Initialize argument parser with arguments
+    parser = argparse.ArgumentParser(description='gPhoton Graphical User Interface. An analysis package for GALEX gPhoton data products')
+    parser.add_argument('--target_list', help='Specify a path to a YAML style list of astronomical targets and associated gPhoton data products')
+    parser.add_argument('--yaml_select', action="store_true", help='Spawns a file select dialog to choose a YAML style list of astronomical targets and associated gPhoton data products')
+    args = parser.parse_args()
+    
+    target_data_products = {}
+    # If the user specified a gGui YAML file, load its targets
+    if args.target_list:
+        print("File received: " + str(args.target_list))
+        target_list_path = pathlib.Path(args.target_list)
+        target_data_products.update(yaml.load(open(str(target_list_path), 'r')))
+    # If the user requested a file-selector dialog to select a gGui YAML file, display it and load its contents
+    if args.yaml_select:
         def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
             """
             Modular QtWidget File-Selection Dialog to prompt user for file import.
-                Returns array of filenames selected
+            Returns array of filenames selected
 
             :param dialogCaption: Caption to display along top of file dialog window
             :param dialogNameFilter: Filters file dialog to certain extension
             """
-            # Note for devs: Import inside function due to Glue Startup Script Workorder
-            from qtpy.QtWidgets import QApplication, QFileDialog # See GitHub Issue Ticket #7
-            x = QApplication([])
+            x = QtWidgets.QApplication([])
             # Set File Dialog Options
-            dialog = QFileDialog(caption=dialogCaption)
-            dialog.setFileMode(QFileDialog.ExistingFiles)
+            dialog = QtWidgets.QFileDialog(caption=dialogCaption)
+            dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
             dialog.setNameFilter(dialogNameFilter)
             # Prompt User for file to import
             dialog.exec_()
             # Get array of File Names
             filenames = dialog.selectedFiles()
             return filenames
-
-        ggui_load_format = input("Load type (y)aml or (m)anual: ")
-        #ggui_load_format = 'd'
-        if ggui_load_format == 'y':
-            ggui_yaml_path = prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)")[0]
-            return yaml.load(open(ggui_yaml_path, 'r'))
-            #targManager.loadGguiYaml(ggui_yaml)
-        elif ggui_load_format == 'm':
-            # Prompt User via File Dialog for LightCurve CSVs
-            lightcurveFilenames = prompt_user_for_file("Select gPhoton CSV Lightcurve file", "Lightcurve CSV (*.csv)")[0]
-            # Prompt User via File Dialog for CoAdd Fits
-            coaddFilenames = prompt_user_for_file("Select gPhoton FITS CoAdd file", "CoAdd FITS (*.fits)")[0]
-            # Prompt User via File Dialog for Image Cube Fits
-            cubeFilenames = prompt_user_for_file("Select gPhoton FITS Image Cube file", "Image Cube FITS (*.fits)")[0]
-            #return {"Target": {'lightcurve': lightcurveFilenames, 'coadd': coaddFilenames, 'cube': cubeFilenames}}
-            return {"Target": {'lightcurve': {'UnknownBand': lightcurveFilenames}, 'coadd': {'UnknownBand': coaddFilenames}, 'cube': {'UnknownBand': cubeFilenames}}}
-        else:
-            print("Unrecognized character")
-            exit(-1)
-
-    # Initialize Glue Application with blank Data Collection
-    ggui_app = ggui_glue_application(target_dict=get_ggui_data_files())
-    
+        for ggui_yaml_file in prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
+            target_data_products.update(yaml.load(open(ggui_yaml_file, 'r')))
+    # If no targets were recognized, notify the user
+    if not target_data_products:
+        print("No yaml received. Starting empty gGui session...")
+    # Initialize gGui with user-supplied targets, if any
+    ggui_app = ggui_glue_application(target_dict=target_data_products)
     # Start gGui
-    #targManager.show()
     ggui_app.start()
-
+    
 if __name__ == '__main__':
     main()
