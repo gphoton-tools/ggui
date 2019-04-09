@@ -1,10 +1,10 @@
 from collections import OrderedDict
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtGui
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
 
-import pathlib
+from pkg_resources import resource_filename
 
 class target_manager(QtWidgets.QToolBar):
     """
@@ -22,13 +22,13 @@ class target_manager(QtWidgets.QToolBar):
         # Initialize GUI Elements
         self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
         # Add Back Button
-        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd().parent / 'icons' / 'ArrowBack_transparent.png')), "Previous Target", self.previous_target)
+        self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowBack_transparent.png')), "Previous Target", self.previous_target)
         # Add Combo Box
         self.QComboBox = QtWidgets.QComboBox(self)
         self.QComboBox.currentTextChanged.connect(self.setPrimaryTarget)
         self.addWidget(self.QComboBox)
         # Add Forward Button
-        self.addAction(QtGui.QIcon(str(pathlib.Path.cwd().parent / 'icons' / 'ArrowForward_transparent.png')), "Next Target", self.next_target)
+        self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowForward_transparent.png')), "Next Target", self.next_target)
 
         # If the initializer wants to know about target changes, register its provided callback
         if target_change_callback:

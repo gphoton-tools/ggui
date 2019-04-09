@@ -1,5 +1,3 @@
-import sys
-import pathlib
 from PyQt5 import QtWidgets
 from glue.config import qt_fixed_layout_tab, viewer_tool
 from glue.viewers.common.qt.tool import Tool
@@ -7,6 +5,8 @@ from glue.viewers.common.qt.tool import Tool
 from glue.viewers.matplotlib.qt.data_viewer import MatplotlibDataViewer
 from glue.viewers.scatter.qt import ScatterViewer
 from glue.viewers.image.qt import ImageViewer
+
+from pkg_resources import resource_filename
 
 class gguiOverviewBaseViewer(MatplotlibDataViewer):
     
@@ -66,7 +66,7 @@ class duyImageViewer(gguiOverviewBaseViewer, ImageViewer):
 
 @viewer_tool
 class fuvToggleTool(Tool):
-    icon = str(pathlib.Path.cwd().parent / 'icons' / 'FUV_transparent.png')
+    icon = resource_filename('ggui.icons', 'FUV_transparent.png')
     tool_id = 'fuv_toggle'
     tool_tip = 'Toggle the FUV Dataset'
 
@@ -78,7 +78,7 @@ class fuvToggleTool(Tool):
 
 @viewer_tool
 class nuvToggleTool(Tool):
-    icon = str(pathlib.Path.cwd().parent / 'icons' / 'NUV_transparent.png')
+    icon = resource_filename('ggui.icons', 'NUV_transparent.png')
     tool_id = 'nuv_toggle'
     tool_tip = 'Toggle the NUV Dataset'
 
