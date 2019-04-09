@@ -4,18 +4,17 @@
 .. moduleauthor:: Duy Nguyen <dtn5ah@virginia.edu>
 """
 
-# Note to Devs: Glue does not fully support upper imports. Imports must be done within functions
-import yaml
 import argparse
 import pathlib
+import yaml
 
 from glue.core import DataCollection
 from glue.app.qt.application import GlueApplication
 from glue.config import menubar_plugin
 from PyQt5 import QtWidgets
 
-import qtTabLayouts
-from targetManager import target_manager
+from ggui import qtTabLayouts
+from ggui.targetManager import target_manager
 
 class ggui_glue_application(GlueApplication):
     """
