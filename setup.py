@@ -22,7 +22,7 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'bottleneck==1.2.1', 'numpy', 'pyqt5', 'glueviz>=0.13.3', 'pyyaml'
+    'pyqt5', 'glueviz>=0.13.3', 'pyyaml'
 ]
 
 # What packages are optional?
@@ -112,7 +112,8 @@ setup(
     },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
-    include_package_data=True,
+    package_data={'': ['*.png']},
+    #include_package_data=True,
     license='MIT',
     classifiers=[
         # Trove classifiers
