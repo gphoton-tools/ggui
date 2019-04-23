@@ -17,7 +17,7 @@ DESCRIPTION = 'gPhoton Graphical User Interface'
 URL = 'https://github.com/gphoton-tools/ggui'
 EMAIL = 'dnguyen@nrao.edu'
 AUTHOR = 'Duy Tuong Nguyen, Scott Fleming'
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.7.0'
 VERSION = None
 
 # What packages are required for this module to be executed?
