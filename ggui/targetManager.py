@@ -11,7 +11,12 @@ class target_manager(QtWidgets.QToolBar):
     Class that handles the loading of gPhoton data and management of multiple
     gGui targets
     """
-    def __init__(self, glue_parent, target_change_callback=None):
+        """Initializes gGui Target Manager
+        If provided a dictionary of targets, in outlined gGui YAML structure, it will load those targets into the target manager
+
+        :param GlueApplication: The Glue instance that instantiated this object. Target Manager cannot be run outside a Glue context
+        :param target_change_callback: Callback function to notify upon primary target change
+        """
         super().__init__()
         self._glue_parent = glue_parent
         self._target_catalog = OrderedDict()
@@ -35,15 +40,30 @@ class target_manager(QtWidgets.QToolBar):
             self.register_target_change_callback(target_change_callback)
 
     def register_target_change_callback(self, callback):
+        """Registers a callback function to call when primary target changes
+
+        :param callback: Callback function
+        """
         self._target_change_callbacks.append(callback)
     
     def loadTargetDict(self, targDict: dict):
+        """Loads a dictionary of targets and associated data product paths into internal cache
+
+        :param targDict: gGui compliant dictionary of targets and paths to associated gPhoton data products
+        """
         # Add incoming dictionary to internal cache
         self._target_catalog.update(targDict)
         # Add new items to GUI
         self.QComboBox.addItems(targDict.keys())
 
     def setPrimaryTarget(self, targName: str):
+        """Changes primary target to target specified
+        Unloads existing primary target's data (internal cache and parent Glue session), 
+        loads the new primary target's data, links their corresponding attributes together,
+        and notifies all stakeholders of the new changed primary target
+
+        :param targName: Name of desired new primary target
+        """
         # Don't bother doing anything if we're changing to the current target!
         if targName != self._primary_name:
             # If we have data loaded, remove it
@@ -88,16 +108,29 @@ class target_manager(QtWidgets.QToolBar):
             for callback in self._target_change_callbacks:
                 callback(self._primary_name)
 
-    def getPrimaryData(self):
+    def getPrimaryData(self) -> dict:
+        """Returns currently loaded primary target's data
+        
+        :returns: dictionary of the current primary target's data
+        """
         return self._primary_data
 
-    def getPrimaryName(self):
+    def getPrimaryName(self) -> dict:
+        """Returns the current primary target's name
+
+        :returns: current primary target's name as string
+        """
         return self._primary_name
 
-    def getTargetNames(self):
+    def getTargetNames(self) -> list:
+        """Returns a list of all cached targets' names
+        
+        :returns: list of all cached targets' names
+        """
         return self._target_catalog.keys()
 
     def next_target(self):
+        """Advances to next primary target"""
         # Determine the index we're switching to...
         current_target_index = list(self._target_catalog.keys()).index(self._primary_name)
         next_target_index = current_target_index + 1
@@ -109,6 +142,7 @@ class target_manager(QtWidgets.QToolBar):
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
 
     def previous_target(self):
+        """Advances to previous primary target"""
         # Determine the index we're switching to...
         current_target_index = list(self._target_catalog.keys()).index(self._primary_name)
         next_target_index = current_target_index - 1
@@ -118,5 +152,3 @@ class target_manager(QtWidgets.QToolBar):
         # Command Target Manager to switch primary targets
         next_target_name = list(self._target_catalog.keys())[next_target_index]
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
-
-    
