@@ -82,11 +82,18 @@ class ggui_glue_application(GlueApplication):
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(self.overview_widget)
 
-def main():
+def main(user_arguments: list = None):
+    """Entry point/helper function to start ggui
+
+    :param user_arguments: list of arguments, should simulate command line args. Use ['-h'] or ['--help'] for help documentation
+    """
     # Initialize argument parser with arguments
     parser = argparse.ArgumentParser(description='gPhoton Graphical User Interface. An analysis package for GALEX gPhoton data products')
     parser.add_argument('--target_list', help='Specify a path to a YAML style list of astronomical targets and associated gPhoton data products')
     parser.add_argument('--yaml_select', action="store_true", help='Spawns a file select dialog to choose a YAML style list of astronomical targets and associated gPhoton data products')
+    if user_arguments: 
+        args = parser.parse_args(user_arguments)
+    else: 
     args = parser.parse_args()
     
     target_data_products = {}
