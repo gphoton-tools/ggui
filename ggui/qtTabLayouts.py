@@ -28,7 +28,7 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
         if 'NUV' in self.dataLib:
             self.dataLib['NUV']['layer'].color = 'red'
         
-    def toggleBandScatter(self, band, value=None):
+    def toggleBandVisibility(self, band, value=None):
         if self.dataLib.get(band).get('layer'):
             if value is None: value = not self.dataLib[band]['layer'].visible
             #self.dataLib[band]['layer'].visible = not self.dataLib[band]['layer'].visible
@@ -74,7 +74,7 @@ class fuvToggleTool(Tool):
         super().__init__(viewer)
 
     def activate(self):
-        self.viewer.toggleBandScatter('FUV')
+        self.viewer.toggleBandVisibility('FUV')
 
 @viewer_tool
 class nuvToggleTool(Tool):
@@ -86,7 +86,7 @@ class nuvToggleTool(Tool):
         super().__init__(viewer)
 
     def activate(self):
-        self.viewer.toggleBandScatter('NUV')
+        self.viewer.toggleBandVisibility('NUV')
 
 @qt_fixed_layout_tab
 class overviewTabLayout(QtWidgets.QMdiArea):
