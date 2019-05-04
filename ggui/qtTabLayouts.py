@@ -13,12 +13,12 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
     tools = ['fuv_toggle', 'nuv_toggle']
     
         self.data_cache = {}
-        for band, bandData in data.items():
-            self.add_data(bandData)
+        for band, band_data in data.items():
+            self.add_data(band_data)
             # Horrible performance. Go back and fix!
             for index, layerData in enumerate([layers.layer for layers in self.state.layers]):
-                if layerData == bandData:
-                    self.data_cache[band] = {'data': bandData, 'layer': self.state.layers[index]}
+                if layerData == band_data:
+                    self.data_cache[band] = {'data': band_data, 'layer': self.state.layers[index]}
                     break
         # Associate FUV datasets with the color blue, and NUV datasets with the color red
         if 'FUV' in self.data_cache:
@@ -45,9 +45,9 @@ class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
     
         # See DevNote 01: Python Scope
         # Set lightcurve axes to flux vs time
-        bandData = list(self.data_cache.values())[0]['data']
-        self.state.x_att = bandData.id['t_mean']
-        self.state.y_att = bandData.id['flux_bgsub']
+        band_data = list(self.data_cache.values())[0]['data']
+        self.state.x_att = band_data.id['t_mean']
+        self.state.y_att = band_data.id['flux_bgsub']
         
 
         for datalayer in self.data_cache.values():
