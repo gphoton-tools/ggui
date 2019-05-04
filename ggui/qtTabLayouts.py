@@ -12,27 +12,25 @@ class gguiOverviewBaseViewer(MatplotlibDataViewer):
     
     tools = ['fuv_toggle', 'nuv_toggle']
     
-    def __init__(self, session, data):
-        super().__init__(session)
-        self.dataLib = {}
+        self.data_cache = {}
         for band, bandData in data.items():
             self.add_data(bandData)
             # Horrible performance. Go back and fix!
             for index, layerData in enumerate([layers.layer for layers in self.state.layers]):
                 if layerData == bandData:
-                    self.dataLib[band] = {'data': bandData, 'layer': self.state.layers[index]}
+                    self.data_cache[band] = {'data': bandData, 'layer': self.state.layers[index]}
                     break
         # Associate FUV datasets with the color blue, and NUV datasets with the color red
-        if 'FUV' in self.dataLib:
-            self.dataLib['FUV']['layer'].color = 'blue'
-        if 'NUV' in self.dataLib:
-            self.dataLib['NUV']['layer'].color = 'red'
+        if 'FUV' in self.data_cache:
+            self.data_cache['FUV']['layer'].color = 'blue'
+        if 'NUV' in self.data_cache:
+            self.data_cache['NUV']['layer'].color = 'red'
         
     def toggleBandVisibility(self, band, value=None):
-        if self.dataLib.get(band).get('layer'):
-            if value is None: value = not self.dataLib[band]['layer'].visible
-            #self.dataLib[band]['layer'].visible = not self.dataLib[band]['layer'].visible
-            self.dataLib[band]['layer'].visible = value
+        if self.data_cache.get(band).get('layer'):
+            if value is None: value = not self.data_cache[band]['layer'].visible
+            #self.data_cache[band]['layer'].visible = not self.data_cache[band]['layer'].visible
+            self.data_cache[band]['layer'].visible = value
 
     def mousePressEvent(self, event):
         self._session.application._viewer_in_focus = self
@@ -47,12 +45,12 @@ class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
     
         # See DevNote 01: Python Scope
         # Set lightcurve axes to flux vs time
-        bandData = list(self.dataLib.values())[0]['data']
+        bandData = list(self.data_cache.values())[0]['data']
         self.state.x_att = bandData.id['t_mean']
         self.state.y_att = bandData.id['flux_bgsub']
         
 
-        for datalayer in self.dataLib.values():
+        for datalayer in self.data_cache.values():
             # Set all layers to display a solid line
             datalayer['layer'].linestyle = 'solid'
             datalayer['layer'].line_visible = True
