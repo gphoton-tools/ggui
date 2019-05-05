@@ -59,7 +59,7 @@ class gguiLightcurveViewer(gguiOverviewBaseViewer, ScatterViewer):
             datalayer['layer'].yerr_visible = True
 
 
-class duyImageViewer(gguiOverviewBaseViewer, ImageViewer):
+class ggui_image_viewer(ggui_overview_base_viewer, ImageViewer):
     pass
 
 @viewer_tool
@@ -117,7 +117,7 @@ class overviewTabLayout(QtWidgets.QMdiArea):
         self.lightCurveViewer = lightCurveViewer
 
     def loadCoadd(self, session, coaddData, targName):
-        coaddViewer = duyImageViewer(session, coaddData)
+        coaddViewer = ggui_image_viewer(session, coaddData)
 
         coaddViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(coaddData.keys()))
         coaddViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(coaddData.keys()))
@@ -128,7 +128,7 @@ class overviewTabLayout(QtWidgets.QMdiArea):
         self.coaddViewer = coaddViewer
 
     def loadCube(self, session, cubeData, targName):
-        cubeViewer = duyImageViewer(session, cubeData)
+        cubeViewer = ggui_image_viewer(session, cubeData)
 
         cubeViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(cubeData.keys()))
         cubeViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(cubeData.keys()))
