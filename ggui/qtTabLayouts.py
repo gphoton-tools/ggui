@@ -87,7 +87,7 @@ class nuvToggleTool(Tool):
         self.viewer.toggleBandVisibility('NUV')
 
 @qt_fixed_layout_tab
-class overviewTabLayout(QtWidgets.QMdiArea):
+class ggui_overview_tab(QtWidgets.QMdiArea):
     
     def __init__(self, parent=None, session=None, targName="Target", targData={}):
         super().__init__()

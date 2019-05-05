@@ -30,7 +30,7 @@ class ggui_glue_application(GlueApplication):
         # Initialize blank overview tab
         def init_overview_tab(self):
             # Initialize blank overview_widget
-            self.overview_widget = qtTabLayouts.overviewTabLayout(session=self.session)
+            self.overview_widget = qtTabLayouts.ggui_overview_tab(session=self.session)
             self.tab_widget.addTab(self.overview_widget, "gGui Overview Tab: No Data Loaded")
             # Set Overview Tab to focus
             self.tab_widget.setCurrentWidget(self.overview_widget)
@@ -75,7 +75,7 @@ class ggui_glue_application(GlueApplication):
         :param target_name: The name of the target
         :param target_data: The corresponding gPhoton data of the target
         """
-        self.overview_widget = qtTabLayouts.overviewTabLayout(session=self.session, targName=target_name, targData=target_data)
+        self.overview_widget = qtTabLayouts.ggui_overview_tab(session=self.session, targName=target_name, targData=target_data)
         #overview_widget.subWindowActivated.connect(self._update_viewer_in_focus)
 
         self.tab_widget.addTab(self.overview_widget, "Overview of " + str(target_name))
