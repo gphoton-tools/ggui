@@ -17,12 +17,17 @@ from ggui import qtTabLayouts
 from ggui.targetManager import target_manager
 
 class ggui_glue_application(GlueApplication):
-    """
-    Primary gGui Application Class. Integrates gGui framework into Glue 
-    (target manager, custom tab generation, etc.)
+    """Primary gGui Application Class
+    Integrates gGui framework (target manager, custom tab generation, etc.) into Glue
     """
     
-    def __init__(self, data_collection=DataCollection(), target_dict={}):
+    def __init__(self, data_collection: DataCollection = DataCollection(), target_dict: dict = None):
+        """Initializes gGui
+        If provided a dictionary of targets, in outlined gGui YAML structure, it will load those targets into the target manager
+
+        :param data_collection: Glue data collection containing Glue data to plot
+        :param target_dict: Dict of targets and paths to associated gPhoton data products to load initially
+        """
         super().__init__(data_collection)
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
@@ -41,10 +46,10 @@ class ggui_glue_application(GlueApplication):
         self.addToolBar(self.target_manager)
 
         if target_dict:
-            # Because we don't have a Multi-Target Manager yet, just choose the first one and load that one into gGui
-            targ_names = list(self.target_manager.getTargetNames())
+            # Notify user of successful target catalog detection
             print(str(len(target_dict.keys())) + " targets received. Loading " + str(list(target_dict.keys())[0]) + " as default.")
 
+            # Load supplied target catalog into target manager
             # NOTE: Upon first load, Target Manager will automatically update target manager's primary target with the first entry in this dict.
             self.load_targets(target_dict)
 
@@ -52,7 +57,10 @@ class ggui_glue_application(GlueApplication):
         self.close_tab(self.get_tab_index(default_tab), False)
 
     def primary_target_changed(self, _):
-        # Update all tabs with new target info
+        """Updates tab data of new primary target
+        Indended as signal callback for the target manager to notify gGui of primary target changes
+        """
+        # Update overview tab with new target's data
         self.overview_widget.load_data(self.session,
                                     self.target_manager.getPrimaryName(),
                                     self.target_manager.getPrimaryData())
@@ -60,10 +68,9 @@ class ggui_glue_application(GlueApplication):
 
     def load_targets(self, target_dict: dict):
         """
-        Imports gGui-compliant data (see yaml standard) into
-        target manager
+        Imports gGui-compliant data (see yaml standard) into target manager
 
-        :param target_dict: Dictionary of gPhoton data files with target name and corresponding band
+        :param target_dict: Dict of targets and paths to associated gPhoton data products
         """
         self.target_manager.loadTargetDict(target_dict)
 
