@@ -78,10 +78,10 @@ class target_manager(QtWidgets.QToolBar):
                 unload_primary_data()
             
             # Clear existing target cache
-            self._primary_name = targName
+            self._primary_name = None
             self._primary_data.clear()
             
-            target_files = self._target_catalog.get(self._primary_name)
+            target_files = self._target_catalog.get(targName)
             # For each gGui Data Type...
             for data_product_type in target_files:
                 self._primary_data[data_product_type] = {}
@@ -106,6 +106,9 @@ class target_manager(QtWidgets.QToolBar):
                             accessor = tuple(linking_pair)
                             self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
                             #self._glue_parent.data_collection.add_link(LinkSame(linking_pair[0].id[glue_attribute]))
+
+            # Now that all data has been processed properly, officially designate targName as new primary target
+            self._primary_name = targName
 
             # Notify all stakeholders of target change
             for callback in self._target_change_callbacks:
