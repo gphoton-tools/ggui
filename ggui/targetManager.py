@@ -64,6 +64,9 @@ class target_manager(QtWidgets.QToolBar):
 
         :param targName: Name of desired new primary target
         """
+        # If requested target is not in current cache, throw exception
+        if targName not in self._target_catalog.keys():
+            raise KeyError("Target Manager does not recognize requested target: " + str(targName))
         # Don't bother doing anything if we're changing to the current target!
         if targName != self._primary_name:
             # If we have data loaded, remove it
