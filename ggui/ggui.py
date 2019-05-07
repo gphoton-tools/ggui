@@ -101,7 +101,7 @@ def main(user_arguments: list = None):
     if user_arguments: 
         args = parser.parse_args(user_arguments)
     else: 
-    args = parser.parse_args()
+        args = parser.parse_args()
     
     target_data_products = {}
     # If the user specified a gGui YAML file, load its targets
