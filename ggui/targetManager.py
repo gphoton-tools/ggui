@@ -1,6 +1,8 @@
 from collections import OrderedDict
+from typing import Callable
 
 from PyQt5 import QtWidgets, QtGui
+from glue.app.qt.application import GlueApplication
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
 
@@ -11,10 +13,11 @@ class target_manager(QtWidgets.QToolBar):
     Class that handles the loading of gPhoton data and management of multiple
     gGui targets
     """
+    def __init__(self, glue_parent: GlueApplication, target_change_callback: Callable[[str], None] = None):
         """Initializes gGui Target Manager
         If provided a dictionary of targets, in outlined gGui YAML structure, it will load those targets into the target manager
 
-        :param GlueApplication: The Glue instance that instantiated this object. Target Manager cannot be run outside a Glue context
+        :param glue_parent: The Glue instance that instantiated this object. Target Manager cannot be run outside a Glue context
         :param target_change_callback: Callback function to notify upon primary target change
         """
         super().__init__()
@@ -45,7 +48,7 @@ class target_manager(QtWidgets.QToolBar):
         :param callback: Callback function
         """
         self._target_change_callbacks.append(callback)
-    
+
     def loadTargetDict(self, targDict: dict):
         """Loads a dictionary of targets and associated data product paths into internal cache
 
@@ -106,7 +109,7 @@ class target_manager(QtWidgets.QToolBar):
                             accessor = tuple(linking_pair)
                             self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
                             #self._glue_parent.data_collection.add_link(LinkSame(linking_pair[0].id[glue_attribute]))
-
+            
             # Now that all data has been processed properly, officially designate targName as new primary target
             self._primary_name = targName
 
@@ -116,7 +119,7 @@ class target_manager(QtWidgets.QToolBar):
 
     def getPrimaryData(self) -> dict:
         """Returns currently loaded primary target's data
-        
+
         :returns: dictionary of the current primary target's data
         """
         return self._primary_data
@@ -130,7 +133,7 @@ class target_manager(QtWidgets.QToolBar):
 
     def getTargetNames(self) -> list:
         """Returns a list of all cached targets' names
-        
+
         :returns: list of all cached targets' names
         """
         return self._target_catalog.keys()
