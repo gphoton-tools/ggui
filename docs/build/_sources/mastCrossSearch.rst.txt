@@ -1,9 +1,0 @@
-MAST Archive Cross Search Script
-********************************
-
-mastCrossSearch
-===============
-.. automodule:: mastCrossSearch
-   :members:
-   :undoc-members:
-   :noindex:
