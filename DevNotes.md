@@ -17,3 +17,8 @@
     7. pip install --upgrade pyqt5
     8. ggui
     NOTE: Had to change imports in copied source code to import ggui modules from ggui package (i.e. 'import qtTabLayouts' > 'from ggui import qtTabLayouts)
+
+* Devnote 4: Documenting callback function argument
+    PEP-0484, the PEP that introduced function annotations, has a section on this: https://www.python.org/dev/peps/pep-0484/#callable
+    * Found via: https://stackoverflow.com/questions/33399232/is-there-a-standard-way-to-specify-the-type-of-a-callback-function-in-a-docstrin
+
