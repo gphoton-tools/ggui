@@ -48,7 +48,7 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
 
         :param band: Band to toggle (i.e. 'NUV' or 'FUV')
         :param value: Optional parameter to explicitly set the band's visibility to a specific value. 
-        Absence will toggle the exising visibility
+            Absence will toggle the exising visibility
         """
         # Verify we have data for supplied band
         if self.data_cache.get(band).get('layer'):
@@ -82,7 +82,7 @@ class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
         band_data = list(self.data_cache.values())[0]['data']
         self.state.x_att = band_data.id['t_mean']
         self.state.y_att = band_data.id['flux_bgsub']
-        
+
         # Set default plotting attributes for each dataset
         for datalayer in self.data_cache.values():
             # Set all layers to display a solid line
@@ -160,9 +160,9 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
        
     def load_data(self, session: glue.core.session, target_name: str, target_data: dict):
         """Constructs the appropriate data viewer for any gPhoton data products provided
-       
+
         :param session: Corresponding Glue parent's 'session' object that stores 
-        information about the current environment of glue.
+            information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param target_data: The gPhoton data (lighcurves, coadds, cubes) we are "overviewing"
         """
@@ -171,12 +171,12 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
             viewer_setters[dataType](session, target_name, data)
-        
+    
     def loadLightcurve(self, session: glue.core.session, target_name: str, lightcurve_data: dict):
         """Constructs a lightcurve viewer for gPhoton Lightcurve data
-        
+
         :param session: Corresponding Glue parent's 'session' object that stores 
-        information about the current environment of glue.
+            information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param lightcurve_data: The gPhoton lightcurve to plot
         """
@@ -187,16 +187,17 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         lightCurveViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(lightcurve_data.keys()))
         # Set the title to display the target's name
         lightCurveViewer.axes.set_title("Full Lightcurve of " + target_name)
+        lightCurveViewer.axes.set_autoscaley_on(True)
         # Add this viewer to the overview layout
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
         self.lightCurveViewer = lightCurveViewer
-        
+        lightCurveViewer.redraw()
 
     def loadCoadd(self, session: glue.core.session, target_name: str, coadd_data: dict):
         """Constructs an image viewer for gPhoton Coadd FITS data
 
         :param session: Corresponding Glue parent's 'session' object that stores 
-        information about the current environment of glue.
+            information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param coadd_data: The gPhoton Coadd to plot
         """
@@ -213,9 +214,9 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
 
     def loadCube(self, session: glue.core.session, target_name: str , cube_data: dict):
         """Constructs an image viewer for gPhoton Cube FITS data
-        
+
         :param session: Corresponding Glue parent's 'session' object that stores 
-        information about the current environment of glue.
+            information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param cube_data: The gPhoton Cube to plot
         """
