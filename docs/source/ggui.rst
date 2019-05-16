@@ -11,14 +11,6 @@ Subpackages
 Submodules
 ----------
 
-ggui.autochop module
---------------------
-
-.. automodule:: ggui.autochop
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 ggui.config module
 ------------------
 
@@ -31,14 +23,6 @@ ggui.ggui module
 ----------------
 
 .. automodule:: ggui.ggui
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-ggui.mastCrossSearch module
----------------------------
-
-.. automodule:: ggui.mastCrossSearch
     :members:
     :undoc-members:
     :show-inheritance:
