@@ -101,14 +101,11 @@ class target_manager(QtWidgets.QToolBar):
                                         'coadd': ['Right Ascension', 'Declination'], 
                                         'cube': ['Right Ascension', 'Declination', 'World 0']}
                     for glue_attribute in attributes_to_glue[data_product_type]:
-                        #dataCollection.add_link(LinkSame(somehow add all bands here stored in the bands key above))
                         #Can only link two fields at a time. Need to go through all combinations
-                        import itertools
-                        for linking_pair in (set(frozenset(t) for t in itertools.permutations(self._primary_data[data_product_type].values(),2))):
-                        #for linking_pair in (set(tuple(sorted(t)) for t in itertools.permutations(self._primary_data['lightcurve'].values(),2))):
+                        from itertools import permutations
+                        for linking_pair in (set(frozenset(t) for t in permutations(self._primary_data[data_product_type].values(),2))):
                             accessor = tuple(linking_pair)
                             self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
-                            #self._glue_parent.data_collection.add_link(LinkSame(linking_pair[0].id[glue_attribute]))
             
             # Now that all data has been processed properly, officially designate targName as new primary target
             self._primary_name = targName
