@@ -108,7 +108,7 @@ def main(user_arguments: list = None):
     if args.target_list:
         print("File received: " + str(args.target_list))
         target_list_path = pathlib.Path(args.target_list)
-        target_data_products.update(yaml.load(open(str(target_list_path), 'r')))
+        target_data_products.update(validate_targlist_format(yaml.load(open(str(target_list_path), 'r'), Loader=yaml.BaseLoader), str(target_list_path)))
     # If the user requested a file-selector dialog to select a gGui YAML file, display it and load its contents
     if args.yaml_select:
         def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
@@ -130,7 +130,7 @@ def main(user_arguments: list = None):
             filenames = dialog.selectedFiles()
             return filenames
         for ggui_yaml_file in prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
-            target_data_products.update(yaml.load(open(ggui_yaml_file, 'r')))
+            target_data_products.update(validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file))
     # If no targets were recognized, notify the user
     if not target_data_products:
         print("No yaml received. Starting empty gGui session...")
