@@ -170,7 +170,11 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         viewer_setters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
+            try:
             viewer_setters[dataType](session, target_name, data)
+            except ValueError as error:
+                print("WARNING: " + str(error))
+                continue
         
     def loadLightcurve(self, session: glue.core.session, target_name: str, lightcurve_data: dict):
         """Constructs a lightcurve viewer for gPhoton Lightcurve data
