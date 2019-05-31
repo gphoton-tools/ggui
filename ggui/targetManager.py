@@ -77,6 +77,10 @@ class target_manager(QtWidgets.QToolBar):
                 def unload_primary_data():
                     for band_data_set in list(self._primary_data.values()):
                         for band_data in band_data_set.values():
+                            if isinstance(band_data, list):
+                                for data in band_data:
+                                    self._glue_parent.data_collection.remove(data)   
+                            else:
                             self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
             
