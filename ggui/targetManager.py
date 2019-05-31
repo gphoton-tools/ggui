@@ -101,7 +101,7 @@ class target_manager(QtWidgets.QToolBar):
                         #confirm this is the same object as what was stored in the data collection:
                         self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
                 # If we have multiple bands, glue them together
-                #bands = self._primary_data[data_product_type].keys()
+                try: 
                 if len(self._primary_data[data_product_type].keys()) > 1:
                     attributes_to_glue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
                                         'coadd': ['Right Ascension', 'Declination'], 
@@ -112,6 +112,8 @@ class target_manager(QtWidgets.QToolBar):
                         for linking_pair in (set(frozenset(t) for t in permutations(self._primary_data[data_product_type].values(),2))):
                             accessor = tuple(linking_pair)
                             self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
+                except TypeError:
+                    print("Unable to glue " + str(targName) + " " + str(data_product_type))
             
             # Now that all data has been processed properly, officially designate targName as new primary target
             self._primary_name = targName
