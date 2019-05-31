@@ -180,6 +180,10 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param target_name: The name of the target we are "overviewing"
         :param lightcurve_data: The gPhoton lightcurve to plot
         """
+        # Check for 1-1 correspondence rule (only one data set per band)
+        for band, band_data in lightcurve_data.items():
+            if isinstance(band_data, list):
+                raise ValueError(str(target_name) + " band " + str(band) + " has more than one (" + str(len(band_data)) + ") associated dataset. Cannot plot lightcurve data for this band due to ambiguity.")
         # Construct the data viewer class
         lightCurveViewer = ggui_lightcurve_viewer(session, lightcurve_data)
         # Enable the band visibility toggle tools we have data for
@@ -200,6 +204,10 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param target_name: The name of the target we are "overviewing"
         :param coadd_data: The gPhoton Coadd to plot
         """
+        # Check for 1-1 correspondence rule (only one data set per band)
+        for band, band_data in coadd_data.items():
+            if isinstance(band_data, list):
+                raise ValueError(str(target_name) + " band " + str(band) + " has more than one (" + str(len(band_data)) + ") associated dataset. Cannot plot coadd data for this band due to ambiguity.")
         # Construct the data viewer class
         coaddViewer = ggui_image_viewer(session, coadd_data)
         # Enable the band visibility toggle tools we have data for
@@ -219,6 +227,10 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param target_name: The name of the target we are "overviewing"
         :param cube_data: The gPhoton Cube to plot
         """
+        # Check for 1-1 correspondence rule (only one data set per band)
+        for band, band_data in cube_data.items():
+            if isinstance(band_data, list):
+                raise ValueError(str(target_name) + " band " + str(band) + " has more than one (" + str(len(band_data)) + ") associated dataset. Cannot plot cube data for this band due to ambiguity.")
         # Construct the data viewer class
         cubeViewer = ggui_image_viewer(session, cube_data)
         # Enable the band visibility toggle tools we have data for
