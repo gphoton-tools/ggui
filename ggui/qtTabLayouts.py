@@ -169,25 +169,20 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param target_name: The name of the target we are "overviewing"
         :param target_data: The gPhoton data (lighcurves, coadds, cubes) we are "overviewing"
         """
+        config = ConfigParser()
+        config.read(resource_filename('ggui', 'ggui.conf'))
+
         # Connect each gPhoton data product to its corresponding load method
         viewer_setters = {
-            'lightcurve': {
-                'setter': self.loadLightcurve,
-                'x_att': 't_mean',
-                'y_att': 'flux_bgsub'},
-            'coadd': {
-                'setter': self.loadCoadd,
-                'x_att': 'Right Ascension',
-                'y_att': 'Declination'},
-            'cube': {
-                'setter': self.loadCube,
-                'x_att': 'Right Ascension',
-                'y_att': 'Declination'}           
+            'lightcurve': self.loadLightcurve,
+            'coadd': self.loadCoadd,
+            'cube': self.loadCube
+                      
         }
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
             try:
-                viewer_setters[dataType]['setter'](session, target_name, data, viewer_setters[dataType]['x_att'], viewer_setters[dataType]['y_att'])
+                viewer_setters[dataType](session, target_name, data, config.get('Mandatory Fields', dataType + "_x"), config.get('Mandatory Fields', dataType + "_y"))
             except ValueError as error:
                 print("WARNING: " + str(error))
                 continue

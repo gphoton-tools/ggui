@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from configparser import ConfigParser
 from typing import Callable
 
 from PyQt5 import QtWidgets, QtGui
@@ -81,7 +82,7 @@ class target_manager(QtWidgets.QToolBar):
                                 for data in band_data:
                                     self._glue_parent.data_collection.remove(data)   
                             else:
-                            self._glue_parent.data_collection.remove(band_data)                
+                                self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
             
             # Clear existing target cache
@@ -92,28 +93,53 @@ class target_manager(QtWidgets.QToolBar):
             # For each gGui Data Type...
             for data_product_type in target_files:
                 self._primary_data[data_product_type] = {}
+
+                config = ConfigParser()
+                config.read(resource_filename('ggui', 'ggui.conf'))
+
+                
+                x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback=None)
+                y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback=None)
+
                 # Load every band's data
                 for band, band_file in target_files[data_product_type].items():
                     if band_file:
                         self._primary_data[data_product_type][band] = load_data(band_file)
-                        if isinstance(self._primary_data[data_product_type][band], list):
-                            print("WARNING: " + str(len(self._primary_data[data_product_type][band])) + " datasets imported from " + targName + " " + data_product_type + " band " + band + ". gGui shall import this data, but will be unable to perform automatic actions on it (i.e. gluing, displaying overview, etc.)")
+                        
+                        try:
+                           if x_att:
+                               self._primary_data[data_product_type][band].id[x_att]
+                           if y_att:
+                            self._primary_data[data_product_type][band].id[y_att]
+                        except KeyError as e:
+                            parsed_error = e.args[0].split(':')
+                            if parsed_error[0]== 'ComponentID not found or not unique':
+                                print("WARNING: '" + parsed_error[1].strip() + "' field specified in ggui.conf missing from " + targName + " " + data_product_type + " " + band + ": " + band_file)
+                            else:
+                                raise
+                        except AttributeError:
+                            if isinstance(self._primary_data[data_product_type][band], list):
+                                print("WARNING: " + str(len(self._primary_data[data_product_type][band])) + " datasets imported from " + targName + " " + data_product_type + " band " + band + ". gGui shall import this data, but will be unable to perform automatic actions on it (i.e. gluing, displaying overview, etc.)")
+                            else:
+                                raise
+                            
                         #confirm this is the same object as what was stored in the data collection:
                         self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
                 # If we have multiple bands, glue them together
                 try: 
-                if len(self._primary_data[data_product_type].keys()) > 1:
-                    attributes_to_glue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
-                                        'coadd': ['Right Ascension', 'Declination'], 
-                                        'cube': ['Right Ascension', 'Declination', 'World 0']}
-                    for glue_attribute in attributes_to_glue[data_product_type]:
-                        #Can only link two fields at a time. Need to go through all combinations
-                        from itertools import permutations
-                        for linking_pair in (set(frozenset(t) for t in permutations(self._primary_data[data_product_type].values(),2))):
-                            accessor = tuple(linking_pair)
-                            self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
-                except TypeError:
-                    print("Unable to glue " + str(targName) + " " + str(data_product_type))
+                    if len(self._primary_data[data_product_type].keys()) > 1:
+                        attributes_to_glue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
+                                            'coadd': ['Right Ascension', 'Declination'], 
+                                            'cube': ['Right Ascension', 'Declination', 'World 0']}
+                        #for glue_attribute in attributes_to_glue[data_product_type]:
+                        for glue_attribute in list(filter(lambda x: x is not '', [x_att, y_att] + config.get('Additional Fields To Glue', data_product_type, fallback='').split(','))):
+                            #Can only link two fields at a time. Need to go through all combinations
+                            from itertools import permutations
+                            for linking_pair in (set(frozenset(t) for t in permutations(self._primary_data[data_product_type].values(),2))):
+                                accessor = tuple(linking_pair)
+                                self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
+                except TypeError as e:
+                    print("Unable to glue " + str(targName) + " " + str(data_product_type) + ": " + str(e))
             
             # Now that all data has been processed properly, officially designate targName as new primary target
             self._primary_name = targName
