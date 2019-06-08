@@ -96,10 +96,8 @@ class target_manager(QtWidgets.QToolBar):
 
                 config = ConfigParser()
                 config.read(resource_filename('ggui', 'ggui.conf'))
-
-                
-                x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback=None)
-                y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback=None)
+                x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback='')
+                y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback='')
 
                 # Load every band's data
                 for band, band_file in target_files[data_product_type].items():
