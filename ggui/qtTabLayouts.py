@@ -69,7 +69,7 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
 class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
     """Data Viewer class that handles gPhoton lightcurve events"""
 
-    def __init__(self, session: glue.core.session, lightcurve_data: dict, x_att: str, y_att: str):
+    def __init__(self, session: glue.core.session, lightcurve_data: dict, x_att: str = None, y_att: str = None):
         """Initializes an instance of the gPhoton lightcurve viewer
 
         :param session: Corresponding Glue parent's 'session' object that stores 
@@ -83,7 +83,9 @@ class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
         # See DevNote 01: Python Scope
         # Set lightcurve axes to flux vs time
         band_data = list(self.data_cache.values())[0]['data']
+        if x_att:
         self.state.x_att = band_data.id[x_att]
+        if y_att: 
         self.state.y_att = band_data.id[y_att]
         
         # Set default plotting attributes for each dataset
