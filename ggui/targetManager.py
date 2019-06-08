@@ -104,17 +104,20 @@ class target_manager(QtWidgets.QToolBar):
                     if band_file:
                         self._primary_data[data_product_type][band] = load_data(band_file)
                         
+                        # If x_att, y_att provided in conf, test they exist
                         try:
                             if x_att:
                                 self._primary_data[data_product_type][band].id[x_att]
                             if y_att:
                                 self._primary_data[data_product_type][band].id[y_att]
+                        # KeyError means specified attribute doesn't exist in this data. Warn user, and unset attributes, but continue
                         except KeyError as e:
                             parsed_error = e.args[0].split(':')
                             if parsed_error[0]== 'ComponentID not found or not unique':
                                 print("WARNING: '" + parsed_error[1].strip() + "' field specified in ggui.conf missing from " + targName + " " + data_product_type + " " + band + ": " + band_file)
                             else:
                                 raise
+                        # If AttributeError, check if "data" is actually a list of data (multiple data sets per file). Breaks 1-1 correspondence gGui assumes. Warn user plotting and gluing will fail. Skip this data, but import it regardless
                         except AttributeError:
                             if isinstance(self._primary_data[data_product_type][band], list):
                                 print("WARNING: " + str(len(self._primary_data[data_product_type][band])) + " datasets imported from " + targName + " " + data_product_type + " band " + band + ". gGui shall import this data, but will be unable to perform automatic actions on it (i.e. gluing, displaying overview, etc.)")
