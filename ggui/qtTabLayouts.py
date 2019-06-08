@@ -84,13 +84,13 @@ class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
         # Set lightcurve axes to flux vs time
         band_data = list(self.data_cache.values())[0]['data']
         try:
-        if x_att:
-            self.state.x_att = band_data.id[x_att]
+            if x_att:
+                self.state.x_att = band_data.id[x_att]
         except KeyError as error:
             print("WARNING: gGui cannot assign lightcurve x axis: " + str(error))
         try:
-        if y_att: 
-            self.state.y_att = band_data.id[y_att]
+            if y_att: 
+                self.state.y_att = band_data.id[y_att]
         except KeyError as error:
             print("WARNING: gGui cannot assign lightcurve y axis: " + str(error))
 
