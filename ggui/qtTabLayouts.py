@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 from PyQt5 import QtWidgets
 from glue.app.qt.application import GlueApplication
 import glue.core.session
