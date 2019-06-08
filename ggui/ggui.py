@@ -82,7 +82,7 @@ class ggui_glue_application(GlueApplication):
         :param target_name: The name of the target
         :param target_data: The corresponding gPhoton data of the target
         """
-        self.overview_widget = qtTabLayouts.ggui_overview_tab(session=self.session, targName=target_name, targData=target_data)
+        self.overview_widget = qtTabLayouts.ggui_overview_tab(session=self.session, target_name=target_name, target_data=target_data)
         #overview_widget.subWindowActivated.connect(self._update_viewer_in_focus)
 
         self.tab_widget.addTab(self.overview_widget, "Overview of " + str(target_name))
@@ -104,11 +104,31 @@ def main(user_arguments: list = None):
         args = parser.parse_args()
     
     target_data_products = {}
+
+    def validate_targlist_format(target_list: dict,  list_source: str) -> dict:
+        empty_targets = []
+        for target_name, target_data in target_list.items():
+            valid_files = 0
+            for data_type, band_data in target_data.items():
+                for band, filepathString in band_data.items():
+                    if not pathlib.Path(filepathString).is_file():
+                        if filepathString:
+                            print(filepathString + " does not exist on disk. Ignoring...")
+                    else: valid_files += 1
+            if not valid_files:
+                empty_targets.append(target_name)
+        
+        for bad_target in empty_targets:
+            print(str(bad_target) + " does not have any valid data. Ignoring target...")
+            del target_list[bad_target]
+
+        return target_list
+
     # If the user specified a gGui YAML file, load its targets
     if args.target_list:
         print("File received: " + str(args.target_list))
         target_list_path = pathlib.Path(args.target_list)
-        target_data_products.update(yaml.load(open(str(target_list_path), 'r')))
+        target_data_products.update(validate_targlist_format(yaml.load(open(str(target_list_path), 'r'), Loader=yaml.BaseLoader), str(target_list_path)))
     # If the user requested a file-selector dialog to select a gGui YAML file, display it and load its contents
     if args.yaml_select:
         def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
@@ -130,7 +150,7 @@ def main(user_arguments: list = None):
             filenames = dialog.selectedFiles()
             return filenames
         for ggui_yaml_file in prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
-            target_data_products.update(yaml.load(open(ggui_yaml_file, 'r')))
+            target_data_products.update(validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file))
     # If no targets were recognized, notify the user
     if not target_data_products:
         print("No yaml received. Starting empty gGui session...")

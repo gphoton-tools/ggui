@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 from PyQt5 import QtWidgets
 from glue.app.qt.application import GlueApplication
 import glue.core.session
@@ -68,21 +69,32 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
 class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
     """Data Viewer class that handles gPhoton lightcurve events"""
 
-    def __init__(self, session: glue.core.session, lightcurve_data: dict):
+    def __init__(self, session: glue.core.session, lightcurve_data: dict, x_att: str = None, y_att: str = None):
         """Initializes an instance of the gPhoton lightcurve viewer
 
         :param session: Corresponding Glue parent's 'session' object that stores 
         information about the current environment of glue. Needed for superclass constructor
         :param lightcurve_data: Dict containing lightcurve data identified via respective frequency band
+        :param x_att: Label of attribute to assign to the x-axis
+        :param y_att: Label of attribute to assign to the y-axis
         """
         super().__init__(session, lightcurve_data)
     
         # See DevNote 01: Python Scope
         # Set lightcurve axes to flux vs time
         band_data = list(self.data_cache.values())[0]['data']
-        self.state.x_att = band_data.id['t_mean']
-        self.state.y_att = band_data.id['flux_bgsub']
+        try:
+            if x_att:
+                self.state.x_att = band_data.id[x_att]
+        except KeyError as error:
+            print("WARNING: gGui cannot assign lightcurve x axis: " + str(error))
+        try:
+            if y_att: 
+                self.state.y_att = band_data.id[y_att]
+        except KeyError as error:
+            print("WARNING: gGui cannot assign lightcurve y axis: " + str(error))
 
+        
         # Set default plotting attributes for each dataset
         for datalayer in self.data_cache.values():
             # Set all layers to display a solid line
@@ -95,7 +107,8 @@ class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
 
 class ggui_image_viewer(ggui_overview_base_viewer, ImageViewer):
     """Data Viewer class that handles gPhoton FITS images"""
-    pass
+    def __init__(self, session: glue.core.session, image_data: dict, x_att: str, y_att: str):
+        super().__init__(session, image_data)
 
 @viewer_tool
 class fuvToggleTool(Tool):
@@ -166,22 +179,40 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param target_name: The name of the target we are "overviewing"
         :param target_data: The gPhoton data (lighcurves, coadds, cubes) we are "overviewing"
         """
+        config = ConfigParser()
+        config.read(resource_filename('ggui', 'ggui.conf'))
+
         # Connect each gPhoton data product to its corresponding load method
-        viewer_setters = {'lightcurve': self.loadLightcurve, 'coadd': self.loadCoadd, 'cube': self.loadCube}
+        viewer_setters = {
+            'lightcurve': self.loadLightcurve,
+            'coadd': self.loadCoadd,
+            'cube': self.loadCube
+                      
+        }
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
-            viewer_setters[dataType](session, target_name, data)
-    
-    def loadLightcurve(self, session: glue.core.session, target_name: str, lightcurve_data: dict):
+            try:
+                viewer_setters[dataType](session, target_name, data, config.get('Mandatory Fields', dataType + "_x", fallback=None), config.get('Mandatory Fields', dataType + "_y", fallback=None))
+            except ValueError as error:
+                print("WARNING: " + str(error))
+                continue
+        
+    def loadLightcurve(self, session: glue.core.session, target_name: str, lightcurve_data: dict, x_att: str, y_att: str):
         """Constructs a lightcurve viewer for gPhoton Lightcurve data
 
         :param session: Corresponding Glue parent's 'session' object that stores 
             information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param lightcurve_data: The gPhoton lightcurve to plot
+        :param x_att: Label of attribute to assign to the x-axis
+        :param y_att: Label of attribute to assign to the y-axis
         """
+        # Check for 1-1 correspondence rule (only one data set per band)
+        for band, band_data in lightcurve_data.items():
+            if isinstance(band_data, list):
+                raise ValueError(str(target_name) + " band " + str(band) + " has more than one (" + str(len(band_data)) + ") associated dataset. Cannot plot lightcurve data for this band due to ambiguity.")
         # Construct the data viewer class
-        lightCurveViewer = ggui_lightcurve_viewer(session, lightcurve_data)
+        lightCurveViewer = ggui_lightcurve_viewer(session, lightcurve_data, x_att, y_att)
         # Enable the band visibility toggle tools we have data for
         lightCurveViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(lightcurve_data.keys()))
         lightCurveViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(lightcurve_data.keys()))
@@ -193,16 +224,22 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         self.lightCurveViewer = lightCurveViewer
         lightCurveViewer.redraw()
 
-    def loadCoadd(self, session: glue.core.session, target_name: str, coadd_data: dict):
+    def loadCoadd(self, session: glue.core.session, target_name: str, coadd_data: dict, x_att: str, y_att: str):
         """Constructs an image viewer for gPhoton Coadd FITS data
 
         :param session: Corresponding Glue parent's 'session' object that stores 
             information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param coadd_data: The gPhoton Coadd to plot
+        :param x_att: Label of attribute to assign to the x-axis
+        :param y_att: Label of attribute to assign to the y-axis
         """
+        # Check for 1-1 correspondence rule (only one data set per band)
+        for band, band_data in coadd_data.items():
+            if isinstance(band_data, list):
+                raise ValueError(str(target_name) + " band " + str(band) + " has more than one (" + str(len(band_data)) + ") associated dataset. Cannot plot coadd data for this band due to ambiguity.")
         # Construct the data viewer class
-        coaddViewer = ggui_image_viewer(session, coadd_data)
+        coaddViewer = ggui_image_viewer(session, coadd_data, x_att, y_att)
         # Enable the band visibility toggle tools we have data for
         coaddViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(coadd_data.keys()))
         coaddViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(coadd_data.keys()))
@@ -212,16 +249,22 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         self.layout.addWidget(coaddViewer, 1, 0)
         self.coaddViewer = coaddViewer
 
-    def loadCube(self, session: glue.core.session, target_name: str , cube_data: dict):
+    def loadCube(self, session: glue.core.session, target_name: str , cube_data: dict, x_att: str, y_att: str):
         """Constructs an image viewer for gPhoton Cube FITS data
 
         :param session: Corresponding Glue parent's 'session' object that stores 
             information about the current environment of glue.
         :param target_name: The name of the target we are "overviewing"
         :param cube_data: The gPhoton Cube to plot
+        :param x_att: Label of attribute to assign to the x-axis
+        :param y_att: Label of attribute to assign to the y-axis
         """
+        # Check for 1-1 correspondence rule (only one data set per band)
+        for band, band_data in cube_data.items():
+            if isinstance(band_data, list):
+                raise ValueError(str(target_name) + " band " + str(band) + " has more than one (" + str(len(band_data)) + ") associated dataset. Cannot plot cube data for this band due to ambiguity.")
         # Construct the data viewer class
-        cubeViewer = ggui_image_viewer(session, cube_data)
+        cubeViewer = ggui_image_viewer(session, cube_data, x_att, y_att)
         # Enable the band visibility toggle tools we have data for
         cubeViewer.toolbar.actions['fuv_toggle'].setEnabled('FUV' in list(cube_data.keys()))
         cubeViewer.toolbar.actions['nuv_toggle'].setEnabled('NUV' in list(cube_data.keys()))
