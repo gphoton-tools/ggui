@@ -185,7 +185,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
             try:
-                viewer_setters[dataType](session, target_name, data, config.get('Mandatory Fields', dataType + "_x"), config.get('Mandatory Fields', dataType + "_y"))
+                viewer_setters[dataType](session, target_name, data, config.get('Mandatory Fields', dataType + "_x", fallback=None), config.get('Mandatory Fields', dataType + "_y", fallback=None))
             except ValueError as error:
                 print("WARNING: " + str(error))
                 continue
