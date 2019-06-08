@@ -22,3 +22,6 @@
     PEP-0484, the PEP that introduced function annotations, has a section on this: https://www.python.org/dev/peps/pep-0484/#callable
     * Found via: https://stackoverflow.com/questions/33399232/is-there-a-standard-way-to-specify-the-type-of-a-callback-function-in-a-docstrin
 
+* Devnote 5: If git reset --hard, ALWAYS STASH FIRST
+
+* Devnote 6: Glue Data object is iterable, but usually not in the ways you think. Most operations with list comprehension will fail
