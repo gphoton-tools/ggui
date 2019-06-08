@@ -95,7 +95,7 @@ class target_manager(QtWidgets.QToolBar):
                 self._primary_data[data_product_type] = {}
 
                 config = ConfigParser()
-                config.read(resource_filename('ggui', 'ggui.conf'))
+                config.read(resource_filename('ggui', 'ggui.conf'))                
                 x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback='')
                 y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback='')
 
@@ -105,10 +105,10 @@ class target_manager(QtWidgets.QToolBar):
                         self._primary_data[data_product_type][band] = load_data(band_file)
                         
                         try:
-                           if x_att:
-                               self._primary_data[data_product_type][band].id[x_att]
-                           if y_att:
-                            self._primary_data[data_product_type][band].id[y_att]
+                            if x_att:
+                                self._primary_data[data_product_type][band].id[x_att]
+                            if y_att:
+                                self._primary_data[data_product_type][band].id[y_att]
                         except KeyError as e:
                             parsed_error = e.args[0].split(':')
                             if parsed_error[0]== 'ComponentID not found or not unique':
