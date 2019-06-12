@@ -5,24 +5,22 @@ GALEX was an ultraviolet space telescope commissioned by NASA and managed by the
 
 gGui is written atop the [Glue Python Library for Dataset Visualization](https://github.com/glue-viz/glue). 
 
-## Prerequisits: 
-* pipenv
-* Python 3.7.1 64-bit
-
 ## Installation Instructions:
-Inside the cloned directory:
+* Install via pip
 ```console
-pipenv install
+pip install ggui
 ```
+
 ## Sample Usage
-1. Activate your gGui pipenv environment:
+* If you know where your yaml file lives, you can specify it as a line argument:
 ```console
-pipenv shell
+ggui --target_list /path/to/ggui.yml
 ```
-2. Use the included CLI startup script:
+* If you'd like to graphically search for your yaml, ggui can create a file selector dialog for you:
 ```console
-python .\ggui.py
+ggui --yaml_select
 ```
 
 ## Revision History
+2019-06-11: Uploaded first test of b0.3.5 to PyPI
 2017-06-26: v0.3.0 Tag Created
