@@ -112,7 +112,7 @@ setup(
     },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
-    package_data={'': ['*.png']},
+    package_data={'': ['*.png', '*.conf']},
     #include_package_data=True,
     license='MIT',
     classifiers=[
