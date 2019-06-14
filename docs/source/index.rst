@@ -20,6 +20,8 @@ gGui is hosted in PyPI. To install, simply use pip!
    :maxdepth: 2
    :caption: Contents:
 
+   about
+   using_ggui
 
 
 Indices and tables
