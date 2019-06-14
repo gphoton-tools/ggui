@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to gGui's documentation!
-================================
+gPhoton Glue User Interface (gGui) Documentation
+================================================
 
 gGui is a data-interpretation interface intended to interpet data from the GALEX Space Telescope data reduction pipeline, gPhoton.
 
@@ -13,6 +13,7 @@ GALEX was an ultraviolet space telescope commissioned by NASA and managed by the
 gGui is written atop the Glue Python Library for Dataset Visualization.
 
 gGui is hosted in PyPI. To install, simply use pip!
+
 ``pip install ggui``
 
 .. toctree::
