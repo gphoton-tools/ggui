@@ -30,3 +30,7 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Acknowledgements
+---------------
+We would like to thank Alyssa Goodman, Thomas Robitaille, Christopher Beaumont, and the entire Glue team for their contributions to the Glue visualization tool, without whom gGui could not exist
