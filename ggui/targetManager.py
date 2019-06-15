@@ -1,3 +1,9 @@
+"""
+.. module:: qtTabLayouts
+    :synopsis: Defines the gGui Target Manager to manage multiple targets
+.. moduleauthor:: Duy Nguyen <dnguyen@nrao.edu>
+"""
+
 from collections import OrderedDict
 from configparser import ConfigParser
 from typing import Callable

@@ -1,7 +1,7 @@
 """
-.. module:: gguicli_startup
-    :synopsis: Startup script to import gPhoton data products into Glue Data Visualizer
-.. moduleauthor:: Duy Nguyen <dtn5ah@virginia.edu>
+.. module:: ggui
+    :synopsis: Defines the gGui class and startup behavior
+.. moduleauthor:: Duy Nguyen <dnguyen@nrao.edu>
 """
 
 import argparse

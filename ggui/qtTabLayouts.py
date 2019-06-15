@@ -1,3 +1,9 @@
+"""
+.. module:: qtTabLayouts
+    :synopsis: Defines the gGui overview tab and associated tools
+.. moduleauthor:: Duy Nguyen <dnguyen@nrao.edu>
+"""
+
 from configparser import ConfigParser
 from PyQt5 import QtWidgets
 from glue.app.qt.application import GlueApplication
