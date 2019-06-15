@@ -6,7 +6,9 @@
 gPhoton Glue User Interface (gGui) Documentation
 ================================================
 
-gGui is a data-analysis software written atop the Glue Visualization Python library to visualize data from the GALEX Space Telescope data reduction pipeline, gPhoton.
+.. image:: images/ggui_splash.png
+
+gGui is a data-analysis package written atop the Glue Visualization Python library to visualize data from the GALEX Space Telescope data reduction pipeline, gPhoton.
 
 gGui is currently actively developed and maintained by `Duy Nguyen <dnguyen@nrao.edu>`_ and `Scott Fleming <fleming@stsci.edu>`_
 
@@ -20,6 +22,7 @@ The latest release is hosted on PyPI. To install, simply use pip!
 
    about
    using_ggui
+   team
 
 
 Indices and tables
