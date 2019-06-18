@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 gPhoton Glue User Interface (gGui) Documentation
-================================================
+################################################
 
 .. image:: images/ggui_splash.png
 
@@ -33,6 +33,6 @@ Indices and tables
 * :ref:`search`
 
 Acknowledgements
-----------------
+================
 We would like to acknowledge Chase Million for producing and maintaining the gPhoton project, whose data gGui is targeted to process.
 We would also like to thank Alyssa Goodman, Thomas Robitaille, Christopher Beaumont, and the entire Glue team for their contributions to the Glue visualization tool, without whom gGui could not exist.

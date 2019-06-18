@@ -1,5 +1,5 @@
 About gGui
-----------
+##########
 gGui is a data-analysis software written to visualize astronomical data, specifically time-tagged lightcurves, coadds, and cubes. gGui serves as the primary data visualization tool for gPhoton, the data reduction pipeline for GALEX.
 
 `The Galaxy Evolution Explorer (GALEX) Space Telescope <https://www.jpl.nasa.gov/missions/galaxy-evolution-explorer-galex/>`_

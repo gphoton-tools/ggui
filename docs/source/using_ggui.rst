@@ -1,5 +1,5 @@
 Using gGui
-----------
+##########
 
 Installing gGui
 ===============

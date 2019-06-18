@@ -1,5 +1,5 @@
 The gGui Team
--------------
+#############
 
 `Duy Nguyen <dnguyen@nrao.edu>`_ is the Principal Software Architect and Developer of gGui. Duy works at Green Bank Observatory as a Software Engineer
 
