@@ -4,7 +4,7 @@ gGui is a data-analysis software written to visualize astronomical data, specifi
 
 `The Galaxy Evolution Explorer (GALEX) Space Telescope <https://www.jpl.nasa.gov/missions/galaxy-evolution-explorer-galex/>`_
 =============================================================================================================================
-GALEX was an ultraviolet space telescope commissioned by NASA and managed by the Jet Propulsion Laboratory (JPL) at the California Institute of Technology (CalTech). 
+`GALEX <https://www.jpl.nasa.gov/missions/galaxy-evolution-explorer-galex/>`_ was an ultraviolet space telescope commissioned by NASA and managed by the Jet Propulsion Laboratory (JPL) at the California Institute of Technology (CalTech). 
 
 The data currently resides in the `GALEX Public Archive <http://galex.stsci.edu/GR6/>`_ at the Space Telescope Science Institute's (`STScI <http://stsci.edu/>`_) Mikulski Archive for Space Telescopes (`MAST <https://archive.stsci.edu/>`_).
 
