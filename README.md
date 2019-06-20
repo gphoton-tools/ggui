@@ -1,7 +1,7 @@
 # gGui: gPhoton glue user interface.
-gGui is a data-interpretation interface intended to interpet data from the GALEX Space Telescope data reduction pipeline, [gPhoton](https://archive.stsci.edu/prepds/gphoton/). 
+gGui is a data-analysis software written to visualize astronomical data, specifically time-tagged lightcurves, coadds, and cubes. gGui serves as the primary data visualization tool for [gPhoton](https://archive.stsci.edu/prepds/gphoton/), the data reduction pipeline for GALEX. 
 
-GALEX was an ultraviolet space telescope commissioned by NASA and managed by the Jet Propulsion Laboratory (JPL) at the California Institute of Technology (CalTech). The data currently resides at the [Space Telescope Science Institute's](http://www.stsci.edu/) (STScI) [Mikulski Archive for Space Telescopes](http://archive.stsci.edu/index.html) (MAST).
+Please see our full documentation at: https://ggui.readthedocs.io/
 
 gGui is written atop the [Glue Python Library for Dataset Visualization](https://github.com/glue-viz/glue). 
 
