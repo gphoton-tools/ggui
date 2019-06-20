@@ -24,6 +24,7 @@ The latest release is hosted on PyPI. To install, simply use pip!
    about
    using_ggui
    team
+   known_issues
 
 
 Indices and tables
