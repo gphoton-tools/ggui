@@ -22,5 +22,5 @@ ggui --yaml_select
 will open a file-select dialog to select your target list(s). After which, gGui will load these targets.
 
 ## Revision History
-2019-06-11: Uploaded first test of b0.3.5 to PyPI
-2017-06-26: v0.3.0 Tag Created
+* 2019-06-11: Uploaded first test of b0.3.5 to PyPI
+* 2017-06-26: v0.3.0 Tag Created
