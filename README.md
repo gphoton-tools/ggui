@@ -12,14 +12,14 @@ pip install ggui
 ```
 
 ## Sample Usage
-* If you know where your yaml file lives, you can specify it as a line argument:
 ```console
 ggui --target_list /path/to/ggui.yml
 ```
-* If you'd like to graphically search for your yaml, ggui can create a file selector dialog for you:
+will automatically load a specific target list into a new gGui session.
 ```console
 ggui --yaml_select
 ```
+will open a file-select dialog to select your target list(s). After which, gGui will load these targets.
 
 ## Revision History
 2019-06-11: Uploaded first test of b0.3.5 to PyPI

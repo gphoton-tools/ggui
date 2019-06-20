@@ -68,9 +68,9 @@ Launching gGui
 ==============
 Assuming you have a properly formatted target list, and have configured the gGui fields of your data, gGui can be started with two independent flags:
 
-``ggui --target_list <path to gGui Target List>`` will automatically load a specific target list into a gGui session.
+``ggui --target_list <path to gGui Target List>`` will automatically load a specific target list into a new gGui session.
 
-``ggui --yaml_select`` will open a file select dialog to select your target list(s). After which, gGui will load these targets.
+``ggui --yaml_select`` will open a file select dialog to select your target list(s). After which, gGui will load these targets into a new gGui session.
 
 If you are in an IPython environment, you can invoke gGui's main() function to use these flags as well: ``from ggui import ggui; ggui.main(['--target_list', '<path to gGui Target List'])``
 
