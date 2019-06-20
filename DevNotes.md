@@ -25,3 +25,5 @@
 * Devnote 5: If git reset --hard, ALWAYS STASH FIRST
 
 * Devnote 6: Glue Data object is iterable, but usually not in the ways you think. Most operations with list comprehension will fail
+
+* Devnote 7: Sphinx version 2.0 changed default master_doc from index.rst/html to contents.rst/html
