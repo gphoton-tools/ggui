@@ -1,4 +1,0 @@
-<target name to display>
-  lightcurve: '/path/to/unix/file.csv'
-  coadd: 'X:\\path\\to\\windows\\file.fits'
-  cube: '/another/path/to/unix/file.fits'

@@ -35,7 +35,7 @@ class MakeParamGUI(QtWidgets.QWidget):
         self.load_button = QPushButton()
         self.save_button = QPushButton()
         self.iscrollarea = QScrollArea()
-        self.yaml_params = []
+        self.yaml_params = dict()
         self.init_ui()
 
     def getifile(self):
@@ -96,6 +96,8 @@ class MakeParamGUI(QtWidgets.QWidget):
         if self.input_fname:
             with open(self.input_fname, 'r') as input_file:
                 csv_reader = csv.reader(input_file, delimiter=',')
+                input_fname_root = os.path.join(
+                    os.path.dirname(self.input_fname), '')
                 row_num = 0
                 for row in csv_reader:
                     row_num = row_num + 1
@@ -105,20 +107,39 @@ class MakeParamGUI(QtWidgets.QWidget):
                             # target to the list object to prepare for yaml
                             # output.
                             testfs = row[1:]
-                            
+
                             # Check for file existence.
                             for testf in testfs:
                                 if not os.path.isfile(testf) and testf:
                                     self.log_display.append("File not found: "
                                                             + testf)
-
-                            self.yaml_params.append({row[0].strip():{
-                                'lightcurve':{'FUV':row[1].strip(),
-                                              'NUV':row[2].strip()},
-                                'coadd':{'FUV':row[3].strip(),
-                                         'NUV':row[4].strip()},
-                                'cube':{'FUV':row[5].strip(),
-                                        'NUV':row[6].strip()}}})
+                            prikey = row[0].strip()
+                            self.yaml_params[prikey] = {'lightcurve':{},
+                                                        'coadd':{}, 'cube':{}}
+                            if row[1].strip():
+                                self.yaml_params[prikey]['lightcurve']['FUV'] = (
+                                    os.path.abspath(input_fname_root +
+                                                    row[1].strip()))
+                            if row[2].strip():
+                                self.yaml_params[prikey]['lightcurve']['NUV'] = (
+                                    os.path.abspath(input_fname_root +
+                                                    row[2].strip()))
+                            if row[3].strip():
+                                self.yaml_params[prikey]['coadd']['FUV'] = (
+                                    os.path.abspath(input_fname_root +
+                                                    row[3].strip()))
+                            if row[4].strip():
+                                self.yaml_params[prikey]['coadd']['NUV'] = (
+                                    os.path.abspath(input_fname_root +
+                                                    row[4].strip()))
+                            if row[5].strip():
+                                self.yaml_params[prikey]['cube']['FUV'] = (
+                                    os.path.abspath(input_fname_root +
+                                                    row[5].strip()))
+                            if row[6].strip():
+                                self.yaml_params[prikey]['cube']['NUV'] = (
+                                    os.path.abspath(input_fname_root +
+                                                    row[6].strip()))
                         else:
                             # Then need to print an error to the log area.
                             err_string = ("Row number {0:d}".format(row_num) +
