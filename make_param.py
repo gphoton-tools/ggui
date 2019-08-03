@@ -20,12 +20,20 @@ except ImportError:
     from PyQt4.QtWidgets import QApplication, QLineEdit, QPushButton, QFileDialog
     from PyQt4.QtWidgets import QTextEdit, QScrollArea
 
+def quoted_presenter(dumper, data):
+    """
+    This is a custom representer for string, so that YAML can be output
+    with quotes to satisfy paths on Windows.
+    """
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='"')
+
 class MakeParamGUI(QtWidgets.QWidget):
     """
     This class builds a pyQt GUI for creating a GGUI YAML parameter file.
     """
 
     def __init__(self):
+        yaml.add_representer(str, quoted_presenter)
         super().__init__()
         self.input_fname = ''
         self.output_fname = ''
@@ -158,7 +166,7 @@ class MakeParamGUI(QtWidgets.QWidget):
         Writes yaml parameters to file.
         """
         with open(self.output_fname, 'w') as outfile:
-            yaml.dump(self.yaml_params, outfile)
+            yaml.dump(self.yaml_params, outfile, default_flow_style=False)
 
     def make_input_row(self):
         """
