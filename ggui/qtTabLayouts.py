@@ -71,7 +71,6 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
         self._session.application._update_focus_decoration()
         self._session.application._update_plot_dashboard()
 
-
 class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
     """Data Viewer class that handles gPhoton lightcurve events"""
 

@@ -83,7 +83,6 @@ class ggui_glue_application(GlueApplication):
         :param target_data: The corresponding gPhoton data of the target
         """
         self.overview_widget = qtTabLayouts.ggui_overview_tab(session=self.session, target_name=target_name, target_data=target_data)
-        #overview_widget.subWindowActivated.connect(self._update_viewer_in_focus)
 
         self.tab_widget.addTab(self.overview_widget, "Overview of " + str(target_name))
         # Set Overview Tab to focus
