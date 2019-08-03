@@ -22,7 +22,7 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
     Implements basic data import logic, band organizing, and UI methods
     Adds FUV/NUV band support and associated band toggle tools
     """
-    tools = ['fuv_toggle', 'nuv_toggle']
+    tools = ['fuv_toggle', 'nuv_toggle', 'focus']
     
     def __init__(self, glue_session: glue.core.session, data: dict):
         """Initializes base gGui data viewer
@@ -152,6 +152,25 @@ class nuvToggleTool(Tool):
     def activate(self):
         """Calls the ggui data viewer's data visibility toggle with the 'FUV' band"""
         self.viewer.toggle_band_visibility('NUV')
+
+@viewer_tool
+class focusTool(Tool):
+    """Requests gGui to give the corresponding tool focus"""
+    # Set the boilerplate attributes
+    icon = resource_filename('ggui.icons', 'Focus.png')
+    tool_id = 'focus'
+    tool_tip = 'Click to set this viewer to focus'
+
+    def __init__(self, viewer):
+        """Initializes the focus tool
+        
+        :param viewer: The corresponding data viewer this tool belongs to
+        """
+        super().__init__(viewer)
+
+    def activate(self):
+        """Calls the ggui data viewer's data visibility toggle with the 'FUV' band"""
+        self.viewer.mousePressEvent(None)
 
 @qt_fixed_layout_tab
 class ggui_overview_tab(QtWidgets.QMdiArea):
