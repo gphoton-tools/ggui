@@ -108,7 +108,7 @@ setup(
     # py_modules=['mypackage'],
 
     entry_points={
-        'console_scripts': ['ggui=ggui.ggui:main'],
+        'console_scripts': ['ggui=ggui.main:main'],
     },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
