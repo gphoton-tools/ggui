@@ -75,7 +75,7 @@ class target_manager(QtWidgets.QToolBar):
         :param targName: Name of desired new primary target
         """
         # If requested target is not in current cache, throw exception
-        if targName not in self._target_catalog.keys():
+        if targName not in self.getTargetNames():
             raise KeyError("Target Manager does not recognize requested target: " + str(targName))
         # Don't bother doing anything if we're changing to the current target!
         if targName != self._primary_name:
@@ -181,23 +181,23 @@ class target_manager(QtWidgets.QToolBar):
     def next_target(self):
         """Advances to next primary target"""
         # Determine the index we're switching to...
-        current_target_index = list(self._target_catalog.keys()).index(self._primary_name)
+        current_target_index = list(self.getTargetNames()).index(self._primary_name)
         next_target_index = current_target_index + 1
         # And wrap around to the front if we're currently on the last target
-        if next_target_index > int(len(self._target_catalog.keys())) - 1:
+        if next_target_index > int(len(self.getTargetNames())) - 1:
             next_target_index = 0
         # Command Target Manager to switch primary targets
-        next_target_name = list(self._target_catalog.keys())[next_target_index]
+        next_target_name = list(self.getTargetNames())[next_target_index]
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
 
     def previous_target(self):
         """Advances to previous primary target"""
         # Determine the index we're switching to...
-        current_target_index = list(self._target_catalog.keys()).index(self._primary_name)
+        current_target_index = list(self.getTargetNames()).index(self._primary_name)
         next_target_index = current_target_index - 1
         # And wrap around to the back if we're currently on the first target
         if next_target_index < 0:
-            next_target_index = int(len(self._target_catalog.keys())) - 1
+            next_target_index = int(len(self.getTargetNames())) - 1
         # Command Target Manager to switch primary targets
-        next_target_name = list(self._target_catalog.keys())[next_target_index]
+        next_target_name = list(self.getTargetNames())[next_target_index]
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
