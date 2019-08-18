@@ -33,6 +33,8 @@ class target_manager(QtWidgets.QToolBar):
         self._primary_name = ""
         self._primary_data = {}
         self._target_change_callbacks = []
+        self._target_notes = None
+        self._note_display_widget = target_note_display(self)
 
         # Initialize GUI Elements
         self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
@@ -44,10 +46,18 @@ class target_manager(QtWidgets.QToolBar):
         self.addWidget(self.QComboBox)
         # Add Forward Button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowForward_transparent.png')), "Next Target", self.next_target)
+        # Add Notes Button
+        self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'Notepad.png')), "Target Notes", self._note_display_widget.show)
 
         # If the initializer wants to know about target changes, register its provided callback
         if target_change_callback:
             self.register_target_change_callback(target_change_callback)
+
+    def close(self):
+        """Handles graceful exit housekeeping"""
+
+        # Close note display widget if open
+        self._note_display_widget.close()
 
     def register_target_change_callback(self, callback):
         """Registers a callback function to call when primary target changes
@@ -92,11 +102,19 @@ class target_manager(QtWidgets.QToolBar):
                                 self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
             
+            # Update target notes
+            if self._target_notes:
+                print("Updating notes...")
+                self._target_catalog[self._primary_name]['_notes'] = self._target_notes
+
             # Clear existing target cache
             self._primary_name = None
             self._primary_data.clear()
+            self._target_notes = None
             
             target_files = self._target_catalog.get(targName)
+
+            self._target_notes = target_files.pop('_notes', None)
             # For each gGui Data Type...
             for data_product_type in target_files:
                 self._primary_data[data_product_type] = {}
@@ -179,6 +197,14 @@ class target_manager(QtWidgets.QToolBar):
         """
         return self._target_catalog.keys()
 
+
+    def getTargetNotes(self) -> str:
+        """Returns any notes associated with the current target. Returns empty string if no notes found.
+
+        :returns: notes registered with the current target
+        """
+        return self._target_notes
+
     def next_target(self):
         """Advances to next primary target"""
         # Determine the index we're switching to...
@@ -202,3 +228,63 @@ class target_manager(QtWidgets.QToolBar):
         # Command Target Manager to switch primary targets
         next_target_name = list(self.getTargetNames())[next_target_index]
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
+
+
+class target_note_display(QtWidgets.QGroupBox):
+    """Subwidget to display notes of current target"""
+
+    def __init__(self, parent):
+        """
+        Initializes note display widget
+
+        :param parent: The parent that spawned this note widget (usually the target manager)
+        """
+        super().__init__()
+        self._target_manager = parent
+        self._target_manager.register_target_change_callback(self.primary_target_changed)
+        # Initialize Widgets
+        self._text_field = QtWidgets.QTextEdit(initial_text)
+        self._text_field.setEnabled(False)
+        self._save_button = QtWidgets.QPushButton("Viewer only. Saving not implemented")
+        self._save_button.setEnabled(False)
+        # Declare Layout
+        self._layout = QtWidgets.QGridLayout()
+        self.setLayout(self._layout)
+        # Organize Widgets in Layout
+        self._layout.addWidget(self._text_field, 0, 0)
+        self._layout.addWidget(self._save_button, 1, 0)
+
+    def closeEvent(self, _):
+        """When close is detected, prompts user to save notes if text has been modified"""
+        self.save_notes()
+
+    def primary_target_changed(self, new_target: str):
+        """
+        When primary target has changed, retrieves notes for the new target
+
+        :param new_target: Name of the new primary target
+        """
+        # Save existing target's notes
+        self.save_notes()
+        # Get the new notes and update our text field
+        self._text_field.setText(self._target_manager.getTargetNotes())
+
+    def save_notes(self, force_save: bool = False):
+        """
+        Checks if notes need to be saved. If so, saves the notes and flushes to disk
+
+        :param force_save: If True, skips text modification checks and forces a save to disk
+        """
+        # Check for abort-save conditions
+        if not force_save:
+            # Check if text has been modified
+            unsaved_text = False
+            # If text has been modified, ask user if they want to save. Otherwise, fallthrough to save
+            if unsaved_text:
+                if QtWidgets.QMessageBox.No == QtWidgets.QMessageBox.question(self, "Close Confirmation", "Would you like to save your notes?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No):
+                    return
+            # If text hasn't been modified, exit
+            else:
+                return
+        # If no abort-save conditions caught, save to disk
+        print("Implement saving feature here...")

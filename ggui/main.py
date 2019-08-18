@@ -16,11 +16,12 @@ from PyQt5 import QtWidgets
 from ggui import qtTabLayouts
 from ggui.targetManager import target_manager
 
+
 class ggui_glue_application(GlueApplication):
     """Primary gGui Application Class
     Integrates gGui framework (target manager, custom tab generation, etc.) into Glue
     """
-    
+
     def __init__(self, data_collection: DataCollection = DataCollection(), target_dict: dict = None):
         """Initializes gGui
         If provided a dictionary of targets, in outlined gGui YAML structure, it will load those targets into the target manager
@@ -31,7 +32,7 @@ class ggui_glue_application(GlueApplication):
         super().__init__(data_collection)
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
-        
+
         # Initialize blank overview tab
         def init_overview_tab(self):
             # Initialize blank overview_widget
@@ -56,14 +57,20 @@ class ggui_glue_application(GlueApplication):
         # Delete first default tab
         self.close_tab(self.get_tab_index(default_tab), False)
 
+    def closeEvent(self, event):
+        """Handles subwindows when gGui is closed"""
+
+        # Notify Target Manager of closing
+        self.target_manager.close()
+
     def primary_target_changed(self, _):
         """Updates tab data of new primary target
         Indended as signal callback for the target manager to notify gGui of primary target changes
         """
         # Update overview tab with new target's data
         self.overview_widget.load_data(self.session,
-                                    self.target_manager.getPrimaryName(),
-                                    self.target_manager.getPrimaryData())
+                                       self.target_manager.getPrimaryName(),
+                                       self.target_manager.getPrimaryData())
         self.tab_widget.setTabText(self.get_tab_index(self.overview_widget), "Overview of " + str(self.target_manager.getPrimaryName()))
 
     def load_targets(self, target_dict: dict):
@@ -109,6 +116,8 @@ def main(user_arguments: list = None):
         for target_name, target_data in target_list.items():
             valid_files = 0
             for data_type, band_data in target_data.items():
+                if data_type == '_notes':
+                    continue
                 for band, filepathString in band_data.items():
                     if not pathlib.Path(filepathString).is_file():
                         if filepathString:
