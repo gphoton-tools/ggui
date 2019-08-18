@@ -47,7 +47,7 @@ class ggui_glue_application(GlueApplication):
 
         if target_dict:
             # Notify user of successful target catalog detection
-            print(str(len(target_dict.keys())) + " targets received. Loading " + str(list(target_dict.keys())[0]) + " as default.")
+            #print(str(len(target_dict.keys())) + " targets received. Loading " + str(list(target_dict.keys())[0]) + " as default.")
 
             # Load supplied target catalog into target manager
             # NOTE: Upon first load, Target Manager will automatically update target manager's primary target with the first entry in this dict.
@@ -95,7 +95,7 @@ def main(user_arguments: list = None):
     """
     # Initialize argument parser with arguments
     parser = argparse.ArgumentParser(description='gPhoton Graphical User Interface. An analysis package for GALEX gPhoton data products')
-    parser.add_argument('--target_list', help='Specify a path to a YAML style list of astronomical targets and associated gPhoton data products')
+    parser.add_argument('--target_list', nargs='+', help='Specify a path to a YAML style list of astronomical targets and associated gPhoton data products')
     parser.add_argument('--yaml_select', action="store_true", help='Spawns a file select dialog to choose a YAML style list of astronomical targets and associated gPhoton data products')
     if user_arguments: 
         args = parser.parse_args(user_arguments)
@@ -125,9 +125,9 @@ def main(user_arguments: list = None):
 
     # If the user specified a gGui YAML file, load its targets
     if args.target_list:
-        print("File received: " + str(args.target_list))
-        target_list_path = pathlib.Path(args.target_list)
-        target_data_products.update(validate_targlist_format(yaml.load(open(str(target_list_path), 'r'), Loader=yaml.BaseLoader), str(target_list_path)))
+        for file in args.target_list:
+            target_list_path = str(pathlib.Path(file).absolute())
+            target_data_products[target_list_path] = validate_targlist_format(yaml.load(open(target_list_path, 'r'), Loader=yaml.BaseLoader), target_list_path)
     # If the user requested a file-selector dialog to select a gGui YAML file, display it and load its contents
     if args.yaml_select:
         def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
@@ -149,7 +149,7 @@ def main(user_arguments: list = None):
             filenames = dialog.selectedFiles()
             return filenames
         for ggui_yaml_file in prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
-            target_data_products.update(validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file))
+            target_data_products[ggui_yaml_file] = validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file)
     # If no targets were recognized, notify the user
     if not target_data_products:
         print("No yaml received. Starting empty gGui session...")
