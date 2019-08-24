@@ -22,12 +22,12 @@ class ggui_glue_application(GlueApplication):
     Integrates gGui framework (target manager, custom tab generation, etc.) into Glue
     """
 
-    def __init__(self, data_collection: DataCollection = DataCollection(), target_dict: dict = None):
+    def __init__(self, data_collection: DataCollection = DataCollection(), imported_target_catalogs: dict = None):
         """Initializes gGui
         If provided a dictionary of targets, in outlined gGui YAML structure, it will load those targets into the target manager
 
         :param data_collection: Glue data collection containing Glue data to plot
-        :param target_dict: Dict of targets and paths to associated gPhoton data products to load initially
+        :param imported_target_catalogs: Dict of targets and paths to associated gPhoton data products to load initially
         """
         super().__init__(data_collection)
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
@@ -46,13 +46,13 @@ class ggui_glue_application(GlueApplication):
         self.target_manager = target_manager(self, self.primary_target_changed)
         self.addToolBar(self.target_manager)
 
-        if target_dict:
+        if imported_target_catalogs:
             # Notify user of successful target catalog detection
-            #print(str(len(target_dict.keys())) + " targets received. Loading " + str(list(target_dict.keys())[0]) + " as default.")
+            #print(str(len(imported_target_catalogs.keys())) + " targets received. Loading " + str(list(imported_target_catalogs.keys())[0]) + " as default.")
 
             # Load supplied target catalog into target manager
             # NOTE: Upon first load, Target Manager will automatically update target manager's primary target with the first entry in this dict.
-            self.load_targets(target_dict)
+            self.load_targets(imported_target_catalogs)
 
         # Delete first default tab
         self.close_tab(self.get_tab_index(default_tab), False)
@@ -73,13 +73,14 @@ class ggui_glue_application(GlueApplication):
                                        self.target_manager.getPrimaryData())
         self.tab_widget.setTabText(self.get_tab_index(self.overview_widget), "Overview of " + str(self.target_manager.getPrimaryName()))
 
-    def load_targets(self, target_dict: dict):
+    def load_targets(self, imported_target_catalogs: dict):
         """
         Imports gGui-compliant data (see yaml standard) into target manager
 
-        :param target_dict: Dict of targets and paths to associated gPhoton data products
+        :param imported_target_catalogs: Dict of gGui yamls and filenames imported from main
         """
-        self.target_manager.loadTargetDict(target_dict)
+        for filename in imported_target_catalogs:
+            self.target_manager.loadTargetDict(imported_target_catalogs[filename], filename)
 
     def create_overview_widget(self, target_name: str, target_data: dict):
         """
@@ -95,6 +96,7 @@ class ggui_glue_application(GlueApplication):
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(self.overview_widget)
 
+
 def main(user_arguments: list = None):
     """Entry point/helper function to start ggui
 
@@ -108,7 +110,7 @@ def main(user_arguments: list = None):
         args = parser.parse_args(user_arguments)
     else: 
         args = parser.parse_args()
-    
+
     target_data_products = {}
 
     def validate_targlist_format(target_list: dict,  list_source: str) -> dict:
@@ -125,7 +127,7 @@ def main(user_arguments: list = None):
                     else: valid_files += 1
             if not valid_files:
                 empty_targets.append(target_name)
-        
+
         for bad_target in empty_targets:
             print(str(bad_target) + " does not have any valid data. Ignoring target...")
             del target_list[bad_target]
@@ -163,9 +165,9 @@ def main(user_arguments: list = None):
     if not target_data_products:
         print("No yaml received. Starting empty gGui session...")
     # Initialize gGui with user-supplied targets, if any
-    ggui_app = ggui_glue_application(target_dict=target_data_products)
+    ggui_app = ggui_glue_application(imported_target_catalogs=target_data_products)
     # Start gGui
     ggui_app.start()
-    
+
 if __name__ == '__main__':
     main()

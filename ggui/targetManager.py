@@ -66,16 +66,16 @@ class target_manager(QtWidgets.QToolBar):
         """
         self._target_change_callbacks.append(callback)
 
-    def loadTargetDict(self, ggui_yaml_file: dict):
-        """Loads a dictionary of targets and associated data product paths into internal cache
+    def loadTargetDict(self, target_files: dict, id_name: str = None):
+        """Loads a single dictionary of targets and associated data product paths into internal cache
 
-        :param ggui_yaml_file: gGui compliant yaml dictionary of targets and paths to associated gPhoton data products
+        :param id_name: Name/identifier of this dictionary of targets. Can be used to return data
+        :param target_files: gGui compliant yaml dictionary of targets and paths to associated gPhoton data products
         """
-        # Add incoming dictionary to internal cache
-        for target_dict in ggui_yaml_file.values():
-            self._target_catalog.update(target_dict)
+        # Add targets to internal cache
+        self._target_catalog.update(target_files)
         # Add new items to GUI
-            self.QComboBox.addItems(target_dict.keys())
+        self.QComboBox.addItems(target_files.keys())
 
     def setPrimaryTarget(self, targName: str):
         """Changes primary target to target specified
