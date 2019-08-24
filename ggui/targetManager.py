@@ -243,7 +243,7 @@ class target_note_display(QtWidgets.QGroupBox):
         self._target_manager = parent
         self._target_manager.register_target_change_callback(self.primary_target_changed)
         # Initialize Widgets
-        self._text_field = QtWidgets.QTextEdit(initial_text)
+        self._text_field = QtWidgets.QTextEdit()
         self._text_field.setEnabled(False)
         self._save_button = QtWidgets.QPushButton("Viewer only. Saving not implemented")
         self._save_button.setEnabled(False)
