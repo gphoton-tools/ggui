@@ -197,8 +197,7 @@ class target_manager(QtWidgets.QToolBar):
         """
         return self._target_catalog.keys()
 
-
-    def getTargetNotes(self) -> str:
+    def getPrimaryNotes(self) -> str:
         """Returns any notes associated with the current target. Returns empty string if no notes found.
 
         :returns: notes registered with the current target
@@ -267,7 +266,7 @@ class target_note_display(QtWidgets.QGroupBox):
         # Save existing target's notes
         self.save_notes()
         # Get the new notes and update our text field
-        self._text_field.setText(self._target_manager.getTargetNotes())
+        self._text_field.setText(self._target_manager.getPrimaryNotes())
 
     def save_notes(self, force_save: bool = False):
         """
