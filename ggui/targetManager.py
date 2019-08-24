@@ -204,6 +204,15 @@ class target_manager(QtWidgets.QToolBar):
         """
         return self._target_notes
 
+    def setPrimaryTargetNotes(self, new_notes: str):
+        """"
+        Updates internal cache of target's notes to given string
+
+        :param new_notes: New notes for the primary target
+        """
+        self._target_notes = new_notes
+        self._target_catalog[self._primary_name]['_notes'] = new_notes
+
     def next_target(self):
         """Advances to next primary target"""
         # Determine the index we're switching to...
