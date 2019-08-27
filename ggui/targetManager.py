@@ -74,6 +74,7 @@ class target_manager(QtWidgets.QToolBar):
         :param id_name: Name/identifier of this dictionary of targets. Can be used to return data
         :param target_files: gGui compliant yaml dictionary of targets and paths to associated gPhoton data products
         """
+        self._target_catalog_with_filenames[id_name] = OrderedDict(target_files)
         # Add targets to internal cache
         self._target_catalog.update(target_files)
         # Add new items to GUI
