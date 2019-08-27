@@ -6,6 +6,7 @@
 
 from collections import OrderedDict
 from configparser import ConfigParser
+import itertools
 from typing import Callable
 
 from PyQt5 import QtWidgets, QtGui
