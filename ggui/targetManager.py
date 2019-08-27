@@ -15,6 +15,7 @@ from glue.core.data_factories import load_data
 
 from pkg_resources import resource_filename
 
+
 class target_manager(QtWidgets.QToolBar):
     """
     Class that handles the loading of gPhoton data and management of multiple
@@ -30,6 +31,7 @@ class target_manager(QtWidgets.QToolBar):
         super().__init__()
         self._glue_parent = glue_parent
         self._target_catalog = OrderedDict()
+        self._target_catalog_with_filenames = OrderedDict()
         self._primary_name = ""
         self._primary_data = {}
         self._target_change_callbacks = []
@@ -90,8 +92,8 @@ class target_manager(QtWidgets.QToolBar):
             raise KeyError("Target Manager does not recognize requested target: " + str(targName))
         # Don't bother doing anything if we're changing to the current target!
         if targName != self._primary_name:
-            # If we have data loaded, remove it
-            if self._primary_data: 
+            # If we have data loaded, remove it from the Glue Data
+            if self._primary_data:
                 def unload_primary_data():
                     for band_data_set in list(self._primary_data.values()):
                         for band_data in band_data_set.values():
@@ -101,7 +103,7 @@ class target_manager(QtWidgets.QToolBar):
                             else:
                                 self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
-            
+
             # Update target notes
             if self._target_notes:
                 print("Updating notes...")
@@ -111,7 +113,7 @@ class target_manager(QtWidgets.QToolBar):
             self._primary_name = None
             self._primary_data.clear()
             self._target_notes = None
-            
+
             target_files = self._target_catalog.get(targName)
 
             self._target_notes = target_files.pop('_notes', None)
@@ -128,7 +130,7 @@ class target_manager(QtWidgets.QToolBar):
                 for band, band_file in target_files[data_product_type].items():
                     if band_file:
                         self._primary_data[data_product_type][band] = load_data(band_file)
-                        
+
                         # If x_att, y_att provided in conf, test they exist
                         try:
                             if x_att:
