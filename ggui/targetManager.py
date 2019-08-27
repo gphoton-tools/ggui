@@ -194,11 +194,12 @@ class target_manager(QtWidgets.QToolBar):
         return self._primary_name
 
     def getTargetNames(self) -> list:
-        """Returns a list of all cached targets' names
+        """Returns the names of all registered targets, in their registered order
 
         :returns: list of all cached targets' names
         """
-        return self._target_catalog.keys()
+        # Devnote 8: List Comprehension Alternative
+        return list(itertools.chain.from_iterable(self._target_catalog_with_filenames.values()))
 
     def getPrimaryNotes(self) -> str:
         """Returns any notes associated with the current target. Returns empty string if no notes found.
