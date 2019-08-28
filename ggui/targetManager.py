@@ -180,6 +180,34 @@ class target_manager(QtWidgets.QToolBar):
             for callback in self._target_change_callbacks:
                 callback(self._primary_name)
 
+    def setPrimaryNotes(self, new_notes: str):
+        """"
+        Updates internal cache of target's notes to given string
+
+        :param new_notes: New notes for the primary target
+        """
+        self._target_notes = new_notes
+        self._target_catalog[self._primary_name]['_notes'] = new_notes
+
+        self.getTargetData(self._primary_name)['_notes'] = new_notes
+        print(self._target_catalog_with_filenames)
+
+    def getTargetNames(self) -> list:
+        """Returns the names of all registered targets, in their registered order
+
+        :returns: list of all cached targets' names
+        """
+        # Devnote 8: List Comprehension Alternative
+        return list(itertools.chain.from_iterable(self._target_catalog_with_filenames.values()))
+
+    def getTargetData(self, target_name: str) -> dict:
+        for target_data_catalog in self._target_catalog_with_filenames.values():
+            try:
+                return target_data_catalog[target_name]
+            except KeyError:
+                pass
+        raise KeyError("'" + str(target_name) + "' not found in cache")
+
     def getPrimaryData(self) -> dict:
         """Returns currently loaded primary target's data
 
@@ -194,29 +222,12 @@ class target_manager(QtWidgets.QToolBar):
         """
         return self._primary_name
 
-    def getTargetNames(self) -> list:
-        """Returns the names of all registered targets, in their registered order
-
-        :returns: list of all cached targets' names
-        """
-        # Devnote 8: List Comprehension Alternative
-        return list(itertools.chain.from_iterable(self._target_catalog_with_filenames.values()))
-
     def getPrimaryNotes(self) -> str:
         """Returns any notes associated with the current target. Returns empty string if no notes found.
 
         :returns: notes registered with the current target
         """
         return self._target_notes
-
-    def setPrimaryTargetNotes(self, new_notes: str):
-        """"
-        Updates internal cache of target's notes to given string
-
-        :param new_notes: New notes for the primary target
-        """
-        self._target_notes = new_notes
-        self._target_catalog[self._primary_name]['_notes'] = new_notes
 
     def next_target(self):
         """Advances to next primary target"""
