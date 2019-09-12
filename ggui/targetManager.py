@@ -8,6 +8,8 @@ from collections import OrderedDict
 from configparser import ConfigParser
 import itertools
 from typing import Callable
+from copy import copy
+import yaml
 
 from PyQt5 import QtWidgets, QtGui
 from glue.app.qt.application import GlueApplication
@@ -287,9 +289,8 @@ class target_note_display(QtWidgets.QGroupBox):
         self._target_manager.register_target_change_callback(self.primary_target_changed)
         # Initialize Widgets
         self._text_field = QtWidgets.QTextEdit()
-        self._text_field.setEnabled(False)
-        self._save_button = QtWidgets.QPushButton("Viewer only. Saving not implemented")
-        self._save_button.setEnabled(False)
+        self._save_button = QtWidgets.QPushButton("Force save notes")
+        self._save_button.clicked.connect(lambda: self.save_notes(True))
         # Declare Layout
         self._layout = QtWidgets.QGridLayout()
         self.setLayout(self._layout)
@@ -330,4 +331,5 @@ class target_note_display(QtWidgets.QGroupBox):
             else:
                 return
         # If no abort-save conditions caught, save to disk
-        print("Implement saving feature here...")
+        self._target_manager.setPrimaryNotes(self._text_field.toPlainText())
+        self._target_manager.flushSourceFile(self._target_manager.getTargetSourceFile(self._target_manager.getPrimaryName()))
