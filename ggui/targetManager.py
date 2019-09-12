@@ -187,10 +187,7 @@ class target_manager(QtWidgets.QToolBar):
         :param new_notes: New notes for the primary target
         """
         self._target_notes = new_notes
-        self._target_catalog[self._primary_name]['_notes'] = new_notes
-
-        self.getTargetData(self._primary_name)['_notes'] = new_notes
-        print(self._target_catalog_with_filenames)
+        self.getTargetFiles(self._primary_name)['_notes'] = new_notes
 
     def getTargetNames(self) -> list:
         """Returns the names of all registered targets, in their registered order
@@ -200,8 +197,13 @@ class target_manager(QtWidgets.QToolBar):
         # Devnote 8: List Comprehension Alternative
         return list(itertools.chain.from_iterable(self._target_catalog_with_filenames.values()))
 
-    def getTargetData(self, target_name: str) -> dict:
-        for target_data_catalog in self._target_catalog_with_filenames.values():
+    def getTargetFiles(self, target_name: str) -> dict:
+        """Returns the files and metadata of a specified target (Unloaded data, as per lazy evaluation principle)
+        
+        :param target_name: Name of the target whose files to lookup
+        :returns: Unloaded metadata and filepaths of the corresponding target's data
+        """
+        for target_data_catalog in self._target_catalog.values():
             try:
                 return target_data_catalog[target_name]
             except KeyError:
