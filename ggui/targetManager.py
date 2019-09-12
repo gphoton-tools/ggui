@@ -106,10 +106,8 @@ class target_manager(QtWidgets.QToolBar):
                                 self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
 
-            # Update target notes
-            if self._target_notes:
-                print("Updating notes...")
-                self._target_catalog[self._primary_name]['_notes'] = self._target_notes
+            # Save target notes
+            self._note_display_widget.save_notes()
 
             # Clear existing target cache
             self._primary_name = None
