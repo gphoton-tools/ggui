@@ -116,8 +116,7 @@ class target_manager(QtWidgets.QToolBar):
             self._primary_data.clear()
             self._target_notes = None
 
-            target_files = self._target_catalog.get(targName)
-
+            target_files = copy(self.getTargetFiles(targName))
             self._target_notes = target_files.pop('_notes', None)
             # For each gGui Data Type...
             for data_product_type in target_files:
