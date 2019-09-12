@@ -264,6 +264,14 @@ class target_manager(QtWidgets.QToolBar):
         next_target_name = list(self.getTargetNames())[next_target_index]
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
 
+    def flushSourceFile(self, source_filename: str):
+        """Force saves (flushes) the given source file
+        Intended to be used for saving notes
+
+        :param source_filename: Filename of source file to be flushed
+        """
+        with open(source_filename, "w") as source_file:
+            source_file.write(yaml.dump(dict(self._target_catalog[source_filename])))
 
 class target_note_display(QtWidgets.QGroupBox):
     """Subwidget to display notes of current target"""
