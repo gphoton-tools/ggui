@@ -30,4 +30,4 @@
 
 * Devnote 8: Could also be replaced with list comprehension, but this itertools seems to be more human readable (at least to me) and according to the stackoverflow I found it on, it is also faster:
   * https://stackoverflow.com/questions/14807689/python-list-comprehension-to-join-list-of-lists
-  * return [item for sublist in [x.keys() for x in self._target_catalog_with_filenames.values()] for item in sublist]
+  * return [item for sublist in [x.keys() for x in self._target_catalog.values()] for item in sublist]
