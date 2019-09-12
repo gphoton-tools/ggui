@@ -208,6 +208,17 @@ class target_manager(QtWidgets.QToolBar):
                 pass
         raise KeyError("'" + str(target_name) + "' not found in cache")
 
+    def getTargetSourceFile(self, target_name: str) -> str:
+        """Returns the source yaml file the given target originated from
+        
+        :param target_name: Name of the target whose source yaml file to lookup
+        :returns: Absoute filepath of the specified target's source file.
+        """
+        for source_filename, target_data_catalog in self._target_catalog.items():
+            if target_name in target_data_catalog:
+                return source_filename
+        raise KeyError("Source file for target '" + str(target_name) + "' could not be found")
+
     def getPrimaryData(self) -> dict:
         """Returns currently loaded primary target's data
 
