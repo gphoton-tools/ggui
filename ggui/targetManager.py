@@ -32,7 +32,6 @@ class target_manager(QtWidgets.QToolBar):
         super().__init__()
         self._glue_parent = glue_parent
         self._target_catalog = OrderedDict()
-        self._target_catalog_with_filenames = OrderedDict()
         self._primary_name = ""
         self._primary_data = {}
         self._target_change_callbacks = []
@@ -75,9 +74,8 @@ class target_manager(QtWidgets.QToolBar):
         :param id_name: Name/identifier of this dictionary of targets. Can be used to return data
         :param target_files: gGui compliant yaml dictionary of targets and paths to associated gPhoton data products
         """
-        self._target_catalog_with_filenames[id_name] = OrderedDict(target_files)
         # Add targets to internal cache
-        self._target_catalog.update(target_files)
+        self._target_catalog[id_name] = OrderedDict(target_files)
         # Add new items to GUI
         self.QComboBox.addItems(target_files.keys())
 
@@ -109,23 +107,26 @@ class target_manager(QtWidgets.QToolBar):
             # Save target notes
             self._note_display_widget.save_notes()
 
-            # Clear existing target cache
+            # Clear internal target cache
             self._primary_name = None
             self._primary_data.clear()
             self._target_notes = None
 
             target_files = copy(self.getTargetFiles(targName))
             self._target_notes = target_files.pop('_notes', None)
+
             # For each gGui Data Type...
             for data_product_type in target_files:
+                # Initialize dictionary for this data product
                 self._primary_data[data_product_type] = {}
 
+                # Retrieve the x and y attributes for this data product from the conf file
                 config = ConfigParser()
                 config.read(resource_filename('ggui', 'ggui.conf'))                
                 x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback='')
                 y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback='')
 
-                # Load every band's data
+                # Load every band's data into internal cache
                 for band, band_file in target_files[data_product_type].items():
                     if band_file:
                         self._primary_data[data_product_type][band] = load_data(band_file)
@@ -152,7 +153,7 @@ class target_manager(QtWidgets.QToolBar):
                             else:
                                 raise
                             
-                        #confirm this is the same object as what was stored in the data collection:
+                        # Register this data product with Glue's Data Collection
                         self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
                 # If we have multiple bands, glue them together
                 try: 
@@ -192,7 +193,7 @@ class target_manager(QtWidgets.QToolBar):
         :returns: list of all cached targets' names
         """
         # Devnote 8: List Comprehension Alternative
-        return list(itertools.chain.from_iterable(self._target_catalog_with_filenames.values()))
+        return list(itertools.chain.from_iterable(self._target_catalog.values()))
 
     def getTargetFiles(self, target_name: str) -> dict:
         """Returns the files and metadata of a specified target (Unloaded data, as per lazy evaluation principle)
