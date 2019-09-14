@@ -210,6 +210,18 @@ class target_manager(QtWidgets.QToolBar):
                 pass
         raise KeyError("'" + str(target_name) + "' not found in cache")
 
+    def getTargetNotes(self, target_name: str) -> str:
+        """Returns the notes specified target, or blank string if no notes registered
+        
+        :param target_name: Name of the target whose notes to lookup
+        :returns: Notes of the specified target, or blank string if no notes
+        """
+        targ_data = self.getTargetFiles(target_name)
+        try:
+            return targ_data['_notes']
+        except KeyError:
+            return ""
+    
     def getTargetSourceFile(self, target_name: str) -> str:
         """Returns the source yaml file the given target originated from
         
