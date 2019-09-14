@@ -322,10 +322,10 @@ class target_note_display(QtWidgets.QGroupBox):
         # Check for abort-save conditions
         if not force_save:
             # Check if text has been modified
-            unsaved_text = False
+            unsaved_text = self._text_field.document().isModified()
             # If text has been modified, ask user if they want to save. Otherwise, fallthrough to save
             if unsaved_text:
-                if QtWidgets.QMessageBox.No == QtWidgets.QMessageBox.question(self, "Close Confirmation", "Would you like to save your notes?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No):
+                if QtWidgets.QMessageBox.Cancel == QtWidgets.QMessageBox.question(self, "Close Confirmation", "Do you want to save changes to your notes?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Cancel):
                     return
             # If text hasn't been modified, exit
             else:
