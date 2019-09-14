@@ -312,6 +312,8 @@ class target_note_display(QtWidgets.QGroupBox):
         self.save_notes()
         # Get the new notes and update our text field
         self._text_field.setText(self._target_manager.getPrimaryNotes())
+        # Set text field to unmodified to recalibrate autosave detection
+        self._text_field.document().setModified(False)
 
     def save_notes(self, force_save: bool = False):
         """
@@ -332,4 +334,8 @@ class target_note_display(QtWidgets.QGroupBox):
                 return
         # If no abort-save conditions caught, save to disk
         self._target_manager.setPrimaryNotes(self._text_field.toPlainText())
-        self._target_manager.flushSourceFile(self._target_manager.getTargetSourceFile(self._target_manager.getPrimaryName()))
+        try:
+            self._target_manager.flushSourceFile(self._target_manager.getTargetSourceFile(self._target_manager.getPrimaryName()))
+            self._text_field.document().setModified(False)
+        except IOError:
+            print("Error saving notes! Your notes have NOT been saved!")
