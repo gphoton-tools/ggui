@@ -288,15 +288,21 @@ class target_note_display(QtWidgets.QGroupBox):
         self._target_manager = parent
         self._target_manager.register_target_change_callback(self.primary_target_changed)
         # Initialize Widgets
+        # Main Text Field
         self._text_field = QtWidgets.QTextEdit()
+        # Save Notes Button
         self._save_button = QtWidgets.QPushButton("Force save notes")
         self._save_button.clicked.connect(lambda: self.save_notes(True))
+        # Discard Changes Button
+        self._discard_button = QtWidgets.QPushButton("Discard Changes")
+        self._discard_button.clicked.connect(self.discard_note_changes)
         # Declare Layout
         self._layout = QtWidgets.QGridLayout()
         self.setLayout(self._layout)
         # Organize Widgets in Layout
-        self._layout.addWidget(self._text_field, 0, 0)
+        self._layout.addWidget(self._text_field, 0, 0, 1, 2)
         self._layout.addWidget(self._save_button, 1, 0)
+        self._layout.addWidget(self._discard_button, 1, 1)
 
     def closeEvent(self, _):
         """When close is detected, prompts user to save notes if text has been modified"""
@@ -339,3 +345,14 @@ class target_note_display(QtWidgets.QGroupBox):
             self._text_field.document().setModified(False)
         except IOError:
             print("Error saving notes! Your notes have NOT been saved!")
+
+    def discard_note_changes(self):
+        """Discards any changes to notes and reverts to last saved notes"""
+
+        # Safety Prompt
+        if QtWidgets.QMessageBox.Cancel == QtWidgets.QMessageBox.question(self, "Discard Confirmation", "Are you sure you want to permanently discard changes to your notes?", QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel):
+            return
+        # Revert Notes
+        self._text_field.setText(self._target_manager.getPrimaryNotes())
+        # Set text field to unmodified to recalibrate autosave detection
+        self._text_field.document().setModified(False)
