@@ -44,6 +44,7 @@ class ggui_glue_application(GlueApplication):
 
         # Initialize empty Target Manager
         self.target_manager = target_manager(self, self.primary_target_changed)
+        self.addToolBarBreak()
         self.addToolBar(self.target_manager)
 
         if imported_target_catalogs:
