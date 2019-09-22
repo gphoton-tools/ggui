@@ -304,11 +304,14 @@ class target_note_display(QtWidgets.QGroupBox):
         self._text_field = QtWidgets.QTextEdit()
         self._text_field.document().modificationChanged.connect(self.modificationChanged)
         # Save Notes Button
-        self._save_button = QtWidgets.QPushButton("Force save notes")
+        self._save_button = QtWidgets.QPushButton("Save Notes")
+        self.setTitle("Notes: Unmodified")
+        self._save_button.setEnabled(False)
         self._save_button.clicked.connect(lambda: self.save_notes(True))
         # Discard Changes Button
         self._discard_button = QtWidgets.QPushButton("Discard Changes")
         self._discard_button.clicked.connect(self.discard_note_changes)
+        self._discard_button.setEnabled(False)
         # Declare Layout
         self._layout = QtWidgets.QGridLayout()
         self.setLayout(self._layout)
@@ -368,6 +371,16 @@ class target_note_display(QtWidgets.QGroupBox):
         self._text_field.setText(self._target_manager.getPrimaryNotes())
         # Set text field to unmodified to recalibrate autosave detection
         self._text_field.document().setModified(False)
+        self.setTitle("Notes: Changes Discard")
+        self.setStyleSheet('QGroupBox:title {color: rgb(0, 0, 175);}')
 
     def modificationChanged(self, changed: bool):
         print("Modification Changed: " + str(changed))
+        self._save_button.setEnabled(changed)
+        self._discard_button.setEnabled(changed)
+        if changed:
+            self.setTitle("Notes: Modified")
+            self.setStyleSheet('QGroupBox:title {color: rgb(255, 0, 0);}')
+        else:
+            self.setTitle("Notes: Saved")
+            self.setStyleSheet('QGroupBox:title {color: rgb(0, 150, 0);}')
