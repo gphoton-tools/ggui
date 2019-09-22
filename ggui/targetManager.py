@@ -302,6 +302,7 @@ class target_note_display(QtWidgets.QGroupBox):
         # Initialize Widgets
         # Main Text Field
         self._text_field = QtWidgets.QTextEdit()
+        self._text_field.document().modificationChanged.connect(self.modificationChanged)
         # Save Notes Button
         self._save_button = QtWidgets.QPushButton("Force save notes")
         self._save_button.clicked.connect(lambda: self.save_notes(True))
@@ -369,3 +370,6 @@ class target_note_display(QtWidgets.QGroupBox):
         self._text_field.setText(self._target_manager.getPrimaryNotes())
         # Set text field to unmodified to recalibrate autosave detection
         self._text_field.document().setModified(False)
+
+    def modificationChanged(self, changed: bool):
+        print("Modification Changed: " + str(changed))
