@@ -327,8 +327,6 @@ class target_note_display(QtWidgets.QGroupBox):
 
         :param new_target: Name of the new primary target
         """
-        # Save existing target's notes
-        self.save_notes()
         # Get the new notes and update our text field
         self._text_field.setText(self._target_manager.getPrimaryNotes())
         # Set text field to unmodified to recalibrate autosave detection
