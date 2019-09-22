@@ -354,6 +354,7 @@ class target_note_display(QtWidgets.QGroupBox):
         self._target_manager.setPrimaryNotes(self._text_field.toPlainText())
         try:
             self._target_manager.flushSourceFile(self._target_manager.getTargetSourceFile(self._target_manager.getPrimaryName()))
+            # Set text field to unmodified to recalibrate autosave detection
             self._text_field.document().setModified(False)
         except IOError:
             print("Error saving notes! Your notes have NOT been saved!")
