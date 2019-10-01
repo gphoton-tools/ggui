@@ -375,7 +375,6 @@ class target_note_display(QtWidgets.QGroupBox):
         self.setStyleSheet('QGroupBox:title {color: rgb(0, 0, 175);}')
 
     def modificationChanged(self, changed: bool):
-        print("Modification Changed: " + str(changed))
         self._save_button.setEnabled(changed)
         self._discard_button.setEnabled(changed)
         if changed:
