@@ -6,7 +6,10 @@
 
 from collections import OrderedDict
 from configparser import ConfigParser
+import itertools
 from typing import Callable
+from copy import copy
+import yaml
 
 from PyQt5 import QtWidgets, QtGui
 from glue.app.qt.application import GlueApplication
@@ -14,6 +17,7 @@ from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
 
 from pkg_resources import resource_filename
+
 
 class target_manager(QtWidgets.QToolBar):
     """
@@ -73,7 +77,7 @@ class target_manager(QtWidgets.QToolBar):
         :param target_files: gGui compliant yaml dictionary of targets and paths to associated gPhoton data products
         """
         # Add targets to internal cache
-        self._target_catalog.update(target_files)
+        self._target_catalog[id_name] = OrderedDict(target_files)
         # Add new items to GUI
         self.QComboBox.addItems(target_files.keys())
 
@@ -90,8 +94,8 @@ class target_manager(QtWidgets.QToolBar):
             raise KeyError("Target Manager does not recognize requested target: " + str(targName))
         # Don't bother doing anything if we're changing to the current target!
         if targName != self._primary_name:
-            # If we have data loaded, remove it
-            if self._primary_data: 
+            # If we have data loaded, remove it from the Glue Data
+            if self._primary_data:
                 def unload_primary_data():
                     for band_data_set in list(self._primary_data.values()):
                         for band_data in band_data_set.values():
@@ -101,34 +105,34 @@ class target_manager(QtWidgets.QToolBar):
                             else:
                                 self._glue_parent.data_collection.remove(band_data)                
                 unload_primary_data()
-            
-            # Update target notes
-            if self._target_notes:
-                print("Updating notes...")
-                self._target_catalog[self._primary_name]['_notes'] = self._target_notes
 
-            # Clear existing target cache
+            # Save target notes
+            self._note_display_widget.save_notes()
+
+            # Clear internal target cache
             self._primary_name = None
             self._primary_data.clear()
             self._target_notes = None
-            
-            target_files = self._target_catalog.get(targName)
 
+            target_files = copy(self.getTargetFiles(targName))
             self._target_notes = target_files.pop('_notes', None)
+
             # For each gGui Data Type...
             for data_product_type in target_files:
+                # Initialize dictionary for this data product
                 self._primary_data[data_product_type] = {}
 
+                # Retrieve the x and y attributes for this data product from the conf file
                 config = ConfigParser()
                 config.read(resource_filename('ggui', 'ggui.conf'))                
                 x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback='')
                 y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback='')
 
-                # Load every band's data
+                # Load every band's data into internal cache
                 for band, band_file in target_files[data_product_type].items():
                     if band_file:
                         self._primary_data[data_product_type][band] = load_data(band_file)
-                        
+
                         # If x_att, y_att provided in conf, test they exist
                         try:
                             if x_att:
@@ -151,7 +155,7 @@ class target_manager(QtWidgets.QToolBar):
                             else:
                                 raise
                             
-                        #confirm this is the same object as what was stored in the data collection:
+                        # Register this data product with Glue's Data Collection
                         self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
                 # If we have multiple bands, glue them together
                 try: 
@@ -176,6 +180,59 @@ class target_manager(QtWidgets.QToolBar):
             for callback in self._target_change_callbacks:
                 callback(self._primary_name)
 
+    def setPrimaryNotes(self, new_notes: str):
+        """"
+        Updates internal cache of target's notes to given string
+
+        :param new_notes: New notes for the primary target
+        """
+        self._target_notes = new_notes
+        self.getTargetFiles(self._primary_name)['_notes'] = new_notes
+
+    def getTargetNames(self) -> list:
+        """Returns the names of all registered targets, in their registered order
+
+        :returns: list of all cached targets' names
+        """
+        # Devnote 8: List Comprehension Alternative
+        return list(itertools.chain.from_iterable(self._target_catalog.values()))
+
+    def getTargetFiles(self, target_name: str) -> dict:
+        """Returns the files and metadata of a specified target (Unloaded data, as per lazy evaluation principle)
+        
+        :param target_name: Name of the target whose files to lookup
+        :returns: Unloaded metadata and filepaths of the corresponding target's data
+        """
+        for target_data_catalog in self._target_catalog.values():
+            try:
+                return target_data_catalog[target_name]
+            except KeyError:
+                pass
+        raise KeyError("'" + str(target_name) + "' not found in cache")
+
+    def getTargetNotes(self, target_name: str) -> str:
+        """Returns the notes specified target, or blank string if no notes registered
+        
+        :param target_name: Name of the target whose notes to lookup
+        :returns: Notes of the specified target, or blank string if no notes
+        """
+        targ_data = self.getTargetFiles(target_name)
+        try:
+            return targ_data['_notes']
+        except KeyError:
+            return ""
+    
+    def getTargetSourceFile(self, target_name: str) -> str:
+        """Returns the source yaml file the given target originated from
+        
+        :param target_name: Name of the target whose source yaml file to lookup
+        :returns: Absoute filepath of the specified target's source file.
+        """
+        for source_filename, target_data_catalog in self._target_catalog.items():
+            if target_name in target_data_catalog:
+                return source_filename
+        raise KeyError("Source file for target '" + str(target_name) + "' could not be found")
+
     def getPrimaryData(self) -> dict:
         """Returns currently loaded primary target's data
 
@@ -190,28 +247,12 @@ class target_manager(QtWidgets.QToolBar):
         """
         return self._primary_name
 
-    def getTargetNames(self) -> list:
-        """Returns a list of all cached targets' names
-
-        :returns: list of all cached targets' names
-        """
-        return self._target_catalog.keys()
-
     def getPrimaryNotes(self) -> str:
         """Returns any notes associated with the current target. Returns empty string if no notes found.
 
         :returns: notes registered with the current target
         """
         return self._target_notes
-
-    def setPrimaryTargetNotes(self, new_notes: str):
-        """"
-        Updates internal cache of target's notes to given string
-
-        :param new_notes: New notes for the primary target
-        """
-        self._target_notes = new_notes
-        self._target_catalog[self._primary_name]['_notes'] = new_notes
 
     def next_target(self):
         """Advances to next primary target"""
@@ -237,6 +278,14 @@ class target_manager(QtWidgets.QToolBar):
         next_target_name = list(self.getTargetNames())[next_target_index]
         self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
 
+    def flushSourceFile(self, source_filename: str):
+        """Force saves (flushes) the given source file
+        Intended to be used for saving notes
+
+        :param source_filename: Filename of source file to be flushed
+        """
+        with open(source_filename, "w") as source_file:
+            source_file.write(yaml.dump(dict(self._target_catalog[source_filename])))
 
 class target_note_display(QtWidgets.QGroupBox):
     """Subwidget to display notes of current target"""
@@ -251,16 +300,25 @@ class target_note_display(QtWidgets.QGroupBox):
         self._target_manager = parent
         self._target_manager.register_target_change_callback(self.primary_target_changed)
         # Initialize Widgets
+        # Main Text Field
         self._text_field = QtWidgets.QTextEdit()
-        self._text_field.setEnabled(False)
-        self._save_button = QtWidgets.QPushButton("Viewer only. Saving not implemented")
+        self._text_field.document().modificationChanged.connect(self.modificationChanged)
+        # Save Notes Button
+        self._save_button = QtWidgets.QPushButton("Save Notes")
+        self.setTitle("Notes: Unmodified")
         self._save_button.setEnabled(False)
+        self._save_button.clicked.connect(lambda: self.save_notes(True))
+        # Discard Changes Button
+        self._discard_button = QtWidgets.QPushButton("Discard Changes")
+        self._discard_button.clicked.connect(self.discard_note_changes)
+        self._discard_button.setEnabled(False)
         # Declare Layout
         self._layout = QtWidgets.QGridLayout()
         self.setLayout(self._layout)
         # Organize Widgets in Layout
-        self._layout.addWidget(self._text_field, 0, 0)
+        self._layout.addWidget(self._text_field, 0, 0, 1, 2)
         self._layout.addWidget(self._save_button, 1, 0)
+        self._layout.addWidget(self._discard_button, 1, 1)
 
     def closeEvent(self, _):
         """When close is detected, prompts user to save notes if text has been modified"""
@@ -272,10 +330,10 @@ class target_note_display(QtWidgets.QGroupBox):
 
         :param new_target: Name of the new primary target
         """
-        # Save existing target's notes
-        self.save_notes()
         # Get the new notes and update our text field
         self._text_field.setText(self._target_manager.getPrimaryNotes())
+        # Set text field to unmodified to recalibrate autosave detection
+        self._text_field.document().setModified(False)
 
     def save_notes(self, force_save: bool = False):
         """
@@ -286,13 +344,42 @@ class target_note_display(QtWidgets.QGroupBox):
         # Check for abort-save conditions
         if not force_save:
             # Check if text has been modified
-            unsaved_text = False
+            unsaved_text = self._text_field.document().isModified()
             # If text has been modified, ask user if they want to save. Otherwise, fallthrough to save
             if unsaved_text:
-                if QtWidgets.QMessageBox.No == QtWidgets.QMessageBox.question(self, "Close Confirmation", "Would you like to save your notes?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No):
+                if QtWidgets.QMessageBox.Cancel == QtWidgets.QMessageBox.question(self, "Close Confirmation", "Do you want to save changes to your notes?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Cancel):
                     return
             # If text hasn't been modified, exit
             else:
                 return
         # If no abort-save conditions caught, save to disk
-        print("Implement saving feature here...")
+        self._target_manager.setPrimaryNotes(self._text_field.toPlainText())
+        try:
+            self._target_manager.flushSourceFile(self._target_manager.getTargetSourceFile(self._target_manager.getPrimaryName()))
+            # Set text field to unmodified to recalibrate autosave detection
+            self._text_field.document().setModified(False)
+        except IOError:
+            print("Error saving notes! Your notes have NOT been saved!")
+
+    def discard_note_changes(self):
+        """Discards any changes to notes and reverts to last saved notes"""
+
+        # Safety Prompt
+        if QtWidgets.QMessageBox.Cancel == QtWidgets.QMessageBox.question(self, "Discard Confirmation", "Are you sure you want to permanently discard changes to your notes?", QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel):
+            return
+        # Revert Notes
+        self._text_field.setText(self._target_manager.getPrimaryNotes())
+        # Set text field to unmodified to recalibrate autosave detection
+        self._text_field.document().setModified(False)
+        self.setTitle("Notes: Changes Discard")
+        self.setStyleSheet('QGroupBox:title {color: rgb(0, 0, 175);}')
+
+    def modificationChanged(self, changed: bool):
+        self._save_button.setEnabled(changed)
+        self._discard_button.setEnabled(changed)
+        if changed:
+            self.setTitle("Notes: Modified")
+            self.setStyleSheet('QGroupBox:title {color: rgb(255, 0, 0);}')
+        else:
+            self.setTitle("Notes: Saved")
+            self.setStyleSheet('QGroupBox:title {color: rgb(0, 150, 0);}')

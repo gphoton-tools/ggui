@@ -27,3 +27,7 @@
 * Devnote 6: Glue Data object is iterable, but usually not in the ways you think. Most operations with list comprehension will fail
 
 * Devnote 7: Sphinx version 2.0 changed default master_doc from index.rst/html to contents.rst/html
+
+* Devnote 8: Could also be replaced with list comprehension, but this itertools seems to be more human readable (at least to me) and according to the stackoverflow I found it on, it is also faster:
+  * https://stackoverflow.com/questions/14807689/python-list-comprehension-to-join-list-of-lists
+  * return [item for sublist in [x.keys() for x in self._target_catalog.values()] for item in sublist]
