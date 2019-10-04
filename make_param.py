@@ -20,6 +20,34 @@ except ImportError:
     from PyQt4.QtWidgets import QApplication, QLineEdit, QPushButton, QFileDialog
     from PyQt4.QtWidgets import QTextEdit, QScrollArea
 
+import pathlib
+def validate_targlist_format(target_list: dict,  list_source: str) -> dict:
+    """Verifies dictionary is in gGui YAML format
+    Verifies a given dictionary is the established gGui format.
+    Also verifies all specified files exist. Removes any target that does not have any valid files
+
+    :returns: verified gGui target dictionary
+    """
+    empty_targets = []
+    for target_name, target_data in target_list.items():
+        valid_files = 0
+        for data_type, band_data in target_data.items():
+            if data_type == '_notes':
+                continue
+            for band, filepathString in band_data.items():
+                if not pathlib.Path(filepathString).is_file():
+                    if filepathString:
+                        print(filepathString + " does not exist on disk. Ignoring...")
+                else: valid_files += 1
+        if not valid_files:
+            empty_targets.append(target_name)
+
+    for bad_target in empty_targets:
+        print(str(bad_target) + " does not have any valid data. Ignoring target...")
+        del target_list[bad_target]
+
+    return target_list
+
 def quoted_presenter(dumper, data):
     """
     This is a custom representer for string, so that YAML can be output
