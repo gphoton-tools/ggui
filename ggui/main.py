@@ -108,7 +108,6 @@ class ggui_glue_application(GlueApplication):
         :param dialogCaption: Caption to display along top of file dialog window
         :param dialogNameFilter: Filters file dialog to certain extension
         """
-        x = QtWidgets.QApplication([])
         # Set File Dialog Options
         dialog = QtWidgets.QFileDialog(caption=dialogCaption)
         dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
@@ -143,7 +142,7 @@ def main(user_arguments: list = None):
             target_data_products[target_list_path] = validate_targlist_format(yaml.load(open(target_list_path, 'r'), Loader=yaml.BaseLoader), target_list_path)
     # If the user requested a file-selector dialog to select a gGui YAML file, display it and load its contents
     if args.yaml_select:
-        
+        x = QtWidgets.QApplication([])
         for ggui_yaml_file in ggui_glue_application.prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
             target_data_products[ggui_yaml_file] = validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file)
     # If no targets were recognized, notify the user
