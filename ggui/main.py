@@ -16,6 +16,8 @@ from PyQt5 import QtWidgets
 from ggui import qtTabLayouts
 from ggui.targetManager import target_manager
 
+from make_param import validate_targlist_format
+
 
 class ggui_glue_application(GlueApplication):
     """Primary gGui Application Class
@@ -97,6 +99,26 @@ class ggui_glue_application(GlueApplication):
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(self.overview_widget)
 
+    @staticmethod
+    def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
+        """
+        Modular QtWidget File-Selection Dialog to prompt user for file import.
+        Returns array of filenames selected
+
+        :param dialogCaption: Caption to display along top of file dialog window
+        :param dialogNameFilter: Filters file dialog to certain extension
+        """
+        x = QtWidgets.QApplication([])
+        # Set File Dialog Options
+        dialog = QtWidgets.QFileDialog(caption=dialogCaption)
+        dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
+        dialog.setNameFilter(dialogNameFilter)
+        # Prompt User for file to import
+        dialog.exec_()
+        # Get array of File Names
+        filenames = dialog.selectedFiles()
+        return filenames
+
 
 def main(user_arguments: list = None):
     """Entry point/helper function to start ggui
@@ -121,25 +143,8 @@ def main(user_arguments: list = None):
             target_data_products[target_list_path] = validate_targlist_format(yaml.load(open(target_list_path, 'r'), Loader=yaml.BaseLoader), target_list_path)
     # If the user requested a file-selector dialog to select a gGui YAML file, display it and load its contents
     if args.yaml_select:
-        def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
-            """
-            Modular QtWidget File-Selection Dialog to prompt user for file import.
-            Returns array of filenames selected
-
-            :param dialogCaption: Caption to display along top of file dialog window
-            :param dialogNameFilter: Filters file dialog to certain extension
-            """
-            x = QtWidgets.QApplication([])
-            # Set File Dialog Options
-            dialog = QtWidgets.QFileDialog(caption=dialogCaption)
-            dialog.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-            dialog.setNameFilter(dialogNameFilter)
-            # Prompt User for file to import
-            dialog.exec_()
-            # Get array of File Names
-            filenames = dialog.selectedFiles()
-            return filenames
-        for ggui_yaml_file in prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
+        
+        for ggui_yaml_file in ggui_glue_application.prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
             target_data_products[ggui_yaml_file] = validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file)
     # If no targets were recognized, notify the user
     if not target_data_products:
