@@ -32,7 +32,8 @@ class ggui_glue_application(GlueApplication):
         :param imported_target_catalogs: Dict of targets and paths to associated gPhoton data products to load initially
         """
         super().__init__(data_collection)
-        
+        # Modify window title to specify gGui modified Glue environment
+        self.setWindowTitle("gGui: gPhoton Graphical User Interface")
         # Add gGui YAML loader to "File" Menu
         self.menuBar().actions()[0].menu().addSeparator()
         self.menuBar().actions()[0].menu().addAction("Load gGui Target File", self.load_ggui_yaml)
