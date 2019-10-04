@@ -32,6 +32,11 @@ class ggui_glue_application(GlueApplication):
         :param imported_target_catalogs: Dict of targets and paths to associated gPhoton data products to load initially
         """
         super().__init__(data_collection)
+        
+        # Add gGui YAML loader to "File" Menu
+        self.menuBar().actions()[0].menu().addSeparator()
+        self.menuBar().actions()[0].menu().addAction("Load gGui Target File", self.load_ggui_yaml)
+
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
 
@@ -99,6 +104,13 @@ class ggui_glue_application(GlueApplication):
         # Set Overview Tab to focus
         self.tab_widget.setCurrentWidget(self.overview_widget)
 
+    def load_ggui_yaml(self):
+        """Prompts user with File Dialog for gGui YAML Target List
+        Validates the YAML file and loads it into the Target Manager
+        """
+        for ggui_yaml_file in ggui_glue_application.prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
+            self.target_manager.loadTargetDict(validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file), ggui_yaml_file)
+    
     @staticmethod
     def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
         """
