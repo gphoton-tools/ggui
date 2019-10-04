@@ -38,6 +38,16 @@ class ggui_glue_application(GlueApplication):
         self.menuBar().actions()[0].menu().addSeparator()
         self.menuBar().actions()[0].menu().addAction("Load gGui Target File", self.load_ggui_yaml)
 
+        # Rename Glue "Help" to "About Glue"
+        self.menuBar().actions()[6].setText("&About Glue")
+        
+        # Add "About gGui" Menu
+        menu_about_ggui = self.menuBar().addMenu("About &gGui")
+        # Add link to gGui ReadTheDocs
+        ggui_rtd = QtWidgets.QAction("gGui &Online Documentation", menu_about_ggui)
+        ggui_rtd.triggered.connect(nonpartial(webbrowser.open, 'https://ggui.readthedocs.io/'))
+        menu_about_ggui.addAction(ggui_rtd)
+
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
 
