@@ -11,6 +11,8 @@ import yaml
 from glue.core import DataCollection
 from glue.app.qt.application import GlueApplication
 from glue.config import menubar_plugin
+import webbrowser
+from glue.utils import nonpartial
 from PyQt5 import QtWidgets
 
 from ggui import qtTabLayouts
