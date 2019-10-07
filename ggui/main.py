@@ -17,6 +17,7 @@ from PyQt5 import QtWidgets
 
 from ggui import qtTabLayouts
 from ggui.targetManager import target_manager
+from .version  import __version__
 
 from make_param import validate_targlist_format
 
@@ -40,15 +41,17 @@ class ggui_glue_application(GlueApplication):
         self.menuBar().actions()[0].menu().addSeparator()
         self.menuBar().actions()[0].menu().addAction("Load gGui Target File", self.load_ggui_yaml)
 
-        # Rename Glue "Help" to "About Glue"
+        # Rename Glue "Help" to "Glue Help"
         self.menuBar().actions()[6].setText("&Glue Help")
         
-        # Add "About gGui" Menu
+        # Add "gGui Help" Menu
         menu_about_ggui = self.menuBar().addMenu("&gGui Help")
         # Add link to gGui ReadTheDocs
         ggui_rtd = QtWidgets.QAction("gGui &Online Documentation", menu_about_ggui)
         ggui_rtd.triggered.connect(nonpartial(webbrowser.open, 'https://ggui.readthedocs.io/'))
         menu_about_ggui.addAction(ggui_rtd)
+        # Add basic About information
+        menu_about_ggui.addAction("About gGui", self.show_about_ggui)
 
         # Save a reference to the default tab. We won't need this, but can't delete it until we have multiple tabs
         default_tab = self.current_tab
@@ -124,6 +127,9 @@ class ggui_glue_application(GlueApplication):
         for ggui_yaml_file in ggui_glue_application.prompt_user_for_file("Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"):
             self.target_manager.loadTargetDict(validate_targlist_format(yaml.load(open(ggui_yaml_file, 'r'), Loader=yaml.BaseLoader), ggui_yaml_file), ggui_yaml_file)
     
+    def show_about_ggui(self):
+        QtWidgets.QMessageBox.about(self, "About gGui", "gPhoton Graphical User Interface (gGui)\nDeveloped by Duy Nguyen, Scott Fleming\nVersion: " + __version__ + "\n\ngGui is provided under the AURA Software License. Please see the included license for details.")
+
     @staticmethod
     def prompt_user_for_file(dialogCaption: str, dialogNameFilter: str) -> list:
         """
