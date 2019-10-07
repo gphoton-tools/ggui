@@ -213,6 +213,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
             'cube': self.loadCube
         }
         # Clear the board: Delete the existing data viewers
+        # Looping via index, remove in reverse order to not affect indexing
         for widgetIndex in reversed(range(0, self.layout.count())):
             self.layout.takeAt(widgetIndex).widget().deleteLater()
         # For all the data we've been given, call the appropriate constructor with that data
