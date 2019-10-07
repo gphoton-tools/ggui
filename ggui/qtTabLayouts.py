@@ -211,8 +211,10 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
             'lightcurve': self.loadLightcurve,
             'coadd': self.loadCoadd,
             'cube': self.loadCube
-                      
         }
+        # Clear the board: Remove the existing data viewers
+        for widgetIndex in reversed(range(0, self.layout.count())):
+            self.layout.removeItem(self.layout.itemAt(widgetIndex))
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
             try:
