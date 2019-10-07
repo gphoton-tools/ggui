@@ -41,10 +41,10 @@ class ggui_glue_application(GlueApplication):
         self.menuBar().actions()[0].menu().addAction("Load gGui Target File", self.load_ggui_yaml)
 
         # Rename Glue "Help" to "About Glue"
-        self.menuBar().actions()[6].setText("&About Glue")
+        self.menuBar().actions()[6].setText("&Glue Help")
         
         # Add "About gGui" Menu
-        menu_about_ggui = self.menuBar().addMenu("About &gGui")
+        menu_about_ggui = self.menuBar().addMenu("&gGui Help")
         # Add link to gGui ReadTheDocs
         ggui_rtd = QtWidgets.QAction("gGui &Online Documentation", menu_about_ggui)
         ggui_rtd.triggered.connect(nonpartial(webbrowser.open, 'https://ggui.readthedocs.io/'))
