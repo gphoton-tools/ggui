@@ -19,7 +19,7 @@ from ggui import qtTabLayouts
 from ggui.targetManager import target_manager
 from .version  import __version__
 
-from make_param import validate_targlist_format
+from ggui.make_param import validate_targlist_format
 
 
 class ggui_glue_application(GlueApplication):
