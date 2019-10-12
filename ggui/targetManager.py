@@ -19,7 +19,7 @@ from glue.core.data_factories import load_data
 from pkg_resources import resource_filename
 
 
-class target_manager(QtWidgets.QToolBar):
+class TargetManager(QtWidgets.QToolBar):
     """
     Class that handles the loading of gPhoton data and management of multiple
     gGui targets
@@ -83,7 +83,7 @@ class target_manager(QtWidgets.QToolBar):
 
     def setPrimaryTarget(self, targName: str):
         """Changes primary target to target specified
-        Unloads existing primary target's data (internal cache and parent Glue session), 
+        Unloads existing primary target's data (internal cache and parent Glue session),
         loads the new primary target's data, links their corresponding attributes together,
         and notifies all stakeholders of the new changed primary target
 

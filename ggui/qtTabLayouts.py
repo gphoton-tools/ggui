@@ -17,17 +17,17 @@ from glue.viewers.image.qt import ImageViewer
 
 from pkg_resources import resource_filename
 
-class ggui_overview_base_viewer(MatplotlibDataViewer):
+class gGuiOverviewBaseViewer(MatplotlibDataViewer):
     """Base class for gGui data viewers
     Implements basic data import logic, band organizing, and UI methods
     Adds FUV/NUV band support and associated band toggle tools
     """
     tools = ['fuv_toggle', 'nuv_toggle', 'focus']
-    
+
     def __init__(self, glue_session: glue.core.session, data: dict):
         """Initializes base gGui data viewer
 
-        :param session: Corresponding Glue parent's 'session' object that stores 
+        :param session: Corresponding Glue parent's 'session' object that stores
         information about the current environment of glue. Needed for superclass constructor
         :param data: Band separated dict of data to load
         """
@@ -38,7 +38,7 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
             # Import data into data viewer
             self.add_data(band_data)
             # Find associated data layer created for that data and cache it along with the data
-            # Have to currently loop through all layers and check if the data is the same as the 
+            # Have to currently loop through all layers and check if the data is the same as the
             # one we're currently processing EVERY TIME. Horrible performance. Go back and fix!
             for index, layerData in enumerate([layers.layer for layers in self.state.layers]):
                 if layerData == band_data:
@@ -49,19 +49,19 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
             self.data_cache['FUV']['layer'].color = 'blue'
         if 'NUV' in self.data_cache:
             self.data_cache['NUV']['layer'].color = 'red'
-        
+
     def toggle_band_visibility(self, band: str, value: str = None):
         """Toggles visibility of a dataset by band
 
         :param band: Band to toggle (i.e. 'NUV' or 'FUV')
-        :param value: Optional parameter to explicitly set the band's visibility to a specific value. 
+        :param value: Optional parameter to explicitly set the band's visibility to a specific value.
             Absence will toggle the exising visibility
         """
         # Verify we have data for supplied band
         if self.data_cache.get(band).get('layer'):
             # If the visibility value wasn't explicitly defined, make it the opposite of hte existing visibility value
             # Otherwise, use the supplied value
-            if not value: 
+            if not value:
                 value = not self.data_cache[band]['layer'].visible
             # Set the band's visibility
             self.data_cache[band]['layer'].visible = value
@@ -71,20 +71,20 @@ class ggui_overview_base_viewer(MatplotlibDataViewer):
         self._session.application._update_focus_decoration()
         self._session.application._update_plot_dashboard()
 
-class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
+class ggui_lightcurve_viewer(gGuiOverviewBaseViewer, ScatterViewer):
     """Data Viewer class that handles gPhoton lightcurve events"""
 
     def __init__(self, session: glue.core.session, lightcurve_data: dict, x_att: str = None, y_att: str = None):
         """Initializes an instance of the gPhoton lightcurve viewer
 
-        :param session: Corresponding Glue parent's 'session' object that stores 
+        :param session: Corresponding Glue parent's 'session' object that stores
         information about the current environment of glue. Needed for superclass constructor
         :param lightcurve_data: Dict containing lightcurve data identified via respective frequency band
         :param x_att: Label of attribute to assign to the x-axis
         :param y_att: Label of attribute to assign to the y-axis
         """
         super().__init__(session, lightcurve_data)
-    
+
         # See DevNote 01: Python Scope
         # Set lightcurve axes to flux vs time
         band_data = list(self.data_cache.values())[0]['data']
@@ -94,7 +94,7 @@ class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
         except KeyError as error:
             print("WARNING: gGui cannot assign lightcurve x axis: " + str(error))
         try:
-            if y_att: 
+            if y_att:
                 self.state.y_att = band_data.id[y_att]
         except KeyError as error:
             print("WARNING: gGui cannot assign lightcurve y axis: " + str(error))
@@ -110,13 +110,13 @@ class ggui_lightcurve_viewer(ggui_overview_base_viewer, ScatterViewer):
             datalayer['layer'].yerr_visible = True
 
 
-class ggui_image_viewer(ggui_overview_base_viewer, ImageViewer):
+class ggui_image_viewer(gGuiOverviewBaseViewer, ImageViewer):
     """Data Viewer class that handles gPhoton FITS images"""
     def __init__(self, session: glue.core.session, image_data: dict, x_att: str, y_att: str):
         super().__init__(session, image_data)
 
 @viewer_tool
-class fuvToggleTool(Tool):
+class FuvToggleTool(Tool):
     """Glue data viewer tool that calls the FUV band visibility toggle method to corresponding ggui data viewer"""
     # Set the boilerplate attributes
     icon = resource_filename('ggui.icons', 'FUV_transparent.png')
@@ -135,7 +135,7 @@ class fuvToggleTool(Tool):
         self.viewer.toggle_band_visibility('FUV')
 
 @viewer_tool
-class nuvToggleTool(Tool):
+class NuvToggleTool(Tool):
     """Glue data viewer tool that calls the NUV band visibility toggle method to corresponding ggui data viewer"""
     # Set the boilerplate attributes
     icon = resource_filename('ggui.icons', 'NUV_transparent.png')
@@ -154,7 +154,7 @@ class nuvToggleTool(Tool):
         self.viewer.toggle_band_visibility('NUV')
 
 @viewer_tool
-class focusTool(Tool):
+class FocusTool(Tool):
     """Requests gGui to give the corresponding tool focus"""
     # Set the boilerplate attributes
     icon = resource_filename('ggui.icons', 'Focus.png')
