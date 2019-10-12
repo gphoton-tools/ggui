@@ -106,20 +106,6 @@ class ggui_glue_application(GlueApplication):
         for filename in imported_target_catalogs:
             self.target_manager.loadTargetDict(imported_target_catalogs[filename], filename)
 
-    def create_overview_widget(self, target_name: str, target_data: dict):
-        """
-        Creates an overview tab of gPhoton lightcurve, coadd, and cube data.
-        Automatically constructs the tab, adds it to gGui and sets focus to it.
-
-        :param target_name: The name of the target
-        :param target_data: The corresponding gPhoton data of the target
-        """
-        self.overview_widget = qtTabLayouts.ggui_overview_tab(session=self.session, target_name=target_name, target_data=target_data)
-
-        self.tab_widget.addTab(self.overview_widget, "Overview of " + str(target_name))
-        # Set Overview Tab to focus
-        self.tab_widget.setCurrentWidget(self.overview_widget)
-
     def load_ggui_yaml(self):
         """Prompts user with File Dialog for gGui YAML Target List
         Validates the YAML file and loads it into the Target Manager
