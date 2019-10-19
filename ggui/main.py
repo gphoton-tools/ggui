@@ -120,7 +120,8 @@ class gGuiGlueApplication(GlueApplication):
         """
         for filename in imported_target_catalogs:
             self.target_manager.loadTargetDict(
-                imported_target_catalogs[filename], filename
+                filename,
+                imported_target_catalogs[filename]
             )
 
     def load_ggui_yaml(self):
@@ -131,11 +132,11 @@ class gGuiGlueApplication(GlueApplication):
             "Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"
         ):
             self.target_manager.loadTargetDict(
+                ggui_yaml_file, 
                 validate_targlist_format(
                     yaml.load(open(ggui_yaml_file, "r"), Loader=yaml.BaseLoader),
                     ggui_yaml_file,
-                ),
-                ggui_yaml_file,
+                )
             )
 
     def show_about_ggui(self):
@@ -201,8 +202,8 @@ def main(user_arguments: list = None):
 
     # If the user specified a gGui YAML file, load its targets
     if args.target_list:
-        for file in args.target_list:
-            target_list_path = str(pathlib.Path(file).absolute())
+        for ggui_yaml_file in args.target_list:
+            target_list_path = str(pathlib.Path(ggui_yaml_file).absolute())
             target_data_products[target_list_path] = validate_targlist_format(
                 yaml.load(open(target_list_path, "r"), Loader=yaml.BaseLoader),
                 target_list_path,
@@ -214,9 +215,11 @@ def main(user_arguments: list = None):
         for ggui_yaml_file in gGuiGlueApplication.prompt_user_for_file(
             "Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"
         ):
-            target_data_products[ggui_yaml_file] = validate_targlist_format(
-                yaml.load(open(ggui_yaml_file, "r"), Loader=yaml.BaseLoader),
-                ggui_yaml_file,
+            target_list_path = str(pathlib.Path(ggui_yaml_file).absolute())
+            target_data_products[target_list_path] = validate_targlist_format(
+                yaml.load(open(target_list_path, "r"), 
+                Loader=yaml.BaseLoader),
+                target_list_path,
             )
     # If no targets were recognized, notify the user
     if not target_data_products:

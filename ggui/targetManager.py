@@ -9,9 +9,10 @@ from configparser import ConfigParser
 import itertools
 from typing import Callable
 from copy import copy
+import pathlib
 import yaml
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from glue.app.qt.application import GlueApplication
 from glue.core.link_helpers import LinkSame
 from glue.core.data_factories import load_data
@@ -34,7 +35,6 @@ class TargetManager(QtWidgets.QToolBar):
         super().__init__()
         self._glue_parent = glue_parent
         self._target_catalog = OrderedDict()
-        self._primary_name = ""
         self._primary_data = {}
         self._target_change_callbacks = []
         self._target_notes = None
@@ -46,7 +46,7 @@ class TargetManager(QtWidgets.QToolBar):
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowBack_transparent.png')), "Previous Target", self.previous_target)
         # Add Combo Box
         self.QComboBox = QtWidgets.QComboBox(self)
-        self.QComboBox.currentTextChanged.connect(self.setPrimaryTarget)
+        self.QComboBox.currentIndexChanged.connect(self.setPrimaryTarget)
         self.addWidget(self.QComboBox)
         # Add Forward Button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowForward_transparent.png')), "Next Target", self.next_target)
@@ -70,115 +70,118 @@ class TargetManager(QtWidgets.QToolBar):
         """
         self._target_change_callbacks.append(callback)
 
-    def loadTargetDict(self, target_files: dict, id_name: str = None):
+    def loadTargetDict(self, target_catalog: str, target_files: dict):
         """Loads a single dictionary of targets and associated data product paths into internal cache
 
-        :param id_name: Name/identifier of this dictionary of targets. Can be used to return data
         :param target_files: gGui compliant yaml dictionary of targets and paths to associated gPhoton data products
+        :param target_catalog: Name/identifier of this dictionary of targets. Can be used to return data
         """
-        # Add targets to internal cache
-        self._target_catalog[id_name] = OrderedDict(target_files)
+        # Verify the catalog exists
+        target_catalog = str(pathlib.Path(target_catalog).absolute())
+        # Check if we've already loaded this file. Otherwise throw an error
+        if target_catalog in self._target_catalog:
+            raise ValueError("Duplicate gGui catalog. Catalog already imported into gGui: " + target_catalog)
+        # Add catalog targets to internal cache
+        self._target_catalog[target_catalog] = OrderedDict(target_files)
         # Add new items to GUI
-        self.QComboBox.addItems(target_files.keys())
+        for item in target_files.keys():
+            self.QComboBox.addItem(item, {'target_catalog': target_catalog})
 
-    def setPrimaryTarget(self, targName: str):
+    def setPrimaryTarget(self, targIndex: int):
         """Changes primary target to target specified
         Unloads existing primary target's data (internal cache and parent Glue session),
         loads the new primary target's data, links their corresponding attributes together,
         and notifies all stakeholders of the new changed primary target
 
-        :param targName: Name of desired new primary target
+        :param targIndex: Index of desired new primary target
         """
+        targName = self.QComboBox.currentText()
+        targ_catalog = self.QComboBox.currentData()['target_catalog']
         # If requested target is not in current cache, throw exception
         if targName not in self.getTargetNames():
             raise KeyError("Target Manager does not recognize requested target: " + str(targName))
-        # Don't bother doing anything if we're changing to the current target!
-        if targName != self._primary_name:
-            # If we have data loaded, remove it from the Glue Data
-            if self._primary_data:
-                def unload_primary_data():
-                    for band_data_set in list(self._primary_data.values()):
-                        for band_data in band_data_set.values():
-                            if isinstance(band_data, list):
-                                for data in band_data:
-                                    self._glue_parent.data_collection.remove(data)   
-                            else:
-                                self._glue_parent.data_collection.remove(band_data)                
-                unload_primary_data()
 
-            # Save target notes
-            self._note_display_widget.save_notes()
+        # If we have data loaded, remove it from the Glue Data
+        if self._primary_data:
+            def unload_primary_data():
+                for band_data_set in list(self._primary_data.values()):
+                    for band_data in band_data_set.values():
+                        if isinstance(band_data, list):
+                            for data in band_data:
+                                self._glue_parent.data_collection.remove(data)   
+                        else:
+                            self._glue_parent.data_collection.remove(band_data)                
+            unload_primary_data()
 
-            # Clear internal target cache
-            self._primary_name = None
-            self._primary_data.clear()
-            self._target_notes = None
+        # Save target notes
+        self._note_display_widget.save_notes()
 
-            target_files = copy(self.getTargetFiles(targName))
-            self._target_notes = target_files.pop('_notes', None)
+        # Clear internal target cache
+        self._primary_data.clear()
+        self._target_notes = None
 
-            # For each gGui Data Type...
-            for data_product_type in target_files:
-                # Initialize dictionary for this data product
-                self._primary_data[data_product_type] = {}
+        target_files = copy(self.getTargetFiles(targ_catalog, targName))
+        self._target_notes = target_files.pop('_notes', None)
 
-                # Retrieve the x and y attributes for this data product from the conf file
-                config = ConfigParser()
-                config.read(resource_filename('ggui', 'ggui.conf'))                
-                x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback='')
-                y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback='')
+        # For each gGui Data Type...
+        for data_product_type in target_files:
+            # Initialize dictionary for this data product
+            self._primary_data[data_product_type] = {}
 
-                # Load every band's data into internal cache
-                for band, band_file in target_files[data_product_type].items():
-                    if band_file:
-                        self._primary_data[data_product_type][band] = load_data(band_file)
+            # Retrieve the x and y attributes for this data product from the conf file
+            config = ConfigParser()
+            config.read(resource_filename('ggui', 'ggui.conf'))                
+            x_att = config.get('Mandatory Fields', data_product_type + "_x", fallback='')
+            y_att = config.get('Mandatory Fields', data_product_type + "_y", fallback='')
 
-                        # If x_att, y_att provided in conf, test they exist
-                        try:
-                            if x_att:
-                                self._primary_data[data_product_type][band].id[x_att]
-                            if y_att:
-                                self._primary_data[data_product_type][band].id[y_att]
-                        # KeyError means specified attribute doesn't exist in this data. Warn user, and unset attributes, but continue
-                        except KeyError as e:
-                            parsed_error = e.args[0].split(':')
-                            if parsed_error[0]== 'ComponentID not found or not unique':
-                                print("WARNING: '" + parsed_error[1].strip() + "' field specified in ggui.conf missing from " + targName + " " + data_product_type + " " + band + ": " + band_file)
-                                x_att = ''
-                                y_att = ''
-                            else:
-                                raise
-                        # If AttributeError, check if "data" is actually a list of data (multiple data sets per file). Breaks 1-1 correspondence gGui assumes. Warn user plotting and gluing will fail. Skip this data, but import it regardless
-                        except AttributeError:
-                            if isinstance(self._primary_data[data_product_type][band], list):
-                                print("WARNING: " + str(len(self._primary_data[data_product_type][band])) + " datasets imported from " + targName + " " + data_product_type + " band " + band + ". gGui shall import this data, but will be unable to perform automatic actions on it (i.e. gluing, displaying overview, etc.)")
-                            else:
-                                raise
-                            
-                        # Register this data product with Glue's Data Collection
-                        self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
-                # If we have multiple bands, glue them together
-                try: 
-                    if len(self._primary_data[data_product_type].keys()) > 1:
-                        attributes_to_glue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
-                                            'coadd': ['Right Ascension', 'Declination'], 
-                                            'cube': ['Right Ascension', 'Declination', 'World 0']}
-                        #for glue_attribute in attributes_to_glue[data_product_type]:
-                        for glue_attribute in list(filter(lambda x: x is not '', [x_att, y_att] + config.get('Additional Fields To Glue', data_product_type, fallback='').split(','))):
-                            #Can only link two fields at a time. Need to go through all combinations
-                            from itertools import permutations
-                            for linking_pair in (set(frozenset(t) for t in permutations(self._primary_data[data_product_type].values(),2))):
-                                accessor = tuple(linking_pair)
-                                self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
-                except TypeError as e:
-                    print("Unable to glue " + str(targName) + " " + str(data_product_type) + ": " + str(e))
-            
-            # Now that all data has been processed properly, officially designate targName as new primary target
-            self._primary_name = targName
+            # Load every band's data into internal cache
+            for band, band_file in target_files[data_product_type].items():
+                if band_file:
+                    self._primary_data[data_product_type][band] = load_data(band_file)
 
-            # Notify all stakeholders of target change
-            for callback in self._target_change_callbacks:
-                callback(self._primary_name)
+                    # If x_att, y_att provided in conf, test they exist
+                    try:
+                        if x_att:
+                            self._primary_data[data_product_type][band].id[x_att]
+                        if y_att:
+                            self._primary_data[data_product_type][band].id[y_att]
+                    # KeyError means specified attribute doesn't exist in this data. Warn user, and unset attributes, but continue
+                    except KeyError as e:
+                        parsed_error = e.args[0].split(':')
+                        if parsed_error[0]== 'ComponentID not found or not unique':
+                            print("WARNING: '" + parsed_error[1].strip() + "' field specified in ggui.conf missing from " + targName + " " + data_product_type + " " + band + ": " + band_file)
+                            x_att = ''
+                            y_att = ''
+                        else:
+                            raise
+                    # If AttributeError, check if "data" is actually a list of data (multiple data sets per file). Breaks 1-1 correspondence gGui assumes. Warn user plotting and gluing will fail. Skip this data, but import it regardless
+                    except AttributeError:
+                        if isinstance(self._primary_data[data_product_type][band], list):
+                            print("WARNING: " + str(len(self._primary_data[data_product_type][band])) + " datasets imported from " + targName + " " + data_product_type + " band " + band + ". gGui shall import this data, but will be unable to perform automatic actions on it (i.e. gluing, displaying overview, etc.)")
+                        else:
+                            raise
+                        
+                    # Register this data product with Glue's Data Collection
+                    self._glue_parent.data_collection.append(self._primary_data[data_product_type][band])
+            # If we have multiple bands, glue them together
+            try: 
+                if len(self._primary_data[data_product_type].keys()) > 1:
+                    attributes_to_glue = {'lightcurve': ['t_mean', 'flux_bgsub'], 
+                                        'coadd': ['Right Ascension', 'Declination'], 
+                                        'cube': ['Right Ascension', 'Declination', 'World 0']}
+                    #for glue_attribute in attributes_to_glue[data_product_type]:
+                    for glue_attribute in list(filter(lambda x: x is not '', [x_att, y_att] + config.get('Additional Fields To Glue', data_product_type, fallback='').split(','))):
+                        #Can only link two fields at a time. Need to go through all combinations
+                        from itertools import permutations
+                        for linking_pair in (set(frozenset(t) for t in permutations(self._primary_data[data_product_type].values(),2))):
+                            accessor = tuple(linking_pair)
+                            self._glue_parent.data_collection.add_link(LinkSame(accessor[0].id[glue_attribute],accessor[1].id[glue_attribute]))
+            except TypeError as e:
+                print("Unable to glue " + str(targName) + " " + str(data_product_type) + ": " + str(e))
+
+        # Notify all stakeholders of target change
+        for callback in self._target_change_callbacks:
+            callback(self.getPrimaryName())
 
     def setPrimaryNotes(self, new_notes: str):
         """"
@@ -187,7 +190,7 @@ class TargetManager(QtWidgets.QToolBar):
         :param new_notes: New notes for the primary target
         """
         self._target_notes = new_notes
-        self.getTargetFiles(self._primary_name)['_notes'] = new_notes
+        self.getTargetFiles(self.getPrimaryTargetCatalog(), self.getPrimaryName())['_notes'] = new_notes
 
     def getTargetNames(self) -> list:
         """Returns the names of all registered targets, in their registered order
@@ -197,41 +200,29 @@ class TargetManager(QtWidgets.QToolBar):
         # Devnote 8: List Comprehension Alternative
         return list(itertools.chain.from_iterable(self._target_catalog.values()))
 
-    def getTargetFiles(self, target_name: str) -> dict:
+    def getTargetFiles(self, target_catalog: str, target_name: str) -> dict:
         """Returns the files and metadata of a specified target (Unloaded data, as per lazy evaluation principle)
         
+        :param target_catalog: gGui catalog file this target originated from
         :param target_name: Name of the target whose files to lookup
         :returns: Unloaded metadata and filepaths of the corresponding target's data
         """
-        for target_data_catalog in self._target_catalog.values():
-            try:
-                return target_data_catalog[target_name]
-            except KeyError:
-                pass
-        raise KeyError("'" + str(target_name) + "' not found in cache")
+        try:
+            return self._target_catalog[target_catalog][target_name]
+        except KeyError:
+            raise KeyError("'" + str(target_name) + "' not found in cache")
 
-    def getTargetNotes(self, target_name: str) -> str:
+    def getTargetNotes(self, target_catalog: str, target_name: str) -> str:
         """Returns the notes specified target, or blank string if no notes registered
         
+        :param target_catalog: gGui catalog this target originated from
         :param target_name: Name of the target whose notes to lookup
         :returns: Notes of the specified target, or blank string if no notes
         """
-        targ_data = self.getTargetFiles(target_name)
         try:
-            return targ_data['_notes']
+            return self.getTargetFiles(target_catalog, target_name)['_notes']
         except KeyError:
             return ""
-    
-    def getTargetSourceFile(self, target_name: str) -> str:
-        """Returns the source yaml file the given target originated from
-        
-        :param target_name: Name of the target whose source yaml file to lookup
-        :returns: Absoute filepath of the specified target's source file.
-        """
-        for source_filename, target_data_catalog in self._target_catalog.items():
-            if target_name in target_data_catalog:
-                return source_filename
-        raise KeyError("Source file for target '" + str(target_name) + "' could not be found")
 
     def getPrimaryData(self) -> dict:
         """Returns currently loaded primary target's data
@@ -245,7 +236,10 @@ class TargetManager(QtWidgets.QToolBar):
 
         :returns: current primary target's name as string
         """
-        return self._primary_name
+        return self.QComboBox.currentText()
+
+    def getPrimaryTargetCatalog(self) -> str:
+        return self.QComboBox.currentData()['target_catalog']
 
     def getPrimaryNotes(self) -> str:
         """Returns any notes associated with the current target. Returns empty string if no notes found.
@@ -257,26 +251,24 @@ class TargetManager(QtWidgets.QToolBar):
     def next_target(self):
         """Advances to next primary target"""
         # Determine the index we're switching to...
-        current_target_index = list(self.getTargetNames()).index(self._primary_name)
+        current_target_index = self.QComboBox.currentIndex()
         next_target_index = current_target_index + 1
         # And wrap around to the front if we're currently on the last target
-        if next_target_index > int(len(self.getTargetNames())) - 1:
+        if next_target_index > self.QComboBox.count() - 1:
             next_target_index = 0
         # Command Target Manager to switch primary targets
-        next_target_name = list(self.getTargetNames())[next_target_index]
-        self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
+        self.QComboBox.setCurrentText(self.QComboBox.itemText(next_target_index)) # QComboBox signal will initiate primary target switching
 
     def previous_target(self):
         """Advances to previous primary target"""
         # Determine the index we're switching to...
-        current_target_index = list(self.getTargetNames()).index(self._primary_name)
+        current_target_index = self.QComboBox.currentIndex()
         next_target_index = current_target_index - 1
         # And wrap around to the back if we're currently on the first target
         if next_target_index < 0:
-            next_target_index = int(len(self.getTargetNames())) - 1
+            next_target_index = self.QComboBox.count() - 1
         # Command Target Manager to switch primary targets
-        next_target_name = list(self.getTargetNames())[next_target_index]
-        self.QComboBox.setCurrentText(next_target_name) # QComboBox signal will initiate primary target switching
+        self.QComboBox.setCurrentText(self.QComboBox.itemText(next_target_index)) # QComboBox signal will initiate primary target switching
 
     def flushSourceFile(self, source_filename: str):
         """Force saves (flushes) the given source file
@@ -355,7 +347,7 @@ class target_note_display(QtWidgets.QGroupBox):
         # If no abort-save conditions caught, save to disk
         self._target_manager.setPrimaryNotes(self._text_field.toPlainText())
         try:
-            self._target_manager.flushSourceFile(self._target_manager.getTargetSourceFile(self._target_manager.getPrimaryName()))
+            self._target_manager.flushSourceFile(self._target_manager.getPrimaryTargetCatalog())
             # Set text field to unmodified to recalibrate autosave detection
             self._text_field.document().setModified(False)
         except IOError:
