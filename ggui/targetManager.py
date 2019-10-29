@@ -301,6 +301,7 @@ class target_note_display(QtWidgets.QGroupBox):
         :param parent: The parent that spawned this note widget (usually the target manager)
         """
         super().__init__()
+        self.setWindowTitle("gGui Notepad")
         self._target_manager = parent
         self._target_manager.register_target_change_callback(self.primary_target_changed)
         # Initialize Widgets
