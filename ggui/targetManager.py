@@ -50,6 +50,8 @@ class TargetManager(QtWidgets.QToolBar):
         self.addWidget(self.QComboBox)
         # Add Forward Button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowForward_transparent.png')), "Next Target", self.next_target)
+        # Add Info button
+        self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'Information.svg')), "Target Information", self.show_targ_info)
         # Add Notes Button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'Notepad.png')), "Target Notes", self._note_display_widget.show)
 
@@ -270,6 +272,16 @@ class TargetManager(QtWidgets.QToolBar):
         # Command Target Manager to switch primary targets
         self.QComboBox.setCurrentText(self.QComboBox.itemText(next_target_index)) # QComboBox signal will initiate primary target switching
 
+    def show_targ_info(self):
+        """Displays name and target catalog for the primary target"""
+        QtWidgets.QMessageBox(
+            QtWidgets.QMessageBox.Information, 
+            "About Target", 
+            "Target name: " + str(self.getPrimaryName()) + 
+            "\ngGui Target Catalog: " + str(self.getPrimaryTargetCatalog()), 
+            QtWidgets.QMessageBox.Ok
+        ).exec()
+    
     def flushSourceFile(self, source_filename: str):
         """Force saves (flushes) the given source file
         Intended to be used for saving notes
