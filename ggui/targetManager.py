@@ -376,7 +376,7 @@ class target_note_display(QtWidgets.QGroupBox):
         self._text_field.setText(self._target_manager.getPrimaryNotes())
         # Set text field to unmodified to recalibrate autosave detection
         self._text_field.document().setModified(False)
-        self.setTitle("Notes: Changes Discard")
+        self.setTitle("Notes: Changes Discarded")
         self.setStyleSheet('QGroupBox:title {color: rgb(0, 0, 175);}')
 
     def modificationChanged(self, changed: bool):
