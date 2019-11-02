@@ -66,13 +66,20 @@ If multiple bands are provided for each data product type (i.e. lightcurves, coa
 
 Launching gGui
 ==============
-Assuming you have a properly formatted target list, and have configured the gGui fields of your data, gGui can be started with two independent flags:
+Once gGui is installed, gGui can be launched on the command line by invoking ``ggui``.
 
-``ggui --target_list <path to gGui Target List>`` will automatically load a specific target list into a new gGui session.
+Your gGui target catalog can be loaded either from within gGui or as a command line argument, assuming you have a properly formatted target list, and have configured the gGui fields of your data. From within gGui, you can use the gGui Target Catalog Selector under the "File" Menu:
 
-``ggui --yaml_select`` will open a file select dialog to select your target list(s). After which, gGui will load these targets into a new gGui session.
+.. image:: images/ggui_target_catalog_selector.png
+    :alt: The gGui Target Catalog Selector can be found under "File"
 
-If you are in an IPython environment, you can invoke gGui's main() function to use these flags as well: ``from ggui import ggui; ggui.main(['--target_list', '<path to gGui Target List'])``
+gGui can also be started with two independent flags:
+
+* ``ggui --target_list <path to gGui Target List>`` will automatically load specified target list(s) into a new gGui session.
+
+* ``ggui --yaml_select`` will prompt the user to select your target list(s) before gGui loads. After which, gGui will load these targets into a new gGui session.
+
+Thirdly if you are in an IPython environment, you can invoke gGui's main() function to use these flags as well: ``from ggui import ggui; ggui.main(['--target_list', '<path to gGui Target List'])``
 
 gGui is built atop the Glue Visualization Python Library. To learn more about the framework, please see `Glue's Quickstart Guide <http://docs.glueviz.org/en/stable/getting_started/index.html>`_:
 
