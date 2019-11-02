@@ -89,7 +89,25 @@ Accessed via the primary Glue toolbar in the upper left, the gGui Target Manager
 .. image:: images/ggui_highlight_targman.png
     :alt: gGui window with the Target Manager drop down expanded to show multiple targets
 
-The Target Manager stores all of the targets identified by gGui from your target list(s). gGui only loads the data of the target selected, also known as `lazy evaluation <https://en.wikipedia.org/wiki/Lazy_evaluation>`_. One can advance targets by selecting the specific target from the dropdown list, or using the left/right arrows to advance to the previous/next target respectively. 
+.. _ggui_notepad:
+
+The gGui Notepad
+================
+The gGui Notepad features a collaborative space for teams to store observations, comments, and notes to each target. These notes are saved to the gGui target catalog. The gGui Notepad window can be launched via the notepad icon next to the Target Manager
+
+.. image:: images/ggui_notepad.png
+    :alt: The popup gGui Notepad window atop a gGui window
+
+The notepad displays the state of the notes above the editing window.
+
+.. figure:: images/ggui_notepad_state_all.png
+    :alt: Three images demonstrating the gGui Notepad statuses: Saved, Modified, Discarded
+
+    The gGui Notepad will show the current state of the notes via three status: (a) Saved, (b) Modified and Unsaved, (c) Discarded
+
+"Save Notes" will overwrite the notes on disk with those entered in the editing window.
+
+"Discard Changes" will discard all changes in the editing window and restore the window to the notes stored on disk, in the gGui Target Catalog.
 
 gGui Automatic Tabs
 ===================
