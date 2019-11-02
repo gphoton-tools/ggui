@@ -13,16 +13,15 @@ gGui is a data-analysis package written atop the Glue Visualization Python libra
 
 gGui is currently actively developed and maintained by `Duy Nguyen <dnguyen@nrao.edu>`_ and `Scott Fleming <fleming@stsci.edu>`_
 
-The latest release is hosted on PyPI. To install, simply use pip!
-
-``pip install ggui``
+The latest release is hosted on PyPI. To install, simply use pip! ``pip install ggui``
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: All Documentation:
 
    about
    using_ggui
+   release_list
    team
    known_issues
 
