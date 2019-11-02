@@ -79,7 +79,7 @@ class TargetManager(QtWidgets.QToolBar):
         :param target_catalog: Name/identifier of this dictionary of targets. Can be used to return data
         """
         # Verify the catalog exists
-        target_catalog = str(pathlib.Path(target_catalog).absolute())
+        target_catalog = str(pathlib.Path(target_catalog).resolve())
         # Check if we've already loaded this file. Otherwise throw an error
         if target_catalog in self._target_catalog:
             raise ValueError("Duplicate gGui catalog. Catalog already imported into gGui: " + target_catalog)
