@@ -80,7 +80,7 @@ gGui is built atop the Glue Visualization Python Library. To learn more about th
     :target: http://docs.glueviz.org/en/stable/getting_started/index.html
     :alt: Image of a blank Glue canvas with each module/area labeled
 
-gGui provides two major features atop Glue: The gGui Target Manager and Automatic Tabview Generation. 
+gGui provides three major features atop Glue: The gGui Target Manager, gGui Notepad, and automatic tabview generation. 
 
 The gGui Target Manager
 =======================
