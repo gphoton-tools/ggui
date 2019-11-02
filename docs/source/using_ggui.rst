@@ -14,8 +14,8 @@ Alternatively you may download and install directly from our GitHub repository, 
     git clone https://github.com/gphoton-tools/ggui.git
     pip install ./ggui
 
-gGui Target List
-================
+gGui Target Catalog
+===================
 gGui ingests a list of targets and associated paths to data products. To create this file, you can use our ``make_param`` utility.
 
 Alternatively, you can write this file yourself. This file is written in the YAML standard and expects the following format:
