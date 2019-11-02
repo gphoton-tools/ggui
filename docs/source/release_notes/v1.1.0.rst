@@ -9,7 +9,7 @@ gGui is a data-analysis package written atop the Glue Visualization Python libra
 
 Notable changes
 ---------------
-Version 1.1.0 introduces the gGui Notepad, as well as provides general improvements to the Target Manager and the startup process.
+Version 1.1.0 introduces the gGui Notepad as well as provides general improvements to the Target Manager and the startup process.
 
 1. :ref:`ggui_notepad` is a collaborative space for researchers to write notes about a particular target; these notes are stored in the gGui Target Catalog, allowing the sharing of notes between collaborators.
 

@@ -241,7 +241,15 @@ class TargetManager(QtWidgets.QToolBar):
         return self.QComboBox.currentText()
 
     def getPrimaryTargetCatalog(self) -> str:
-        return self.QComboBox.currentData()['target_catalog']
+        """Returns the current primary target's parent gGui Target Catalog path
+        If no target is selected, returns a blank string
+
+        :returns: primary target's gGui Target Catalog path as string
+        """
+        try:
+            return self.QComboBox.currentData()['target_catalog']
+        except TypeError:
+            return ""
 
     def getPrimaryNotes(self) -> str:
         """Returns any notes associated with the current target. Returns empty string if no notes found.
