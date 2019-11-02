@@ -44,7 +44,7 @@ class gGuiGlueApplication(GlueApplication):
         # Add gGui YAML loader to "File" Menu
         self.menuBar().actions()[0].menu().addSeparator()
         self.menuBar().actions()[0].menu().addAction(
-            "Load gGui Target File", self.load_ggui_yaml
+            "Load gGui Target Catalog", self.load_ggui_yaml
         )
 
         # Rename Glue "Help" to "Glue Help"
