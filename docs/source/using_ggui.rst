@@ -86,8 +86,10 @@ The gGui Target Manager
 =======================
 Accessed via the primary Glue toolbar in the upper left, the gGui Target Manager handles the loading of your target's data:
 
-.. image:: images/ggui_highlight_targman.png
+.. image:: images/ggui_targman_highlight.png
     :alt: gGui window with the Target Manager drop down expanded to show multiple targets
+
+The Target Manager stores all of the targets identified by gGui from your target list(s). gGui only loads the data of the target selected, also known as `lazy evaluation <https://en.wikipedia.org/wiki/Lazy_evaluation>`_. One can advance targets by selecting the specific target from the dropdown list, or using the left/right arrows to advance to the previous/next target respectively. The information button will display the current target name and the parent gGui Target Catalog file this target originated from.
 
 .. _ggui_notepad:
 
