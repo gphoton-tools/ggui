@@ -3,7 +3,7 @@ Using gGui
 
 Installing gGui
 ===============
-gGui is hosted on `PyPI <https://pypi.org/project/ggui/>`_. To install, simply use pip:
+gGui is developed in the `Python language <https://www.python.org/>`_ and is hosted on `PyPI <https://pypi.org/project/ggui/>`_. To install, ensure you have `Python installed <https://www.python.org/downloads/>`_ (version 3.6 or greater) on your system and simply use pip:
 ::
 
     pip install ggui
