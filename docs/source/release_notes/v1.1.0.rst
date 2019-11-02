@@ -1,0 +1,36 @@
+gGui Release Version 1.1.0
+##########################
+
+Dear gGui users and colleagues,
+
+I am excited to announce the release of gGui v1.1! 
+
+gGui is a data-analysis package written atop the Glue Visualization Python library to visualize data from the GALEX Space Telescope data reduction pipeline, gPhoton.
+
+Notable changes
+---------------
+Version 1.1.0 introduces the gGui Notepad and general improvements to the Target Manager, as well as the startup process.
+
+1. The gGui Notepad is a collaborative space for researchers to write notes about a particular target; these notes are stored in the gGui Target Catalog, allowing the sharing of notes between collaborators. For more information, see :ref:`ggui_notepad`.
+
+2. The gGui startup procedure has been enhanced:
+  
+  * Users may now also load a new gGui Target Catalog at runtime by selecting "File" > "Load gGui Target Catalog"
+  * The ``--target_list`` command line argument now supports multiple gGui Target Catalogs, space separated
+
+3. The Target Manager has received a number of improvements:
+
+  * Targets with the same name across multiple targets can be loaded and appropriately distinguished
+  * Added an information button to display the current target's gGui Target Catalog, from which it originated
+
+Version 1.1.0 also resolves the bug of consecutive targets with differing data products. Targets with differing data products will now render correctly.
+
+gGui is hosted on PyPI. To update gGui, simply invoke pip:
+``pip install ggui --upgrade``
+
+Please report any bugs and feature requests to our `GitHub page <https://github.com/gphoton-tools/ggui/issues>`_:
+https://github.com/gphoton-tools/ggui/issues
+
+As always, thank you for supporting gGui!
+
+--Duy Nguyen
