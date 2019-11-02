@@ -64,6 +64,8 @@ If multiple bands are provided for each data product type (i.e. lightcurves, coa
     cube = World 0
     lightcurve = t0,t1
 
+.. _ggui_launch:
+
 Launching gGui
 ==============
 Once gGui is installed, gGui can be launched on the command line by invoking ``ggui``.
@@ -88,6 +90,8 @@ gGui is built atop the Glue Visualization Python Library. To learn more about th
     :alt: Image of a blank Glue canvas with each module/area labeled
 
 gGui provides three major features atop Glue: The gGui Target Manager, gGui Notepad, and automatic tabview generation. 
+
+.. _ggui_targ_man:
 
 The gGui Target Manager
 =======================

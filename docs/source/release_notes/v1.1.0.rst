@@ -11,14 +11,14 @@ Notable changes
 ---------------
 Version 1.1.0 introduces the gGui Notepad and general improvements to the Target Manager, as well as the startup process.
 
-1. The gGui Notepad is a collaborative space for researchers to write notes about a particular target; these notes are stored in the gGui Target Catalog, allowing the sharing of notes between collaborators. For more information, see :ref:`ggui_notepad`.
+1. :ref:`ggui_notepad` is a collaborative space for researchers to write notes about a particular target; these notes are stored in the gGui Target Catalog, allowing the sharing of notes between collaborators.
 
-2. The gGui startup procedure has been enhanced:
+2. The gGui startup procedure has been enhanced. For more information, see :ref:`ggui_launch`.
   
   * Users may now also load a new gGui Target Catalog at runtime by selecting "File" > "Load gGui Target Catalog"
   * The ``--target_list`` command line argument now supports multiple gGui Target Catalogs, space separated
 
-3. The Target Manager has received a number of improvements:
+3. :ref:`ggui_targ_man` has received a number of improvements:
 
   * Targets with the same name across multiple targets can be loaded and appropriately distinguished
   * Added an information button to display the current target's gGui Target Catalog, from which it originated
