@@ -35,10 +35,14 @@ def validate_targlist_format(target_list: dict,  list_source: str) -> dict:
             if data_type == '_notes':
                 continue
             for band, filepathString in band_data.items():
-                if not pathlib.Path(filepathString).is_file():
-                    if filepathString:
+                # If a path not specified, or empty string, just skip it
+                if filepathString:
+                    # If a relative path is given, resolve it with respect to the parent Target Catalog
+                    if not pathlib.Path(filepathString).is_absolute():
+                        filepathString = str(pathlib.Path(list_source).parent.joinpath(pathlib.Path(filepathString)))
+                    if not pathlib.Path(filepathString).is_file():
                         print(filepathString + " does not exist on disk. Ignoring...")
-                else: valid_files += 1
+                    else: valid_files += 1
         if not valid_files:
             empty_targets.append(target_name)
 
