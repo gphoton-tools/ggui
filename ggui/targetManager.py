@@ -139,8 +139,15 @@ class TargetManager(QtWidgets.QToolBar):
             # Load every band's data into internal cache
             for band, band_file in target_files[data_product_type].items():
                 if band_file:
-                    if not pathlib.Path(band_file).is_absolute():
-                        band_file = str(pathlib.Path(targ_catalog).parent.joinpath(pathlib.Path(band_file)))
+                    # If a relative path to the data product is given, join it with respect to the parent Target Catalog path
+                    if not pathlib.PurePath(band_file).is_absolute():
+                        # If there are path delimiters, detect which OS it came from to interpret the path directly
+                        if "\\" in band_file:
+                            band_file = str(pathlib.PurePath(targ_catalog).parent.joinpath(pathlib.PureWindowsPath(band_file)))
+                        elif "/" in band_file:
+                            band_file = str(pathlib.PurePath(targ_catalog).parent.joinpath(pathlib.PurePosixPath(band_file)))
+                        else:
+                            band_file = str(pathlib.PurePath(targ_catalog).parent.joinpath(pathlib.PurePath(band_file)))
                     self._primary_data[data_product_type][band] = load_data(band_file)
 
                     # If x_att, y_att provided in conf, test they exist

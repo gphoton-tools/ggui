@@ -37,11 +37,17 @@ def validate_targlist_format(target_list: dict,  list_source: str) -> dict:
             for band, filepathString in band_data.items():
                 # If a path not specified, or empty string, just skip it
                 if filepathString:
-                    # If a relative path is given, resolve it with respect to the parent Target Catalog
-                    if not pathlib.Path(filepathString).is_absolute():
-                        filepathString = str(pathlib.Path(list_source).parent.joinpath(pathlib.Path(filepathString)))
+                    # If a relative path to the data product is given, join it with respect to the parent Target Catalog path
+                    if not pathlib.PurePath(filepathString).is_absolute():
+                        # If there are path delimiters, detect which OS it came from to interpret the path directly
+                        if "\\" in filepathString:
+                            filepathString = str(pathlib.PurePath(list_source).parent.joinpath(pathlib.PureWindowsPath(filepathString)))
+                        elif "/" in filepathString:
+                            filepathString = str(pathlib.PurePath(list_source).parent.joinpath(pathlib.PurePosixPath(filepathString)))
+                        else:
+                            filepathString = str(pathlib.PurePath(list_source).parent.joinpath(pathlib.PurePath(filepathString)))
                     if not pathlib.Path(filepathString).is_file():
-                        print(filepathString + " does not exist on disk. Ignoring...")
+                        print("Cannot find " + filepathString + " on disk. Ignoring...")
                     else: valid_files += 1
         if not valid_files:
             empty_targets.append(target_name)
