@@ -44,12 +44,14 @@ class TargetManager(QtWidgets.QToolBar):
         self.addWidget(QtWidgets.QLabel("gGui Target Manager: "))
         # Add Back Button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowBack_transparent.png')), "Previous Target", self.previous_target)
+        QtWidgets.QShortcut(QtGui.QKeySequence("PgUp"), self).activated.connect(self.previous_target)
         # Add Combo Box
         self.QComboBox = QtWidgets.QComboBox(self)
         self.QComboBox.currentIndexChanged.connect(self.setPrimaryTarget)
         self.addWidget(self.QComboBox)
         # Add Forward Button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'ArrowForward_transparent.png')), "Next Target", self.next_target)
+        QtWidgets.QShortcut(QtGui.QKeySequence("PgDown"), self).activated.connect(self.next_target)
         # Add Info button
         self.addAction(QtGui.QIcon(resource_filename('ggui.icons', 'Information.svg')), "Target Information", self.show_targ_info)
         # Add Notes Button
