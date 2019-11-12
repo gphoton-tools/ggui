@@ -17,7 +17,7 @@ from PyQt5 import QtWidgets
 
 from ggui import qtTabLayouts
 from ggui.targetManager import TargetManager
-from ggui.make_param import validate_targlist_format
+from ggui.make_param import validate_target_catalog_file
 from .version import __version__
 
 
@@ -203,11 +203,8 @@ def main(user_arguments: list = None):
     # If the user specified a gGui YAML file, load its targets
     if args.target_list:
         for ggui_yaml_file in args.target_list:
-            target_list_path = str(pathlib.Path(ggui_yaml_file).absolute())
-            target_data_products[target_list_path] = validate_targlist_format(
-                yaml.load(open(target_list_path, "r"), Loader=yaml.BaseLoader),
-                target_list_path,
-            )
+            resolved_path = pathlib.Path(ggui_yaml_file).resolve()
+            target_data_products[resolved_path] = validate_target_catalog_file(str(resolved_path))
     # If the user requested a file-selector dialog to select a gGui YAML file, display it and load
     #   its contents
     if args.yaml_select:
@@ -215,12 +212,8 @@ def main(user_arguments: list = None):
         for ggui_yaml_file in gGuiGlueApplication.prompt_user_for_file(
             "Select GGUI YAML Target List", "gGUI YAML (*.yaml; *.yml)"
         ):
-            target_list_path = str(pathlib.Path(ggui_yaml_file).absolute())
-            target_data_products[target_list_path] = validate_targlist_format(
-                yaml.load(open(target_list_path, "r"), 
-                Loader=yaml.BaseLoader),
-                target_list_path,
-            )
+            resolved_path = pathlib.Path(ggui_yaml_file).resolve()
+            target_data_products[resolved_path] = validate_target_catalog_file(str(resolved_path))
     # If no targets were recognized, notify the user
     if not target_data_products:
         print("No yaml received. Starting empty gGui session...")
