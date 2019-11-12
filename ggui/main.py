@@ -6,8 +6,12 @@
 
 import argparse
 import pathlib
+import tempfile
+import urllib
+from urllib.parse import urlparse
 import webbrowser
 import yaml
+from zipfile import ZipFile
 
 from glue.core import DataCollection
 from glue.app.qt.application import GlueApplication
@@ -60,6 +64,8 @@ class gGuiGlueApplication(GlueApplication):
         menu_about_ggui.addAction(ggui_rtd)
         # Add basic About information
         menu_about_ggui.addAction("About gGui", self.show_about_ggui)
+        # Add tutorial button
+        menu_about_ggui.addAction("Load gGui Sample Data", self.ggui_tutorial)
 
         # Save a reference to the default tab
         # We won't need this, but can't delete it until we have multiple tabs
@@ -150,6 +156,27 @@ class gGuiGlueApplication(GlueApplication):
             + "\n\ngGui is provided under the AURA Software License. "
             "Please see the included license for details.",
         )
+
+    def ggui_tutorial(self):
+        """Loads gGui sample data"""
+        sample_data_url = 'https://github.com/gphoton-tools/ggui/raw/v1.2/docs/ggui_tutorial_data2019-11-11.zip'
+        # Dynamically get the sample data archive filename in case it changes
+        sample_filename = pathlib.Path(urlparse(sample_data_url).path).name
+        # Get temp path on disk to where this sample data will be written
+        sample_data_local_path = pathlib.Path(tempfile.gettempdir()) / sample_filename
+
+        # If we don't have the sample data downloaded, download it
+        if sample_data_local_path.is_file():
+            print("Downloading sample data to: " + str(sample_data_local_path) + " from: " + str(sample_data_url))
+            urllib.request.urlretrieve(sample_data_url, str(sample_data_local_path))
+            print("Download Successful: " + str(sample_data_local_path.is_file()))
+
+        with ZipFile(sample_data_local_path, 'r') as sample_data_zip:
+            # Unzip sample data archive
+            sample_data_zip.extractall(tempfile.gettempdir())
+            # Resolve the yaml path and load it to gGui
+            resolved_path = (pathlib.Path(tempfile.gettempdir()) / 'tutorial.yaml').resolve()
+            self.load_targets({resolved_path: validate_target_catalog_file(str(resolved_path))})
 
     @staticmethod
     def prompt_user_for_file(dialog_caption: str, dialog_name_filter: str) -> list:
