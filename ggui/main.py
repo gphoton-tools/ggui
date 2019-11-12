@@ -166,7 +166,7 @@ class gGuiGlueApplication(GlueApplication):
         sample_data_local_path = pathlib.Path(tempfile.gettempdir()) / sample_filename
 
         # If we don't have the sample data downloaded, download it
-        if sample_data_local_path.is_file():
+        if not sample_data_local_path.is_file():
             print("Downloading sample data to: " + str(sample_data_local_path) + " from: " + str(sample_data_url))
             urllib.request.urlretrieve(sample_data_url, str(sample_data_local_path))
             print("Download Successful: " + str(sample_data_local_path.is_file()))
