@@ -21,6 +21,17 @@ except ImportError:
     from PyQt4.QtWidgets import QTextEdit, QScrollArea
 
 import pathlib
+
+def validate_target_catalog_file(filepath: str) -> dict:
+    """Verifies a gGui Target Catalog confirms to the gGui YAML format
+
+    :returns: verified gGui target dictionary
+    """
+    return validate_targlist_format(
+                yaml.load(open(filepath, "r"), Loader=yaml.BaseLoader),
+                filepath
+    )
+
 def validate_targlist_format(target_list: dict,  list_source: str) -> dict:
     """Verifies dictionary is in gGui YAML format
     Verifies a given dictionary is the established gGui format.
