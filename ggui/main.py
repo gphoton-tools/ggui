@@ -17,13 +17,15 @@ from glue.core import DataCollection
 from glue.app.qt.application import GlueApplication
 from glue.config import menubar_plugin
 from glue.utils import nonpartial
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from ggui import qtTabLayouts
 from ggui.targetManager import TargetManager
 from ggui.make_param import validate_target_catalog_file
 from .version import __version__
 
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
 
 class gGuiGlueApplication(GlueApplication):
     """Primary gGui Application Class
