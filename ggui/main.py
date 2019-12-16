@@ -24,6 +24,7 @@ from ggui.targetManager import TargetManager
 from ggui.make_param import validate_target_catalog_file
 from .version import __version__
 
+# Enable High DPI
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
 
