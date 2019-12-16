@@ -215,6 +215,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param lightcurve_data: The gPhoton lightcurve to plot
         :param x_att: Label of attribute to assign to the x-axis
         :param y_att: Label of attribute to assign to the y-axis
+        :returns: Initialized lightcurve viewer
         """
         # Check for 1-1 correspondence rule (only one data set per band)
         for band, band_data in lightcurve_data.items():
@@ -232,6 +233,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         self.layout.addWidget(lightCurveViewer, 0, 0, 1, 2)
         self.lightCurveViewer = lightCurveViewer
         lightCurveViewer.redraw()
+        return lightCurveViewer
 
     def loadCoadd(self, session: glue.core.session, target_name: str, coadd_data: dict, x_att: str, y_att: str):
         """Constructs an image viewer for gPhoton Coadd FITS data
@@ -242,6 +244,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param coadd_data: The gPhoton Coadd to plot
         :param x_att: Label of attribute to assign to the x-axis
         :param y_att: Label of attribute to assign to the y-axis
+        :returns: Initialized coadd viewer
         """
         # Check for 1-1 correspondence rule (only one data set per band)
         for band, band_data in coadd_data.items():
@@ -257,6 +260,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         # Add this viewer to the overview layout
         self.layout.addWidget(coaddViewer, 1, 0)
         self.coaddViewer = coaddViewer
+        return coaddViewer
 
     def loadCube(self, session: glue.core.session, target_name: str , cube_data: dict, x_att: str, y_att: str):
         """Constructs an image viewer for gPhoton Cube FITS data
@@ -267,6 +271,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         :param cube_data: The gPhoton Cube to plot
         :param x_att: Label of attribute to assign to the x-axis
         :param y_att: Label of attribute to assign to the y-axis
+        :returns: Initialized cube viewer
         """
         # Check for 1-1 correspondence rule (only one data set per band)
         for band, band_data in cube_data.items():
@@ -282,3 +287,5 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         # Add this viewer to the overview layout
         self.layout.addWidget(cubeViewer, 1, 1)
         self.cubeViewer = cubeViewer
+        return cubeViewer
+
