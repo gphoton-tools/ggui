@@ -22,7 +22,7 @@ copyright = '2019, Duy Nguyen, Scott Fleming'
 author = 'Duy Nguyen, Scott Fleming'
 
 # The full version, including alpha/beta/rc tags
-release = '0.3.5'
+release = '1.2.0'
 
 
 # -- General configuration ---------------------------------------------------
