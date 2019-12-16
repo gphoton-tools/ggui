@@ -174,6 +174,7 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
         self.setLayout(self.layout)
  
         # If we're given any data, go ahead and load it
+        self._initialized_viewers = {}
         if target_data:
             self.load_data(session, target_name, target_data)
        
@@ -194,10 +195,20 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
             'coadd': self.loadCoadd,
             'cube': self.loadCube
         }
+        
+        # Determine data_product in focus. Will use to set focus to appropriate viewer on new target
+        data_product_in_focus = None
+        for data_product, viewer in self._initialized_viewers.items():
+            if viewer is session.application._viewer_in_focus:
+                data_product_in_focus = data_product
+                continue
+        
         # Clear the board: Delete the existing data viewers
         # Looping via index, remove in reverse order to not affect indexing
+        self._initialized_viewers = {}
         for widgetIndex in reversed(range(0, self.layout.count())):
             self.layout.takeAt(widgetIndex).widget().deleteLater()
+                
         # For all the data we've been given, call the appropriate constructor with that data
         for dataType, data in target_data.items():
             try:
@@ -206,6 +217,14 @@ class ggui_overview_tab(QtWidgets.QMdiArea):
             except ValueError as error:
                 print("WARNING: " + str(error))
                 continue
+
+        # Change focus to this new data's equivalent of the previous data product in focus. If new data doesn't have equivalent data, unset focus
+        if data_product_in_focus in self._initialized_viewers:
+            session.application._viewer_in_focus = self._initialized_viewers[data_product_in_focus]
+        else:
+            session.application._viewer_in_focus = None
+        session.application._update_focus_decoration()
+        session.application._update_plot_dashboard()
         
     def loadLightcurve(self, session: glue.core.session, target_name: str, lightcurve_data: dict, x_att: str, y_att: str):
         """Constructs a lightcurve viewer for gPhoton Lightcurve data
