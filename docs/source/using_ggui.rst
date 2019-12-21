@@ -118,6 +118,13 @@ gGui is built atop the Glue Visualization Python Library. To learn more about th
 
 gGui provides three major features atop Glue: The gGui Target Manager, gGui Notepad, and automatic tabview generation. 
 
+Demo Mode
+==============
+If you're looking for a quick demo to try gGui, we have prepared some sample data for your to try out gGui's feature set. Simply select "Load gGui Sample Data" under the "gGui Help" menu.
+
+.. image:: images/ggui_demo_mode.png
+    :alt: To load sample data, simply select "Load gGui Sample Data" under the "gGui Help" menu.
+
 .. _ggui_targ_man:
 
 The gGui Target Manager
