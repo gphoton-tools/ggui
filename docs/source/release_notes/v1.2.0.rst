@@ -1,0 +1,32 @@
+gGui Release Version 1.2.0
+##########################
+
+Dear gGui users and colleagues,
+
+I am excited to announce the release of gGui v1.2! 
+
+gGui is a data-analysis package written atop the Glue Visualization Python library to visualize data from the GALEX Space Telescope's photon event archive, gPhoton.
+
+Notable changes
+---------------
+Version 1.2.0 includes improvements to many features of gGui:
+
+1. The :ref:`ggui_target_catalog` is now cross-platform! gGui will automatically convert specified paths into your OS environment. This allows users to read target catalogs written by collaborators on a different OS, without any changes necessary to the gGui target catalog.
+
+2. A quick demo mode has been introduced to gGui. To quickly download sample data we've prepared on our GitHub page, simply select "Load gGui Sample Data" under the "gGui Help" menu.
+
+3. Plot options will automatically change as you click on a data product. This change deprecates the focus tool.
+
+4. :ref:`ggui_targ_man` now has configurable keyboard shortcuts! By default, the left and right arrows will advance targets for you! Users can configure these keyboard shortcuts in the :ref:`ggui_config`
+
+5. gGui now supports high DPI desktops.
+
+gGui is hosted on PyPI. To update gGui, simply invoke pip:
+``pip install ggui --upgrade``
+
+Please report any bugs and feature requests to our `GitHub page <https://github.com/gphoton-tools/ggui/issues>`_:
+https://github.com/gphoton-tools/ggui/issues
+
+As always, thank you for supporting gGui!
+
+--Duy Nguyen
