@@ -18,7 +18,6 @@ Version 1.2.0 includes improvements to many features of gGui:
     .. image:: ../images/ggui_demo_mode.png
         :alt: To load sample data, simply select "Load gGui Sample Data" under the "gGui Help" menu.
 
-
 3. Plot options will automatically change as you click on a data product. This change deprecates the focus tool.
 
 4. :ref:`ggui_targ_man` now has configurable keyboard shortcuts! By default, the left and right arrows will advance targets for you! Users can configure these keyboard shortcuts in the :ref:`ggui_config`
