@@ -14,11 +14,13 @@ Alternatively you may download and install directly from our GitHub repository, 
     git clone https://github.com/gphoton-tools/ggui.git
     pip install ./ggui
 
+.. _ggui_target_catalog:
+
 gGui Target Catalog
 ===================
-gGui ingests a list of targets and associated paths to data products. To create this file, you can use our ``make_param`` utility.
+gGui ingests a list of targets and associated paths to data products.
 
-Alternatively, you can write this file yourself. This file is written in the YAML standard and expects the following format:
+To create this file, you can use our ``make_param`` utility. Alternatively, you can write this file yourself. This file is written in the YAML standard and expects the following format:
 ::
 
     <Target Name>
@@ -37,6 +39,24 @@ for example:
         cube
             NUV: /home/ggui_data/andromeda_nuv_cube.fits
             FUV: /home/ggui_data/andromeda_fuv_cube.fits
+
+Paths can also be specified relatively:
+::
+
+    Andromeda Galaxy
+        lightcurve
+            NUV: ./ggui_data/andromeda_nuv_lightcurve.csv
+            FUV: ./ggui_data/andromeda_fuv_lightcurve.csv
+
+gGui is cross platform! The following target catalog is identical to the above:
+::
+
+    Andromeda Galaxy
+        lightcurve
+            NUV: .\ggui_data\andromeda_nuv_lightcurve.csv
+            FUV: ./ggui_data/andromeda_fuv_lightcurve.csv
+
+.. _ggui_config:
 
 gGui Configuration File
 =======================
@@ -63,6 +83,13 @@ If multiple bands are provided for each data product type (i.e. lightcurves, coa
     [Additional Fields To Glue]
     cube = World 0
     lightcurve = t0,t1
+
+The default keyboard shortcuts for gGui may be modified here as well:
+::
+
+    [Target Manager Shortcuts]
+    next_target = Right
+    previous_target = Left
 
 .. _ggui_launch:
 
