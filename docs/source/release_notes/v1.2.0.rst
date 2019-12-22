@@ -7,6 +7,8 @@ I am excited to announce the release of gGui v1.2!
 
 gGui is a data-analysis package written atop the Glue Visualization Python library to visualize data from the GALEX Space Telescope's photon event archive, gPhoton.
 
+I will be `presenting gGui <../_static/gGuiPoster.pdf>`_ at the 235th American Astronomical Society conference in Honolulu, Hawai'i! We would love to chat with our users about anything gGui! Please visit us at `Poster Session 109 (poster 14) on 2020 January 5th at 9:00AM HST <https://www.abstractsonline.com/pp8/#!/8993/presentation/3143>`_!
+
 Notable changes
 ---------------
 Version 1.2.0 includes improvements to many features of gGui:
