@@ -162,7 +162,7 @@ class gGuiGlueApplication(GlueApplication):
 
     def ggui_tutorial(self):
         """Loads gGui sample data"""
-        sample_data_url = 'https://github.com/gphoton-tools/ggui/raw/v1.2/docs/ggui_tutorial_data2019-11-11.zip'
+        sample_data_url = 'https://github.com/gphoton-tools/ggui/raw/master/docs/ggui_tutorial_data2019-11-11.zip'
         # Dynamically get the sample data archive filename in case it changes
         sample_filename = pathlib.Path(urlparse(sample_data_url).path).name
         # Get temp path on disk to where this sample data will be written
