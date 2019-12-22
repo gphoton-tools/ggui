@@ -11,7 +11,7 @@ Notable changes
 ---------------
 Version 1.2.0 includes improvements to many features of gGui:
 
-1. The :ref:`ggui_target_catalog` is now cross-platform! gGui will automatically convert specified paths into your OS environment. This allows users to read target catalogs written by collaborators on a different OS, without any changes necessary to the gGui target catalog.
+1. The :ref:`ggui_target_catalog` is now cross-platform! gGui will automatically convert specified paths written on any OS into your native OS environment. This allows users to read target catalogs written by collaborators on a different OS, without any changes necessary to the gGui target catalog itself.
 
 2. A quick demo mode has been introduced to gGui. To quickly download sample data we've prepared on our GitHub page, simply select "Load gGui Sample Data" under the "gGui Help" menu.
 
