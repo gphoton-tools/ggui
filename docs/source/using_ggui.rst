@@ -8,6 +8,8 @@ gGui is developed in the `Python language <https://www.python.org/>`_ and is hos
 
     pip install ggui
 
+.. warning:: Ensure pip is upgraded by executing (Linux, macOS) `pip install --upgrade pip` or (Windows) `python -m pip install --upgrade pip`. We are aware of users with out of date versions of pip experiencing installation issues with a 'numpy==1.13.3' issue when installing one of our dependencies, 'bottleneck'.
+
 Alternatively you may download and install directly from our GitHub repository, again using pip:
 ::
 

@@ -6,7 +6,12 @@ Please see our full documentation at: https://ggui.readthedocs.io/
 gGui is written atop the [Glue Python Library for Dataset Visualization](https://github.com/glue-viz/glue). 
 
 ## Installation Instructions:
-* Install via pip
+* Install Python 3.6+
+* Upgrade pip
+```console
+python -m pip install --upgrade pip
+```
+* Install gGui via pip
 ```console
 pip install ggui
 ```
