@@ -16,6 +16,8 @@ Alternatively you may download and install directly from our GitHub repository, 
     git clone https://github.com/gphoton-tools/ggui.git
     pip install ./ggui
 
+.. warning:: Users who wish to install directly using our ``setup.py`` file should note a known bug and workaround on our Known Issues page
+
 .. _ggui_target_catalog:
 
 gGui Target Catalog
