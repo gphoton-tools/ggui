@@ -9,7 +9,7 @@ If you run into any issues with gGui, please let us know by creating a GitHub is
     2. ``python ./setup.py install`` from local git root
     3. Modify qtpy to use PyQt5 instead of PySide
 
-        a. Determine qtpy initialization file from python interpreter: ``import qtpy; qtpy.__file``
+        a. Determine qtpy initialization file from python interpreter: ``import qtpy; qtpy.__file__``
         b. Open this file and determine where the PYSIDE_API detection occurs (As of QtPy version 1.9.0, this occurs around line 202)
         c. Modify the qtpy initialization file by adding ``API = 'pyqt5'`` to PySide detection. The file should read:
             
