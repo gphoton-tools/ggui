@@ -1,10 +1,10 @@
 The gGui Team
 #############
 
-`Duy Nguyen <dnguyen@nrao.edu>`_ is the Principal Software Architect and Developer of gGui. Duy works at Green Bank Observatory as a Software Engineer
+`Duy Nguyen <dnguyen@stsci.edu>`_ is the Principal Software Architect and Developer of gGui. They work at Space Telescope Science Institute on the Data Analysist Tools Branch a Software Engineer
 
-* dnguyen@nrao.edu
-* 304-456-2118
-* 155 Observatory, Green Bank, West Virginia 24944
+* dnguyen@stsci.edu
+* (667)218-6459
+* 3700 San Martin Dr, Baltimore, MD 21218
 
-`Scott Fleming <fleming@stsci.edu>`_ is the Principal Investigator of gGui. Scott works at the Space Telescope Science Institute as an Archive Scientist
+`Scott Fleming <fleming@stsci.edu>`_ is the Principal Investigator of gGui. He works at the Space Telescope Science Institute as an Archive Scientist
